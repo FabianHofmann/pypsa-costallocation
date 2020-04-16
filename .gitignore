@@ -1,0 +1,10 @@
+*.nc
+data/
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.log
+*.run.xml
+*.synctex.gz
+*.out
