@@ -18,23 +18,30 @@
 \crefname{constraint}{Constr.}{Constrs.}
 \creflabelformat{constraint}{(#2#1#3)}
 
+\setlength\parindent{8pt}
+
 \newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
 \newcommand{\note}[1]{\textcolor{Orange}{#1}}
 
 
-\newcommand{\generation}{g_{n,s,t}}
+\newcommand{\generation}[1][n]{g_{#1,s,t}}
 \newcommand{\generationpotential}{\bar{g}_{n,s,t}}
+\newcommand{\generationshare}[1][n]{\omega_{#1,s,t}}
 \newcommand{\capacityGeneration}{G_{n,s}}
 \newcommand{\capacityFlow}{F_{\ell}}
 \newcommand{\capexGeneration}{c_{n,s}}
 \newcommand{\capexFlow}{c_{\ell}}
 \newcommand{\opexGeneration}[1][n]{o_{#1,s}}
 \newcommand{\demand}[1][n]{d_{#1,a,t}}
+\newcommand{\demandnodal}[1][n]{d_{#1,t}}
+\newcommand{\demandshare}[1][n]{\omega_{#1,a,t}}
 \newcommand{\utility}{U_{n,a,t}}
 \newcommand{\incidence}[1][n]{K_{#1,\ell}}
 \newcommand{\ptdf}[1][n]{H_{\ell,#1}}
+\newcommand{\ptdfEqual}[1][n]{\ptdf[#1]^\circ}
 \newcommand{\slackflow}{k_{\ell}}
 \newcommand{\slack}[1][n]{k_{#1}}
+\newcommand{\Slack}{k_{m,n}}
 \newcommand{\mulowergeneration}[1][n]{\ubar{\mu}_{#1,s,t}}
 \newcommand{\muuppergeneration}[1][n]{\bar{\mu}_{#1,s,t}}
 \newcommand{\mulowerflow}{\ubar{\mu}_{\ell,t}}
@@ -50,20 +57,19 @@
 \newcommand{\selfconsumption}{p^{\circ}_{n,t}}
 \newcommand{\lagrangian}{\mathcal{L}}
 
-\newcommand{\allocatePeer}[1][n \rightarrow m]{A_{#1,t}}
-\newcommand{\allocateTransaction}[1][n \rightarrow m]{A_{#1,\ell,t}}
-\newcommand{\allocatePeerNormed}[1][n \rightarrow m]{\tilde{A}_{#1,t}}
-\newcommand{\allocateCapexGeneration}{\mathcal{C}^{G}_{m,t}}
-\newcommand{\allocateCapexFlow}{\mathcal{C}^{F}_{m,t}}
-\newcommand{\allocateOpex}{\mathcal{O}_{m,t}}
-\newcommand{\allocateEmissionCost}{\mathcal{E}_{m,t}}
+\newcommand{\allocatePeer}[1][m \rightarrow n]{A_{#1,t}}
+\newcommand{\allocateFlow}[1][n]{F_{#1,\ell,t}}
+\newcommand{\allocateTransaction}[1][m \rightarrow n]{A_{#1,\ell,t}}
+\newcommand{\allocatePeerNormed}[1][m \rightarrow n]{\tilde{A}_{#1,t}}
+\newcommand{\allocateCapexGeneration}[1][n]{\mathcal{C}^{G}_{#1,t}}
+\newcommand{\allocateCapexFlow}[1][n]{\mathcal{C}^{F}_{#1,t}}
+\newcommand{\allocateOpex}[1][n]{\mathcal{O}_{#1,t}}
+\newcommand{\allocateEmissionCost}[1][n]{\mathcal{E}_{#1,t}}
 
-\newcommand{\emission}{e_{n,s}}
+\newcommand{\emission}[1][n]{e_{#1,s}}
 \newcommand{\emissionPrice}{\mu_{\text{CO2}}}
 \newcommand{\megawatthour}{MWh$_\text{el}$}
 \newcommand{\totalcost}{\mathcal{TC}}
-\newcommand{\generatorshare}{\tilde{g}_{n,s,t}}
-\newcommand{\normeddemand}[1][n]{\tilde{d}_{#1,a,t}}
 \newcommand{\impactcapexgeneration}{\Phi_{n,s,t}}
 \newcommand{\impactcapexflow}{\Phi_{\ell,t}}
 
@@ -85,7 +91,20 @@
 % \end{abstract}
 
 
+\subsubsection*{Lagrange Mutliplier}
+
+Maximise $f(x_l)$, with equality constraints $g_i(x_l)$ and inequality constraints $h_j(x_l)$
+
+\begin{align}
+ \mathcal {L}(x_l,\lambda_i, \mu_j)=f(x_l)-\sum_i \lambda_i \, g_i(x_l) - \sum_j \mu_j \, h_j(x_l)
+\end{align}
+...
+
+
 \section*{Linear Energy Modelling and LMP}
+
+
+
 We linearly optimize the capacity and dispatch of a simple power system. 
 
 \begin{align}
@@ -104,26 +123,9 @@ where
  \item[] $\capexFlow$ denotes the CAPEX per transmission line 
  \item[] $\capacityFlow$ denotes the transmission capacity.
 \end{itemize}
-
-\noindent
-In the following we neglect the utility $\utility$ of the nodal demand while fixing the demand $\demand$ to a predefined time-series. The generation $\generation$ is constraint to its capacity
-\begin{align}
- \generation - \generationpotential \capacityGeneration  &\le 0 \resultsin{\muuppergeneration}\Forall{n,s,t} 
- \label[constraint]{eq:upper_generation_capacity_constraint}\\ 
- - \generation &\le 0 \resultsin{\mulowergeneration} \Forall{n,s,t} 
- \label[constraint]{eq:lower_generation_capacity_constraint}
- \end{align}
-where $\generationpotential \in \left[ 0,1\right]$ is the capacity factor for renewable generators. The constraints yield the KKT variables $\muuppergeneration$ and $\mulowergeneration$ which due to complementary slackness are only non-zero if the corresponding constraint is binding. 
-
-\noindent
-The transmission capacity $\capacityFlow$ limits the flow $\flow$ in both directions, such that 
-\begin{align}
- \flow - \capacityFlow &\le 0 \resultsin{\muupperflow} \Forall{\ell,t} 
- \label[constraint]{eq:upper_flow_capacity_constraint} \\
- - \flow - \capacityFlow &\le 0 \resultsin{\mulowerflow} \Forall{\ell,t} 
- \label[constraint]{eq:lower_flow_capacity_constraint}
-\end{align}
-The yielding KKT variables $\muupperflow$ and $\mulowerflow$ are only non-zero if $\flow$ is limited by the trasmission capacity in positive or negative direction, i.e. \cref{eq:upper_flow_capacity_constraint} or \cref{eq:lower_flow_capacity_constraint} are binding. \\
+% 
+\subsubsection*{Constraints}
+In the following we neglect the utility $\utility$ of the nodal demand while fixing the demand $\demand$ to a predefined time-series. \\
 
 The nodal balance constraint ensures that the amount of power that flows into a bus equals the power that flows out of a bus, thus reflects the Kirchhoff Current Law (KCL)
 \begin{align}
@@ -132,138 +134,54 @@ The nodal balance constraint ensures that the amount of power that flows into a 
 \end{align}
 Its shadow price mirrors the Locational Marginal Prizes (LMP) $\lmp$ per bus and time step. In a power market this is the \euro/\megawatthour-price which a consumer has to pay. \\
 
-As the shown in \cite{brown_decreasing_2020}, the OPEX and CAPEX of generators follow the non-profit rule which states that their expenses equals their total revenue 
-
+The generation $\generation$ is constraint to its nominal capacity
 \begin{align}
-\capexGeneration \, \capacityGeneration + \sum_{t} \opexGeneration \, \generation &= \sum_{t} \lmp \, \generation \Forall{n,s}\label{eq:non_profit_generator}
+ \generation - \generationpotential \capacityGeneration  &\le 0 \resultsin{\muuppergeneration} \Forall{n,s,t} 
+ \label[constraint]{eq:upper_generation_capacity_constraint}\\ 
+ - \generation &\le 0 \resultsin{\mulowergeneration} \Forall{n,s,t} 
+ \label[constraint]{eq:lower_generation_capacity_constraint}
+ \end{align}
+where $\generationpotential \in \left[ 0,1\right]$ is the capacity factor for renewable generators. The constraints yield the KKT variables $\muuppergeneration$ and $\mulowergeneration$ which due to complementary slackness,
+\begin{align}
+\muuppergeneration \left( \generation - \generationpotential \, \capacityGeneration \right)  &= 0  \Forall{n,s,t} 
+\label{eq:complementary_slackness_upper_generation} \\
+\mulowergeneration  \, \generation &= 0 \Forall{n,s,t}
+\label{eq:complementary_slackness_lower_generation} 
 \end{align}
+are only non-zero if the corresponding constraint is binding. \\
 
-\noindent
-The relation counts for transmission lines where the CAPEX amounts to the total congestion revenue
+
+The transmission capacity $\capacityFlow$ limits the flow $\flow$ in both directions, such that 
 \begin{align}
-\capexFlow \, \capacityFlow &= - \sum_{n,t} \lmp \, \incidence \, \flow \Forall{\ell} \label{eq:non_profit_branch}
+ \flow - \capacityFlow &\le 0 \resultsin{\muupperflow} \Forall{\ell,t} 
+ \label[constraint]{eq:upper_flow_capacity_constraint} \\
+ - \flow - \capacityFlow &\le 0 \resultsin{\mulowerflow} \Forall{\ell,t} 
+ \label[constraint]{eq:lower_flow_capacity_constraint}
 \end{align}
-Power flow from nodes with low locational prices to nodes with higher prices in the network, thus the nodal price difference in flow direction is negative. \note{Different to Tom's paper, there a minus is missing.}
-Note that we are neglecting the Kirchhoff Voltage Law (KVL) constraints. Finally, the total cost $\totalcost$, consisting of all CAPEX and OPEX have to be payed by the consumers 
-
+The yielding KKT variables $\muupperflow$ and $\mulowerflow$ are only non-zero if $\flow$ is limited by the trasmission capacity in positive or negative direction, i.e. \cref{eq:upper_flow_capacity_constraint} or \cref{eq:lower_flow_capacity_constraint} are binding. The complementary slackness 
 \begin{align}
-\totalcost = \sum_{n,s} \capexGeneration \, \capacityGeneration + \sum_{n,s,t} \opexGeneration \, \generation + \sum_{\ell} \capexFlow \, \capacityFlow = \sum_{n,a,t} \lmp \, \demand 
-\label{eq:total_system_cost}
+ \muupperflow \left( \flow - \capacityFlow \right)  &= 0 \Forall{\ell,t}
+ \label{eq:complementary_slackness_upper_flow} \\
+ \mulowerflow \left( \flow - \capacityFlow \right) &=  0 \Forall{\ell,t}
+ \label{eq:complementary_slackness_lower_flow} 
 \end{align}
+set the respective KKT for flows staying below the thermal limit to zero. 
+\\
 
+\subsubsection*{Flow is a passive variable}
+We treat the flow $\flow$ an a passive quantity only that is it is only influenced by the nodal injection.
 
-\subsection*{Adding CO$_2$ Constraints}
-
-Imposing an additional CO$_2$ constraint limiting the total emission to K,  
+The Power Transfer Distribition Factors (PTDF) $\ptdf$ determine the changes in the flow on line $\ell$ for one unit, commonly one MW, of net power production at bus $n$. Thus with a fix demand $\demand$, they direclty link the generation $\generation$ to the flow on each line according to
 \begin{align}
- \sum_{n,s,t} \emission \, \generation \le \text{K} \resultsin{\emissionPrice} 
- \label[constraint]{eq:co2_constraint}
-\end{align}
-with $\emission$ being the emission factor in tonne-CO$_2$ per \megawatthour, returns an effective CO$_2$ price $\emissionPrice$ in \euro/tonne-CO$_2$. The CO$_2$ price shifts the right hand side of the non-profit relation for generators \cref{eq:non_profit_generator} to
-
-\begin{align}
-\capexGeneration \, \capacityGeneration + \sum_{t} \opexGeneration \, \generation &= \sum_{t} \left( \lmp - \emission \, \emissionPrice \right)  \, \generation \Forall{n,s} 
-\label{eq:non_profit_generator_emission}
-\end{align}
-This shows nicely the duality for exchanging the CO$_2$ \cref{eq:co2_constraint} for a shifted OPEX which includes the CO$_2$ costs
-
-\begin{align}
-\opexGeneration \rightarrow \opexGeneration + \emission \, \emissionPrice \label[relation]{eq:shift_opex_by_emission_cost}
-\end{align}
-
-% ----------------------------------------------------------------------------------------
-% ----------------------------------------------------------------------------------------
-
-\section*{Flow Based Cost Allocation}
-
-Besides using LMP, there are others methods for distributing costs in a power system. A common approach is based on Flow Allocation (FA) methods which determine peer-to-peer (P2P) relations between producers (sources) and consumers (sinks) and thus enable to directly assign costs to the consumers. %Due to the non-determnistic tracing of power through the network the methods result in different allocation. 
-Let $\allocatePeer$ denotes the power that is produced at bus $n$ at time $t$ and assigned to consumers at bus $m$. We will refer to it as a P2P relation between $n$ and $m$. Further let $\allocateTransaction$ denote flow on line $\ell$ at time $t$ caused by the P2P connection $n\rightarrow m$.\\
-\noindent
-In the following we show how the LMP can be reproduced on the basis of FA. 
-
-\subsubsection*{Allocating Operational Expenditures}
-Consumers at bus $m$ compensate the OPEX proportionally to the assigned production, thus 
-\begin{align}
-\allocateOpex &= \sum_{n,s} \opexGeneration \, \generatorshare \, \allocatePeer \Forall{m,t} \label{eq:allocate_opexGeneration}
-\end{align}
-where $\generatorshare = \generation/\sum_s \generation$ denotes the share of generator $s$ of the nodal production. \\
-
-\subsubsection*{Allocating CO$_2$ Cost}
- Similar to the OPEX (compare \cref{eq:shift_opex_by_emission_cost}) consumers at bus $m$ compensate the CO$_2$ cost, thus 
-\begin{align}
- \allocateEmissionCost &= \sum_{n,s} \emissionPrice \, \emission \, \generatorshare \, \allocatePeer \Forall{m,t} \label{eq:allocate_emissionPrice}
-\end{align}
-
-
-\subsubsection*{Allocating Capital Expenditures for Generators}
-According to the polluter pays principle, the CAPEX allocation should differentiate between consumers who are `responsible` for investments and those who are not. Thus, it is crucial to know whether a time step $t$ makes investments in $\capacityGeneration$ necessary or if it would be feasible without (further) investments. The KKT variable of the upper generator capacity constraint $\muuppergeneration$ gives us the needed estimator: If $\muuppergeneration > 0$, the upper capacity constraint \cref{eq:upper_generation_capacity_constraint} is binding and it can be fairly assumed that these times steps cause investments in $\capacityGeneration$. If in contrast $\muuppergeneration = 0$, the generation $\generation$ is not bound and does not push further investments in $\capacityGeneration$.
-On the basis of the KKT variable $\muuppergeneration$ we are able to define a measure $\impactcapexgeneration$ for the impact on the investments in $\capacityGeneration$  
-\begin{align}
-    \impactcapexgeneration = \dfrac{\muuppergeneration}{\sum_t \muuppergeneration \, \generation}
-\end{align}
-which weights the contributions of consumers at bus $m$ at time $t$ to the CAPEX 
-\begin{align}
-    \allocateCapexGeneration &= \sum_{n,s} \capexGeneration \, \capacityGeneration \, \impactcapexgeneration\, \allocatePeer \Forall{m,t} \label{eq:allocate_capexGeneration}
-\end{align}
-
-\noindent
-If consumers at $m$ retrieve power from $n$ when $\impactcapexgeneration$ is large, their contribution to investments in $\capacityGeneration$ raises. On the other hand, if consumers at $m$ retrieve power from $n$ when $\impactcapexgeneration=0$ , their contribution to $\capacityGeneration$ remain unchanged. 
-
-\noindent
-\textit{Side note}: A way more simple approach would neglect these thoughts and let  consumers at $m$ compensate CAPEX for generator $s$ at bus $n$ proportional to their retrieved power. This would lead us to $ \impactcapexgeneration = \left( \generation\right)^{-1}$. 
-
-\subsubsection*{Allocating Capital Expenditures for Transmission Lines}
-The allocation of CAPEX per the transmission line $\capexFlow \, \capacityFlow $ follows a similar procedure as for the generators. Again, we build up on KKT variables $\muupperflow$ and $\mulowerflow$ which translate to the necessity of transmission expansion of $\ell$ at time $t$. The measure $\impactcapexflow$ respects the need of CAPEX of both flow directions when set to 
-
-\begin{align}
-    \impactcapexflow = \dfrac{\muupperflow + \mulowerflow}{\sum_t \left( \muupperflow + \mulowerflow \right) \, \flow}
-\end{align}
-
-and weights the contributions of consumers at bus $m$ at time $t$ to the CAPEX in line $\ell$,
-\begin{align}
-    \allocateCapexFlow = \sum_{n,\ell} \capexFlow \, \capacityFlow\, \impactcapexflow, \allocateTransaction \Forall{m,t} \label{eq:allocate_capexFlow}
-\end{align}
-
-\subsubsection*{Reproducing the LMP Based Consumption Costs}
-The above presented quantities complete an allocation of the total cost $\totalcost$ which mirrors the cost allocation based on LMP, thus 
-
-\begin{align}
- \allocateOpex + \allocateEmissionCost + \allocateCapexGeneration + \allocateCapexFlow \simeq \lmp[m] \, \demand[m] \Forall{m,t} 
- \label{eq:allocated_cost_mirror_lmp}
-\end{align}
-
-\newpage
-
-\section*{Theory}
-\subsubsection*{Lagrange Mutliplier}
-
-Maximise $f(x_l)$, with equality constraints $g_i(x_l)$ and inequality constraints $h_j(x_l)$
-
-\begin{align}
- \mathcal {L}(x_l,\lambda_i, \mu_j)=f(x_l)-\sum_i \lambda_i \, g_i(x_l) - \sum_j \mu_j \, h_j(x_l)
-\end{align}
-...
-
-\subsection*{Full Lagrangian}
-\begin{align}
- \lagrangian\left(\generation, \capacityGeneration, \capacityFlow, \boldsymbol{\lambda}, \boldsymbol{\mu} \right)   = &- \sum_{n,s} \capexGeneration \capacityGeneration - \sum_{n, s, t} \opexGeneration \generation - \sum_{\ell} \capexFlow \, \capacityFlow  \\
- &- \sum_{n,t} \lmp \left(\sum_\ell \incidence \, \flow  - \sum_s \generation + \sum_a \demand  \right)  \\ 
-%  &- \sum_{\ell,c,t} \cycleprice \, \cycle \, \impedance \, \flow  \label[constraint]{eq:langrange_cycle_constraint} \\ 
- &- \sum_{n,s,t} \muuppergeneration \left( \generation - \generationpotential \capacityGeneration \right)  + \sum_{n,s,t} \mulowergeneration \generation  \\
- &- \sum_{\ell,t} \muupperflow \left( \flow - \capacityFlow \right) + \sum_{\ell,t} \mulowerflow \left( \flow + \capacityFlow \right)     
-\end{align}
-% 
-where $\boldsymbol{\lambda} = \left\lbrace \lmp \right\rbrace $ and $\boldsymbol{\mu} = \left\lbrace \muuppergeneration, \mulowergeneration, \muupperflow, \mulowerflow \right\rbrace $ denote the set of related KKT variables.
-
-In this formulation, we treat the flow $\flow$ an a passive quantity only. The Power Transfer Distribition Factors (PTDF) $\ptdf$ determine the changes in the flow on line $\ell$ for one net power production at bus $n$. Thus with a fix demand $\demand$, they links the generation $\generation$ to the flow on each line according to
-\begin{align}
- \flow\left( \generation\right)  = \sum_n \ptdf \left( \sum_s \generation- \sum_a \demand \right)  %= \sum_n \ptdf \injection 
+ \flow\left( \generation\right)  = \sum_n \ptdf \left( \sum_s \generation- \sum_a \demand \right)  
+ \label{eq:flow_from_ptdf}
 \end{align}
 The PTDF have a degree of freedom: The slack $\slack$ denotes the contribution of bus $n$ to balancing out total power excess or deficit in the system. It can be dedicated to one bus, a sinlge ``slackbus``, or to several or all buses. The choice of slack modifies the PTDF accordingly 
 \begin{align}
- \ptdf  \rightarrow \ptdf - \sum_m \ptdf[m] \, \slack[m]
- \label[relation]{eq:ptdf_slacked}
+ \ptdf = \ptdfEqual - \sum_m \ptdfEqual[m]  \, \slack[m]
+ \label{eq:ptdf_slacked}
 \end{align}
+where $\ptdfEqual$ denote the PTDF with equally distributed slack.
 When bus $n$ injects excess power, is has to flow to the slack; when bus $n$ extract deficit power, it has to come from the slack. Summing over all ingoing and outgoing flow changes resulting from an positive injection at $n$ yields again the slack 
 \begin{align}
 \sum_\ell \incidence[m] \, \ptdf =  \delta_{m,n} - \slack[m] 
@@ -274,40 +192,170 @@ where $\delta_{m,n}$ on the right hand side represents the positive injection at
 % \begin{align}
 %  \pdv{\flow}{\generation}  = \ptdf \label{eq:flow_sensitity} 
 % \end{align}
-The global maximum of the Lagrangian requires stationarity with respect to all variables. Using stationarity of the generation    
-\begin{align}
- \pdv{\lagrangian}{\generation} = 0  \Forall{n,s} \\
-\end{align}
-and solving for $\lmp$, leads to 
 
-% \begin{align}
-% - \opexGeneration + \lmp - \sum_{m,\ell} \lmp[m] \, \incidence[m] \, \ptdf  - \muuppergeneration + \mulowergeneration - \sum_{\ell} \muupperflow \ptdf + \sum_{\ell} \mulowerflow \, \ptdf = 0 \Forall{n,s}
-% \end{align}
 
+\subsubsection*{Breaking Down the Full Lagrangian}
 \begin{align}
-\lmp &= \opexGeneration  + \muuppergeneration - \mulowergeneration + \sum_{\ell} \left( \muupperflow - \mulowerflow\right)  \, \ptdf + \sum_{m,\ell}\lmp[m] \, \incidence[m] \, \ptdf   \Forall{n,s} \label{eq:lmp_generalized}
-% &= \opexGeneration  + \muuppergeneration - \mulowergeneration + \sum_{\ell} \left( \muupperflow - \mulowerflow\right)  \, \ptdf + \sum_{m}\lmp[m] \left( \delta_{m,n} - \slack[m] \right) &\Forall{n,s} \label{eq:lmp_generalized}
+ \lagrangian\left(\generation, \capacityGeneration, \capacityFlow, \boldsymbol{\lambda}, \boldsymbol{\mu} \right)   = &- \sum_{n,s} \capexGeneration \capacityGeneration - \sum_{n, s, t} \opexGeneration \generation - \sum_{\ell} \capexFlow \, \capacityFlow  \\
+ &- \sum_{n,t} \lmp \left(\sum_\ell \incidence \, \flow  - \sum_s \generation + \sum_a \demand  \right)  \\ 
+%  &- \sum_{\ell,c,t} \cycleprice \, \cycle \, \impedance \, \flow  \label[constraint]{eq:langrange_cycle_constraint} \\ 
+ &- \sum_{n,s,t} \muuppergeneration \left( \generation - \generationpotential \capacityGeneration \right)  + \sum_{n,s,t} \mulowergeneration \generation  \\
+ &- \sum_{\ell,t} \muupperflow \left( \flow - \capacityFlow \right) + \sum_{\ell,t} \mulowerflow \left( \flow + \capacityFlow \right)     
 \end{align}
 % 
-\Cref{eq:lmp_generalized} must hold for every choice of slack in the PTDF. According to \cref{eq:ptdf_slacked,eq:slack}, setting the slack to $\slack = \delta_{m,n}$ results in $\ptdf = \sum_\ell \incidence[m] \, \ptdf = 0$. This leads to our first represantion for Locational Market Price, which we will refer to as the ``Island Solution``. Accordingly, the LMP is directly determined by the local operational price and prices for the generation capacity constraint
+where $\boldsymbol{\lambda} = \left\lbrace \lmp \right\rbrace $ and $\boldsymbol{\mu} = \left\lbrace \muuppergeneration, \mulowergeneration, \muupperflow, \mulowerflow \right\rbrace $ denote the set of related KKT variables. The global maximum of the Lagrangian requires stationarity with respect to all variables. The stationarity of the generation capacity variable leads to 
+\begin{align}
+ \pdv{\lagrangian}{\capacityGeneration}  = 0 \hspace{10pt} \rightarrow \hspace{10pt} \capexGeneration =  \sum_t \muuppergeneration \, \generationpotential  \Forall{n,s}
+ \label{eq:capexGeneration_duality}
+\end{align}
+
+the stationarity of the transmission capacity to
+\begin{align}
+ \pdv{\lagrangian}{\capacityFlow} = 0 \hspace{10pt} \rightarrow \hspace{10pt} \capexFlow =  \sum_t \left( \muupperflow - \mulowerflow \right) \Forall{\ell}
+ \label{eq:capexFlow_duality}
+\end{align}
+
+
+and the stationarity of the generation to 
+\begin{align}
+ \pdv{\lagrangian}{\generation} &= 0  &\Forall{n,s} \\
+ \rightarrow \hspace{10pt}  \opexGeneration &=  \lmp - \muuppergeneration + \mulowergeneration - \sum_{\ell} \left( \muupperflow - \mulowerflow\right)  \, \ptdf - \sum_{m,\ell}\lmp[m] \, \incidence[m] \, \ptdf   &\Forall{n,s} \label{eq:opex_duality}
+\end{align}
+% 
+For the latter, we used \cref{eq:flow_from_ptdf} which sets the derivative of the flow with respect to the generation to 
+\begin{align}
+\pdv{\flow}{\generation} = \ptdf                                                                                                                                                   \end{align}
+\Cref{eq:capexGeneration_duality,eq:capexFlow_duality,eq:opex_duality} show how the capital and operational prices translate into dual variables. \\
+
+Note that \cref{eq:opex_duality} must hold for every choice of slack in the PTDF. According to \cref{eq:ptdf_slacked,eq:slack}, setting the slack to $\slack = \delta_{m,n}$ results in $\ptdf = \sum_\ell \incidence[m] \, \ptdf = 0$. This leads to our first represantion for Locational Market Price, which we will refer to as the ``Island Solution``,
 \begin{align}
 \lmp  =  \opexGeneration + \muuppergeneration - \mulowergeneration \Forall{n,s,t}
 \label{eq:lmp1}
 \end{align}
-However, using this Island Solution, we can derive a second representation of the LMP. Feeding the \cref{eq:lmp1} back into \cref{eq:lmp_generalized} and applying \cref{eq:slack}, leads to 
+Accordingly, the LMP is directly determined by the local operational price and prices for the generation capacity constraint. 
+However, from the Island Solution, we can derive a second representation for the LMP. Feeding \cref{eq:lmp1} back into \cref{eq:opex_duality} and applying \cref{eq:slack}, finally leads to 
 \begin{align}
 \lmp =  - \sum_\ell \left( \muupperflow - \mulowerflow\right) \ptdf + \sum_m \left( \opexGeneration[m] + \muuppergeneration[m] - \mulowergeneration[m] \right) \slack[m] \Forall{n,s,t} 
+\label{eq:lmp2}
 \end{align}
-This equation generalizes \cref{eq:lmp1}. Note, that setting again $\slack = \delta_{m,n}$ will result in \cref{eq:lmp1}. It depicts the interdependence of the LMP, that is how $\lmp$ can be decomposed to operational prices and prices for capacity constraints at each generator and each transmission line in the system. According to the slack $\slack$,  the possibility for allocating costs between buses and transmission components. 
+This equation generalizes the former Island Solution for the LMP which again can be reproduced by setting $\slack[m] = \delta_{m,n}$. It depicts the interdependence of the LMP, that is how $\lmp$ can be decomposed to operational prices and prices for capacity constraints from all generators and transmission lines in the system. 
 
+\subsubsection*{Cost Allocation}
+
+The choice of slack $\slack[m]$ in \cref{eq:lmp2} decides on the generators and lines to which the nodal price at $n$ is allocated to. As we will see, there are various valid options for this choice. Mutliplied by the nodal consumption $\demandnodal = \sum_a \demand$, the slack translates into the peer-to-peer relation 
+\begin{align}
+ \allocatePeer = \demandnodal \, \slack[m]   \Forall{n,t}
+ \label{eq:allocate_peer}
+\end{align}
+that is the power which is produced at bus $m$ at time $t$ and assigned to consumers at bus $n$. Or the other words, the part of demand $\demandnodal$ that is covered by generators at bus $m$. \\ 
+
+Likewise, multipying the PTDF with the nodal demand will result in the flow induces by the net consumption at $n$ coming from the distributed slack 
+\begin{align}
+ \sum_m \allocateTransaction = - \demandnodal  \, \ptdf \Forall{n,\ell,t}  
+ \label{eq:allocate_transaction}
+\end{align}
+where the PTDF include the slack $\slack[m]$ according to \cref{eq:ptdf_slacked}. \\
+
+The slack $\slack[m]$ in \cref{eq:allocate_peer,eq:allocate_transaction} should be chosen such that the sum over all recipients $n$ in $\allocatePeer$ results in the nodal production, thus
+\begin{align}
+ \sum_n \allocatePeer = \sum_s \generation
+\end{align}
+Then, weighted by the nodal production share $\generationshare[m] = \generation[m]/\sum_s \generation[m]$ the allocation distributes all power pruduced by generator $(m,s)$,
+\begin{align}
+  \sum_n \generationshare[m] \, \allocatePeer = \generation[m] \Forall{m,s,t}
+  \label{eq:recipients_sum}
+\end{align}
+and the sum over all producers $m$ and recipients $n$ in $\allocateTransaction$ equals the power flow on line $\ell$,
+\begin{align}
+ \sum_{m,n} \allocateTransaction = \flow
+\end{align}
+
+
+These two quantities give a more intuitive insight on how the nodal payments can be decomposed. Multiplying both sides of \Cref{eq:lmp2}  with the nodal demand $\demandnodal$ will breakdown the costs payed by consumers at node $n$ to the different expeditures
 
 \begin{align}
- \sum_m \allocateTransaction[m \rightarrow n] = - \demand \, \ptdf  
-\end{align}
-\begin{align}
- \allocatePeer[m \rightarrow n] = \demand[m] \, \slack[m] 
+ \lmp \, \demandnodal = \allocateCapexFlow + \allocateOpex + \allocateCapexGeneration
 \end{align}
 
+with the allocated payments: \\
+\begin{align}
+ \allocateOpex &= \sum_{m,s} \opexGeneration[m] \, \generationshare[m] \, \allocatePeer 
+ &\text{OPEX for generators} 
+ \label{eq:allocate_opexGeneration}\\
+ \allocateCapexGeneration &= \sum_m \muuppergeneration[m] \, \generationshare[m] \, \allocatePeer
+ &\text{CAPEX for the generators} 
+  \label{eq:allocate_capexGeneration} \\
+ \allocateCapexFlow &=  \sum_{m,\ell} \left( \muupperflow - \mulowerflow\right) \allocateTransaction  
+ &\text{CAPEX for the transmission system} 
+  \label{eq:allocate_capexFlow}
+\end{align}
+
+Let's have a look at the allocated OPEX first. Consumers at bus $n$ retrieve power from different generators $(m,s)$ each producing a share of the nodal production. Hence consumers at $n$ compensate the OPEX proportionally to the assigned production. 
+
+ In this way (mutliply both sides of \cref{eq:recipients_sum} by $\opexGeneration$ and sum over $t$), all OPEX payments to generator (m,s) sum up to the total OPEX spent at (m,s). \\
+
+
+
+The CAPEX allocation for generators reveil a similar relation. According to the polluter pays principle, it differentiates between consumers who are `responsible` for investments and those who are not. If $\muuppergeneration > 0$, the upper Capacity \cref{eq:upper_generation_capacity_constraint} is binding. Thus it is these times steps which push investments in $\capacityGeneration$. If in contrast $\muuppergeneration = 0$, the generation $\generation$ is not bound and investments are not necessary. 
+When summing over all CAPEX payments to generator $(m,s)$ each generator retrieves exactly the cost that were spent to build the capacity $\capacityGeneration$,
+
+\begin{align}
+ \sum_{n,t} \muuppergeneration[m] \, \generationshare[m] \, \allocatePeer = \capexGeneration \, \capacityGeneration
+\end{align}
+where we used \cref{eq:complementary_slackness_upper_generation,eq:capexGeneration_duality}. Throughout all time steps, each generator $(m,s)$ receives the money it spends for invesments and operation (non-profit rule). 
+% The non-profit rule can also be seen when looking at the the total revenue per generator, 
+% \begin{align}
+%  \sum_t \lmp \, \generation &= \sum_t \opexGeneration \generation + \muuppergeneration \generation - \mulowergeneration \, \generation &\Forall{n,s} \\
+%  &= \sum_t \opexGeneration \, \generation + \capexGeneration \, \capacityGeneration &\Forall{n,s}
+% \end{align}
+%  where we multiplied both sides of \cref{eq:lmp1} by the generation and using the complementary slackness.  
+\\ 
+
+The allocation of CAPEX for the transmission system $\allocateCapexFlow$ builds up on the KKT variables $\muupperflow$ and $\mulowerflow$. Again the latter translate to the necessity of transmission invesments at $\ell$ at time $t$. Consumers which retrieve power flowing on congested lines, yielding a bound \cref{eq:upper_flow_capacity_constraint} or \eqref{eq:lower_flow_capacity_constraint}, pay compenstations for the resulting investments. Again the sum of all CAPEX payments to line $\ell$ equal the total CAPEX spent, thus
+
+\begin{align}
+ \sum_{m,n,t} \left( \muupperflow - \mulowerflow\right) \allocateTransaction = \capexFlow \, \capacityFlow  
+\end{align}
+where we used the complementary slackness \cref{eq:complementary_slackness_upper_flow,eq:complementary_slackness_lower_flow} and the fact that summing over all sources $m$ and sinks $n$ the allocation equals the actual power flow 
+\begin{align}
+\sum_{n,m} \allocateTransaction = \flow
+\end{align}
+% A similar relation applies for the transmission CAPEX. Mulplying both side of \cref{eq:opex_duality} by the nodal injection $\sum_s \generation - \sum_a \demand$ and using the complementary slackness ...
+% shows that the CAPEX per line amounts to the total congestion revenue
+% \begin{align}
+% \capexFlow \, \capacityFlow &= - \sum_{n,t} \lmp \, \incidence \, \flow \Forall{\ell} \label{eq:non_profit_branch}
+% \end{align}
+% The transmission lines carry power from nodes with lower LMP to nodes with higher LMP, the price difference times the transported power is their congestion revenue. \note{Sign is different to Tom's paper (there a minus is missing).}
+
+
+\subsubsection*{Adding CO$_2$ Constraints}
+
+Imposing an additional CO$_2$ constraint limiting the total emission to K,  
+\begin{align}
+ \sum_{n,s,t} \emission \, \generation \le \text{K} \resultsin{\emissionPrice} 
+ \label[constraint]{eq:co2_constraint}
+\end{align}
+with $\emission$ being the emission factor in tonne-CO$_2$ per \megawatthour, returns an effective CO$_2$ price $\emissionPrice$ in \euro/tonne-CO$_2$. 
+% The CO$_2$ price shifts the right hand side of the non-profit relation for generators \cref{eq:non_profit_generator} to
+% 
+% \begin{align}
+% \capexGeneration \, \capacityGeneration + \sum_{t} \opexGeneration \, \generation &= \sum_{t} \left( \lmp - \emission \, \emissionPrice \right)  \, \generation \Forall{n,s} 
+% \label{eq:non_profit_generator_emission}
+% \end{align}
+% This shows nicely the duality for exchanging the CO$_2$ \cref{eq:co2_constraint} for a shifted OPEX which includes the CO$_2$ costs
+As shown in ... the constraint can be translated in a dual price which shift the operational price per generator
+\begin{align}
+\opexGeneration \rightarrow \opexGeneration + \emission \, \emissionPrice \label[relation]{eq:shift_opex_by_emission_cost}
+\end{align}
+This leads to allocated CO$_2$ cost compensation of node $n$ of
+ \begin{align}
+ \allocateEmissionCost &= \emissionPrice \, \sum_{m,s} \emission[m] \, \generationshare[m] \, \allocatePeer \Forall{n,t} \label{eq:allocate_emissionPrice}
+\end{align}
+
+
+
+% ----------------------------------------------------------------------------------------
+% ----------------------------------------------------------------------------------------
 
 
 % The power injection per node and time denotes the nodal power imbalance between generation and demand
@@ -330,35 +378,35 @@ This equation generalizes \cref{eq:lmp1}. Note, that setting again $\slack = \de
 
 
 
-% \section*{Showcase}
-% 
-% \subsection*{Network with CO$_2$ constraint}
-% We illustrate the flow based cost allocation under use of the fictive network shown in \cref{fig:network}. It consists of nine buses and ten time steps. The solver optimizes the capacity of two generators, wind and gas, per bus. ...   
-% 
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width=\textwidth]{compare_allocation.png}
-%     \caption{Comparison of the stacked flow based cost allocation with the LMP based cost per consumer for each time step $t$ without CO$_2$ constraint. The left bars consist of the allocated OPEX $\allocateOpex$, the allocated CO$_2$ cost $\allocateEmissionCost$, the allocated generator CAPEX $\allocateCapexGeneration$ and transmission CAPEX $\allocateCapexFlow$, while the right bars show the of the nodal consumption times the LMP. }
-%     \label{fig:cost_allocation}
-% \end{figure}
-% 
-% \begin{figure}[h]
-% \begin{subfigure}{.5\textwidth}
-% \centering
-%  \includegraphics[width=\textwidth]{network.png}
-%  \caption{}
-%  \label{fig:network}
-% \end{subfigure}
-% \begin{subfigure}{.5\textwidth}   
-%     \centering
-%     \includegraphics[width=\textwidth]{nodal_payments.png}
-%     \caption{}
-%     \label{fig:nodal_payments}
-% \end{subfigure}
-% \caption{Network used for showcasing. (a) shows the distributing of generation capacities $\capacityGeneration$, the widths of the transmission lines are proportional to their thermal limit $\capacityFlow$. (b) shows the total nodal payments according to the cost allocation.}
-% \end{figure}
-% 
-% 
+\section*{Showcase}
+
+\subsection*{Network with CO$_2$ constraint}
+We illustrate the flow based cost allocation under use of the fictive network shown in \cref{fig:network}. It consists of nine buses and ten time steps. The solver optimizes the capacity of two generators, wind and gas, per bus. ...   
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{compare_allocation.png}
+    \caption{Comparison of the stacked flow based cost allocation with the LMP based cost per consumer for each time step $t$ without CO$_2$ constraint. The left bars consist of the allocated OPEX $\allocateOpex$, the allocated CO$_2$ cost $\allocateEmissionCost$, the allocated generator CAPEX $\allocateCapexGeneration$ and transmission CAPEX $\allocateCapexFlow$, while the right bars show the of the nodal consumption times the LMP. }
+    \label{fig:cost_allocation}
+\end{figure}
+
+\begin{figure}[h]
+\begin{subfigure}{.5\textwidth}
+\centering
+ \includegraphics[width=\textwidth]{network.png}
+ \caption{}
+ \label{fig:network}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}   
+    \centering
+    \includegraphics[width=\textwidth]{nodal_payments.png}
+    \caption{}
+    \label{fig:nodal_payments}
+\end{subfigure}
+\caption{Network used for showcasing. (a) shows the distributing of generation capacities $\capacityGeneration$, the widths of the transmission lines are proportional to their thermal limit $\capacityFlow$. (b) shows the total nodal payments according to the cost allocation.}
+\end{figure}
+
+
 % 
 % 
 % 
@@ -417,7 +465,7 @@ This equation generalizes \cref{eq:lmp1}. Note, that setting again $\slack = \de
 %  \sum_{m} \allocatePeer = \sum_s \generation
 % \end{align}
 % 
-% The P2P relation can be further broke down to allocating generator specific $ \generatorshare \, \allocatePeer $ where $\generatorshare = \generation/\sum_s \generation$ denotes the share of generator $s$ of the nodel production. Similarly the allocation to consumers a are given by and consumer specific $ \normeddemand[m] \allocatePeer$ with the nodal comsumer share given by $\normeddemand = \demand/\sum_a \demand$.
+% The P2P relation can be further broke down to allocating generator specific $ \generationshare \, \allocatePeer $ where $\generationshare = \generation/\sum_s \generation$ denotes the share of generator $s$ of the nodel production. Similarly the allocation to consumers a are given by and consumer specific $ \demandshare[m] \allocatePeer$ with the nodal comsumer share given by $\demandshare = \demand/\sum_a \demand$.
 % \end{appendix}
 
 

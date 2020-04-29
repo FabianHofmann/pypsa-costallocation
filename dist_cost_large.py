@@ -47,6 +47,7 @@ from netallocation.cost import locational_market_price
 from netallocation.grid import PTDF, Incidence, power_demand, network_injection
 from netallocation.linalg import dedup_axis, dot
 from numpy import eye
+import xarray as xr
 
 norm = lambda ds: ds/ds.sum()
 
@@ -56,6 +57,8 @@ s = m + ' ' + carrier
 t = n.snapshots[2]
 
 slack = norm(network_injection(n, t).clip(max=0))
+slack = xr.zeros_like(slack)
+slack += norm(np.random.rand(*slack.shape))
 k = PTDF(n) @ slack
 H = PTDF(n) - k
 K = Incidence(n)
@@ -68,7 +71,6 @@ mu_lo = n.generators_t.mu_lower.loc[t, s]
 line_mu_up = n.lines_t.mu_upper.loc[t]
 line_mu_lo = n.lines_t.mu_lower.loc[t]
 rhs  = ((line_mu_up - line_mu_lo) @ H.sel(bus=m))
-
 print(lhs.item(), rhs.item())
 
 lhs = - y.sel(bus=m) * K.sel(bus=m) @ H.sel(bus=m)
@@ -78,10 +80,14 @@ rhs = ((line_mu_up - line_mu_lo) * H.sel(bus=m)).sum() +\
 print(lhs.item(), rhs.item())
 
 
+lhs = y.sel(bus=m)
+rhs = -(line_mu_up - line_mu_lo) @ H.sel(bus=m) + y @ slack
+print(lhs.item(), rhs.item())
+
+
+# %%
 N = len(n.buses)
 D = dedup_axis(dot(K, H), ('bus_0', 'bus_1'))
-print(D.to_pandas().round(3))
-# %%
 p = D.sel(bus_1=m).to_series()
 f = H.sel(bus=m).to_series()
 c = pd.Series('red', p.index).where(p<0, 'blue')
