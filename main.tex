@@ -259,14 +259,14 @@ set the respective KKT for flows staying below the thermal limit to zero.
 
 \subsubsection*{Decomposing the Locational Marginal Prices and Allocating the Electricity Costs}
 \begin{align}
- \lagrangian\left(\generation, \capacityGeneration, \capacityFlow, \boldsymbol{\lambda}, \boldsymbol{\mu} \right)   = &- \sum_{n,s} \capexGeneration \capacityGeneration - \sum_{n, s, t} \opexGeneration \generation - \sum_{\ell} \capexFlow \, \capacityFlow  \\
+ \lagrangian\left(\generation, \flow, \capacityGeneration, \capacityFlow, \boldsymbol{\lambda}, \boldsymbol{\mu} \right)   = &- \sum_{n,s} \capexGeneration \capacityGeneration - \sum_{n, s, t} \opexGeneration \generation - \sum_{\ell} \capexFlow \, \capacityFlow  \\
  &- \sum_{n,t} \lmp \left(\sum_\ell \incidence \, \flow  - \sum_s \generation + \sum_a \demand  \right)  \\ 
-%  &- \sum_{\ell,c,t} \cycleprice \, \cycle \, \impedance \, \flow  \label[constraint]{eq:langrange_cycle_constraint} \\ 
+ &- \sum_{\ell,c,t} \cycleprice \, \cycle \, \impedance \, \flow  \label[constraint]{eq:langrange_cycle_constraint} \\ 
  &- \sum_{n,s,t} \muuppergeneration \left( \generation - \generationpotential \capacityGeneration \right)  + \sum_{n,s,t} \mulowergeneration \generation  \\
  &- \sum_{\ell,t} \muupperflow \left( \flow - \capacityFlow \right) + \sum_{\ell,t} \mulowerflow \left( \flow + \capacityFlow \right)     
 \end{align}
 % 
-where $\boldsymbol{\lambda} = \left\lbrace \lmp \right\rbrace $ and $\boldsymbol{\mu} = \left\lbrace \muuppergeneration, \mulowergeneration, \muupperflow, \mulowerflow \right\rbrace $ denote the set of related KKT variables. The global maximum of the Lagrangian requires stationarity with respect to all variables. The stationarity of the generation capacity variable leads to 
+where $\boldsymbol{\lambda} = \left\lbrace \lmp, \cycleprice \right\rbrace $ and $\boldsymbol{\mu} = \left\lbrace \muuppergeneration, \mulowergeneration, \muupperflow, \mulowerflow \right\rbrace $ denote the set of related KKT variables. The global maximum of the Lagrangian requires stationarity with respect to all variables. The stationarity of the generation capacity variable leads to 
 \begin{align}
  \pdv{\lagrangian}{\capacityGeneration}  = 0 \hspace{10pt} \rightarrow \hspace{10pt} \capexGeneration =  \sum_t \muuppergeneration \, \generationpotential  \Forall{n,s}
  \label{eq:capexGeneration_duality}
@@ -281,24 +281,29 @@ the stationarity of the transmission capacity to
 
 and the stationarity of the generation to 
 \begin{align}
- \pdv{\lagrangian}{\generation} &= 0  &\Forall{n,s} \\
- \rightarrow \hspace{10pt}  \opexGeneration &=  \lmp - \muuppergeneration + \mulowergeneration - \sum_{\ell} \left( \muupperflow - \mulowerflow\right)  \, \ptdf - \sum_{m,\ell}\lmp[m] \, \incidence[m] \, \ptdf   &\Forall{n,s} \label{eq:opex_duality}
+ \pdv{\lagrangian}{\generation} &= 0 
+ \rightarrow \hspace{10pt}  \opexGeneration =  \lmp - \muuppergeneration + \mulowergeneration \Forall{n,s} \label{eq:opex_duality}
 \end{align}
-% 
-For the latter, we used \cref{eq:flow_from_ptdf} which sets the derivative of the flow with respect to the generation to 
-\begin{align}
-\pdv{\flow}{\generation} = \ptdf                                                                                                                                                   \end{align}
-\Cref{eq:capexGeneration_duality,eq:capexFlow_duality,eq:opex_duality} show how the capital and operational prices translate into dual variables. \\
-
-Note that \cref{eq:opex_duality} must hold for every choice of slack in the PTDF. According to \cref{eq:ptdf_slacked,eq:slack}, setting the slack to $\slack = \delta_{m,n}$ results in $\ptdf = \sum_\ell \incidence[m] \, \ptdf = 0$. This leads to our first represantion for Locational Market Price, which we will refer to as the ``Island Solution``,
+Solving \cref{eq:opex_duality} for the $\lmp$, leads to our first representation for Locational Market Price, which we will refer to as the ``Island Solution``,
 \begin{align}
 \lmp  =  \opexGeneration + \muuppergeneration - \mulowergeneration \Forall{n,s,t}
 \label{eq:lmp1}
 \end{align}
-Accordingly, the LMP is directly determined by the local operational price and prices for the generation capacity constraint. 
-However, from the Island Solution, we can derive a second representation for the LMP. Feeding \cref{eq:lmp1} back into \cref{eq:opex_duality} and applying \cref{eq:slack}, finally leads to 
+It connects the LMP directly with the local operational price and prices for the generation capacity constraint. However, we can derive a second representation for $\lmp$. Starting from the stationarity of the flow
 \begin{align}
-\lmp =  - \sum_\ell \left( \muupperflow - \mulowerflow\right) \ptdf + \sum_m \left( \opexGeneration[m] + \muuppergeneration[m] - \mulowergeneration[m] \right) \slack[m] \Forall{n,s,t} 
+ 0 &= \pdv{\lagrangian}{\flow}  \\
+ &= - \sum_{m,\ell,t} \lmp[m] \, \incidence[m]  - \sum_{\ell} \left( \muupperflow - \mulowerflow \right)  - \sum_{\ell,c,t} \cycleprice \, \cycle \, \impedance &= 0
+\end{align}
+and multipying each term with the Power Transfer Distribution Factor $\ptdf$ leaves us with  
+
+\begin{align}
+  0 &= - \lmp + \lmp[m] \, \slack[m]  - \sum_{\ell} \left( \muupperflow - \mulowerflow \right)
+  \label{eq:lmp_lmp1_reduced}
+\end{align}
+According to \cref{eq:slack}, the first term splits into the LMP at $n$ and the LMP weighted with the slack. The final term disappears as the $\cycle \, \impedance$ is the kernel of the PTDF $\ptdf$, so $\sum_l \cycle \, \impedance \ptdf = 0$. Solving \cref{eq:lmp_lmp1_reduced}, and replacing the LMP of the right hand side with the expression of the Island Solution in \cref{eq:lmp1} leads to 
+
+\begin{align}
+\lmp =  \sum_m \left( \opexGeneration[m] + \muuppergeneration[m] - \mulowergeneration[m] \right) \slack[m] - \sum_\ell \left( \muupperflow - \mulowerflow\right) \ptdf  \Forall{n,s,t} 
 \label{eq:lmp2}
 \end{align}
 This equation generalizes the former Island Solution for the LMP which again can be reproduced by setting $\slack[m] = \delta_{m,n}$. It depicts the interdependence of the LMP, that is how $\lmp$ can be decomposed to operational prices and prices for capacity constraints from all generators and transmission lines in the system. 
