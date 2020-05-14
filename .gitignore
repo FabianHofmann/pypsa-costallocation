@@ -8,3 +8,4 @@ data/
 *.run.xml
 *.synctex.gz
 *.out
+*.nc

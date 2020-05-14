@@ -20,9 +20,12 @@
 
 \setlength\parindent{8pt}
 
+\newcommand{\ie}{\textit{i.e.} }
+\newcommand{\eg}{\textit{e.g.} }
+
 \newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
 \newcommand{\note}[1]{\textcolor{Orange}{#1}}
-
+\newcommand{\vpad}{\vspace{1mm}}
 
 \newcommand{\generation}[1][n]{g_{#1,s,t}}
 \newcommand{\generationpotential}{\bar{g}_{n,s,t}}
@@ -95,49 +98,128 @@
 % The abstract text goes here.
 % \end{abstract}
 
+In the following, we show how Flow Allocation (FA) can be used for decomposing Locational Marginal Prices (LMP) in a linear optimized power system. We begin by revising the fundamentals of the Power Transfer Distribition Factors (PTDF) and the role of the slack, which plays a key role for FA. This will lead us to a generalized form of peer-to-peer allocations and transmission usage allocations based on the choice of slack. In a second step, we breakdown the full Lagrangian of a cost-optimization for a network with transmission and generation capacity expansion. By taking into account sensitivities of the flow with respect to changes in the nodal generation, we are able to derive a cost allocation which directly links to FA.  
 
-\subsubsection*{Lagrange Mutliplier}
+\subsubsection*{Nomenclature}
 
-Maximise $f(x_l)$, with equality constraints $g_i(x_l)$ and inequality constraints $h_j(x_l)$
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ll}
+        $\demand$ & Electric demand per bus $n$, demand type $a$, time step $t$ in MW  \vpad \\
+        $\generation$ & Electric generation per bus $n$, carrier $s$, time step $t$  in MW \vpad \\
+        $\flow$ & Active power flow on line $\ell$, time step $t$ in MW   \vpad \\
+        $\opexGeneration$ & Operational cost (OPEX) in \euro/MW \vpad \\
+        $\capexGeneration$ & Capital Expenditure (CAPEX) in \euro/MW \vpad \\
+        $\capexFlow$  & CAPEX per transmission line $\ell$ in \euro/MW  \vpad \\
+        $\capacityGeneration$ & Generation capacity in MW \vpad \\
+        $\capacityFlow$ & Transmission capacity in MW \vpad \\
+        $\incidence$ & Incidence matrix \vpad \\
+        $\injection$ & Net nodal injection in MW, \ie $\left( \generationnodal - \demandnodal \right)$  \vpad \\
+        $\netproduction$ & Net nodal production in MW, \ie $\text{min}\left( \injection, 0 \right)$ \vpad \\
+        $\netconsumption$ & Net nodal consumption in MW, \ie $\text{min}\left( - \injection, 0 \right)$ \vpad \\ 
+        $\selfconsumption$ & Nodal self-consumption in MW, \ie $\text{min}\left( \netproduction, \netconsumption \right)$
+	\end{tabular}
+\end{table}
 
+
+
+
+\subsubsection*{Power Transfer Distribition Factors}
+
+
+The Power Transfer Distribition Factors (PTDF) $\ptdf$ determine the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$. Thus with a fix demand $\demand$, they directly link the generation $\generation$ to the flow on each line according to
 \begin{align}
- \mathcal {L}(x_l,\lambda_i, \mu_j)=f(x_l)-\sum_i \lambda_i \, g_i(x_l) - \sum_j \mu_j \, h_j(x_l)
+ \flow\left( \generation\right)  = \sum_n \ptdf \left( \sum_s \generation- \sum_a \demand \right)  
+ \label{eq:flow_from_ptdf}
 \end{align}
-...
+The PTDF have a degree of freedom: The slack $\slack$ denotes the contribution of bus $n$ to balancing out total power excess or deficit in the system. It can be dedicated to one bus, a sinlge ``slackbus``, or to several or all buses. The choice of slack modifies the PTDF accordingly 
+\begin{align}
+ \ptdf = \ptdfEqual - \sum_m \ptdfEqual[m]  \, \slack[m]
+ \label{eq:ptdf_slacked}
+\end{align}
+where $\ptdfEqual$ denote the PTDF with equally distributed slack.
+When bus $n$ injects excess power, it has to flow to the slack; when bus $n$ extract deficit power, it has to come from the slack. Summing over all ingoing and outgoing flow changes resulting from an positive injection at $n$ yields again the slack 
+\begin{align}
+\sum_\ell \incidence[m] \, \ptdf =  \delta_{m,n} - \slack[m] 
+\label{eq:slack}
+\end{align}
+where $\delta_{m,n}$ on the right hand side represents the positive injection at $n$.
+
+\subsubsection*{Flow Allocation} \label{sec:flow_allocation}
+
+As shown above, the choice of slack $\slack[m]$ decides on the generators and lines to which power imbalances are distributed to. Established flow allocation schemes haved used this relation and define the slack $\slack[m]$ in order to allocate power flows and exchanges. According to the Equivalent Bilateral Exchanges (EBE) for example, the net demand of bus $n$ is covered by all other buses proportional to their net power production. The Marginal Participation (MP) on the other hand allows to allocate power also to buses with net demand and net production at the same time. In the following we focus on the power that is allocated to net consumers in the network. \\  
+
+For a generic slack, the effective power which is produced at bus $m$ and assigned to consumers at bus $n$ is given by
+\begin{align}
+%  \allocatePeer = \demandnodal \, \slack[m]   \Forall{n,t}
+ \allocatePeer = \selfconsumption + \netconsumption \, \slack[m]   \Forall{n,t}
+ \label{eq:allocate_peer}
+\end{align}
+which we will refer to as the peer-to-peer allocation. It consists of two terms. The first term is the power which is produced at bus $n$ and at the same time consumed at bus $n$, namely the self-consumption $\selfconsumption$. We set this quantity to the minimum of nodal generation and demand, \ie $\selfconsumption = \text{min}(\generation, \demand)$, that is as long as the nodal generation does not exceed the nodal demand, it cannot be exported and assigned to other buses. The second term reflects the net deficit power of bus $n$ which is provided by the slack $\slack$. Following this concept, $\allocatePeer$ splits the electricity demand $\demandnodal$ to different providing buses. 
+
+Multipying the PTDF with the net demand $\netconsumption$ results in the flow induced by all imports to $n$
+\begin{align}
+%  \sum_m \allocateTransaction = - \demandnodal  \, \ptdf \Forall{n,\ell,t}
+ \sum_m \allocateTransaction = - \netconsumption  \, \ptdf \Forall{n,\ell,t}
+ \label{eq:allocate_transaction}
+\end{align}
+where the PTDF include the slack $\slack[m]$ according to \cref{eq:ptdf_slacked}. The slack $\slack[m]$ in \cref{eq:allocate_peer,eq:allocate_transaction} should be chosen such that the sum over all recipients $n$ in $\allocatePeer$ results in the nodal production, thus
+\begin{align}
+ \sum_n \allocatePeer = \generationnodal[m] \Forall{m,s,t}
+ \label{eq:generator_sum}
+\end{align}
+where $\generationnodal = \sum_s \generation$ is the nodal generation.
+Then, weighted by the nodal production share $\generationshare[m] = \generation[m]/\generationnodal[m]$ the allocation distributes all power pruduced by generator $(m,s)$,
+\begin{align}
+  \sum_n \generationshare[m] \, \allocatePeer = \generation[m] \Forall{m,s,t}
+  \label{eq:recipients_sum}
+\end{align}
+and the sum over all producers $m$ and recipients $n$ in $\allocateTransaction$ results in the power flow on line $\ell$,
+\begin{align}
+ \sum_{m,n} \allocateTransaction = \flow \Forall{\ell,t}
+ \label{eq:transaction_sum}
+\end{align}
+\\
 
 
-\section*{Linear Energy Modelling and LMP}
+\subsubsection*{Network Optimisation}
 
+% Maximise $f(x_l)$, with equality constraints $g_i(x_l)$ and inequality constraints $h_j(x_l)$
+% 
+% \begin{align}
+%  \mathcal {L}(x_l,\lambda_i, \mu_j)=f(x_l)-\sum_i \lambda_i \, g_i(x_l) - \sum_j \mu_j \, h_j(x_l)
+% \end{align}
+% ...
+% 
 
-
-We linearly optimize the capacity and dispatch of a simple power system. 
+We linearly cost-optimize the capacity and dispatch of a simple power system. 
 
 \begin{align}
     \underset{\demand, \generation, \capacityGeneration}{\text{max}}
-    \left(\utility(\demand) - \sum_{n,s} \capexGeneration \capacityGeneration - \sum_{n, s, t} \opexGeneration \generation - \sum_{\ell} \capexFlow \, \capacityFlow \right) \label{eq:minisation}
+    \left(\sum_{n,s} \capexGeneration \capacityGeneration - \sum_{n, s, t} \opexGeneration \generation - \sum_{\ell} \capexFlow \, \capacityFlow \right) \label{eq:minisation}
 \end{align}
+% where 
+% \begin{itemize}
+% \item[] $\utility$ denotes the utility function per bus $n$, demand type $a$ time step $t$ 
+%  \item[] $\demand$ denotes the eletric demand 
+%  \item[] $\capexGeneration$ denotes the capital expenditure (CAPEX) per node $n$ and generator type $s$
+%  \item[] $\capacityGeneration$ denotes the generation capacity
+%  \item[] $\opexGeneration$ denotes the operational cost (OPEX)
+%  \item[] $\generation$ denotes the net generation in MW
+%  \item[] $\flow$ denotes the active power flow on line $\ell$
+%  \item[] $\capexFlow$ denotes the CAPEX per transmission line 
+%  \item[] $\capacityFlow$ denotes the transmission capacity.
+subject to following physical constraints. 
+\\
+% In the following we neglect the utility $\utility$ of the nodal demand while fixing the demand $\demand$ to a predefined time-series. \\
 
-where 
-\begin{itemize}
-\item[] $\utility$ denotes the utility function per bus $n$, demand type $a$ time step $t$ 
- \item[] $\demand$ denotes the eletric demand 
- \item[] $\capexGeneration$ denotes the capital expenditure (CAPEX) per node $n$ and generator type $s$
- \item[] $\capacityGeneration$ denotes the generation capacity
- \item[] $\opexGeneration$ denotes the operational cost (OPEX)
- \item[] $\generation$ denotes the net generation in MW
- \item[] $\capexFlow$ denotes the CAPEX per transmission line 
- \item[] $\capacityFlow$ denotes the transmission capacity.
-\end{itemize}
-% 
-\subsubsection*{Constraints}
-In the following we neglect the utility $\utility$ of the nodal demand while fixing the demand $\demand$ to a predefined time-series. \\
 
 The nodal balance constraint ensures that the amount of power that flows into a bus equals the power that flows out of a bus, thus reflects the Kirchhoff Current Law (KCL)
 \begin{align}
     \sum_l \incidence \, \flow - \sum_s \generation + \sum_a \demand &= 0 \resultsin{\lmp} \Forall{n,t}
     \label[constraint]{eq:nodal_balance_lin}
 \end{align}
-Its shadow price mirrors the Locational Marginal Prizes (LMP) $\lmp$ per bus and time step. In a power market this is the \euro/\megawatthour-price which a consumer has to pay. \\
+Its shadow price mirrors the Locational Marginal Prizes (LMP) $\lmp$ per bus and time step. In a power market this is the \euro/\megawatthour-price which a consumer has to pay. Note that the flow $\flow$ in \cref{eq:nodal_balance_lin} is a passive variable only, given by \cref{eq:flow_from_ptdf}.\\
 
 The generation $\generation$ is constraint to its nominal capacity
 \begin{align}
@@ -173,33 +255,9 @@ The yielding KKT variables $\muupperflow$ and $\mulowerflow$ are only non-zero i
 set the respective KKT for flows staying below the thermal limit to zero. 
 \\
 
-\subsubsection*{Flow is a passive variable}
-We treat the flow $\flow$ an a passive quantity only that is it is only influenced by the nodal injection.
-
-The Power Transfer Distribition Factors (PTDF) $\ptdf$ determine the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$. Thus with a fix demand $\demand$, they direclty link the generation $\generation$ to the flow on each line according to
-\begin{align}
- \flow\left( \generation\right)  = \sum_n \ptdf \left( \sum_s \generation- \sum_a \demand \right)  
- \label{eq:flow_from_ptdf}
-\end{align}
-The PTDF have a degree of freedom: The slack $\slack$ denotes the contribution of bus $n$ to balancing out total power excess or deficit in the system. It can be dedicated to one bus, a sinlge ``slackbus``, or to several or all buses. The choice of slack modifies the PTDF accordingly 
-\begin{align}
- \ptdf = \ptdfEqual - \sum_m \ptdfEqual[m]  \, \slack[m]
- \label{eq:ptdf_slacked}
-\end{align}
-where $\ptdfEqual$ denote the PTDF with equally distributed slack.
-When bus $n$ injects excess power, it has to flow to the slack; when bus $n$ extract deficit power, it has to come from the slack. Summing over all ingoing and outgoing flow changes resulting from an positive injection at $n$ yields again the slack 
-\begin{align}
-\sum_\ell \incidence[m] \, \ptdf =  \delta_{m,n} - \slack[m] 
-\label{eq:slack}
-\end{align}
-where $\delta_{m,n}$ on the right hand side represents the positive injection at $n$.
-% Sensitivity of flow $\flow$ against changes of the power production $\generation$  
-% \begin{align}
-%  \pdv{\flow}{\generation}  = \ptdf \label{eq:flow_sensitity} 
-% \end{align}
 
 
-\subsubsection*{Breaking Down the Full Lagrangian}
+\subsubsection*{Decomposing the Locational Marginal Prices and Allocating the Electricity Costs}
 \begin{align}
  \lagrangian\left(\generation, \capacityGeneration, \capacityFlow, \boldsymbol{\lambda}, \boldsymbol{\mu} \right)   = &- \sum_{n,s} \capexGeneration \capacityGeneration - \sum_{n, s, t} \opexGeneration \generation - \sum_{\ell} \capexFlow \, \capacityFlow  \\
  &- \sum_{n,t} \lmp \left(\sum_\ell \incidence \, \flow  - \sum_s \generation + \sum_a \demand  \right)  \\ 
@@ -244,41 +302,10 @@ However, from the Island Solution, we can derive a second representation for the
 \label{eq:lmp2}
 \end{align}
 This equation generalizes the former Island Solution for the LMP which again can be reproduced by setting $\slack[m] = \delta_{m,n}$. It depicts the interdependence of the LMP, that is how $\lmp$ can be decomposed to operational prices and prices for capacity constraints from all generators and transmission lines in the system. 
-
-\subsubsection*{Cost Allocation}
-
 % As shown above, the choice of slack $\slack[m]$ in \cref{eq:lmp2} decides on the generators and lines to which the nodal price at $n$ is allocated to. 
-As shown above, the choice of slack $\slack[m]$ decides on the generators and lines to which power imbalances are distributed to. Established flow allocation schemes haved used this connection and define the slack $\slack[m]$ for allocating power flows. According to the Equivalent Bilateral Exchanges (EBE) for example, the net demand of bus $n$ is covered by all other buses proportional to their net power production. The Marginal Participation (MP) on the other hand allows to allocate power also to buses with net demand and net production. In the Appendix, we revise the mathematical expressions of the slack $\slack[m]$ for the different allocation schemes. \\  
-
-For a generic slack, the effective power which is produced at bus $m$ and assigned to consumers at bus $n$ is given by
-\begin{align}
- \allocatePeer = \demandnodal \, \slack[m]   \Forall{n,t}
- \label{eq:allocate_peer}
-\end{align}
-which we will refer to as the peer-to-peer allocation. In other words, it indicates the part of demand $\demandnodal$ that is effectively covered by generators at bus $m$. Likewise, multipying the PTDF with the nodal demand will result in the flow induces by the net consumption at $n$ coming from the distributed slack 
-\begin{align}
- \sum_m \allocateTransaction = - \demandnodal  \, \ptdf \Forall{n,\ell,t}  
- \label{eq:allocate_transaction}
-\end{align}
-where the PTDF include the slack $\slack[m]$ according to \cref{eq:ptdf_slacked}. The slack $\slack[m]$ in \cref{eq:allocate_peer,eq:allocate_transaction} should be chosen such that the sum over all recipients $n$ in $\allocatePeer$ results in the nodal production, thus
-\begin{align}
- \sum_n \allocatePeer = \generationnodal[m] \Forall{m,s,t}
- \label{eq:generator_sum}
-\end{align}
-where $\generationnodal = \sum_s \generation$ is the nodal generation.
-Then, weighted by the nodal production share $\generationshare[m] = \generation[m]/\generationnodal[m]$ the allocation distributes all power pruduced by generator $(m,s)$,
-\begin{align}
-  \sum_n \generationshare[m] \, \allocatePeer = \generation[m] \Forall{m,s,t}
-  \label{eq:recipients_sum}
-\end{align}
-and the sum over all producers $m$ and recipients $n$ in $\allocateTransaction$ results in the power flow on line $\ell$,
-\begin{align}
- \sum_{m,n} \allocateTransaction = \flow \Forall{\ell,t}
- \label{eq:transaction_sum}
-\end{align}
-\\
-
-Once defined the quantities $\allocatePeer$ and $\allocateTransaction$ on a basis of a valid choice of slack, an intuitive decomposition of the nodal payments becomes vivid: Multiplying both sides of \Cref{eq:lmp2}  with the nodal demand $\demandnodal$ will breakdown the costs payed by consumers at node $n$ to the different expeditures
+Further, \cref{eq:lmp2} reveals a crucial connection of the nodal electricity cost to the above presented flow allocation:
+Multiplying both sides of \cref{eq:lmp2}  with the net nodal demand $\netconsumption$
+breaks down the costs of power import to $n$. Then adding the price of the selfconsumption $\lmp \selfconsumption$ to both sides, finally breaks down the total gross demand cost at $n$,
 
 \begin{align}
  \lmp \, \demandnodal = \allocateCapexFlow + \allocateOpex + \allocateCapexGeneration \Forall{n,t}
@@ -303,24 +330,23 @@ with the allocated payments: \\
  &\text{CAPEX for the transmission system} 
 \label{eq:allocate_capexFlow}
 \end{align}
+Note that we used \cref{eq:allocate_peer,eq:allocate_transaction} which determine the peer-to-peer transactions between $m \rightarrow n$ and the corresponding usage of lines. \Cref{eq:lmp_allocation,eq:allocate_opexGeneration,eq:allocate_capexGeneration,eq:allocate_capexFlow} show how physically allocated flows on the basis of the slack directly tranlate into a cost allocation.\\ 
 
-\subsubsection*{Cost Terms}
-
-Let's have a look at the allocated OPEX first. Consumers at bus $n$ retrieve power from different generators $(m,s)$ and accordingly pay for operational costs. The OPEX allocation can thus be seen as P2P tradings between producers and consumers with fixed production prices. In this way, the generator $(m,s)$ retrieves the exact amount of money from consumers that it spends on the operation. In other words, all OPEX payments to generator (m,s) sum up to the total OPEX spent at (m,s), thus 
+Let's have a look at the allocated OPEX first. Consumers at bus $n$ retrieve power from different generators $(m,s)$ and accordingly compensate their operational costs. The OPEX allocation behaves like P2P tradings between producers and consumers with fixed production prices. In this way, the generator $(m,s)$ retrieves the exact amount of money from consumers that it spends on the operation. In other words, all OPEX payments to generator (m,s) sum up to the total OPEX spent at (m,s), thus 
 \begin{align}
 \sum_{n} \allocateOpex[n \rightarrow (m,s)] = \opexGeneration \, \generation
 \label{eq:no_profit_opex}
 \end{align}
 
 
-The CAPEX allocation for generators reveil a similar relation. According to the polluter pays principle, it differentiates between consumers who are `responsible` for investments and those who are not. If $\muuppergeneration > 0$, the upper Capacity \cref{eq:upper_generation_capacity_constraint} is binding. Thus it is these times steps which push investments in $\capacityGeneration$. If in contrast $\muuppergeneration = 0$, the generation $\generation$ is not bound and investments are not necessary. 
+The CAPEX allocation for generators reveil a similar relation. According to the polluter pays principle, it differentiates between consumers who are `responsible` for investments and those who are not. If $\muuppergeneration > 0$, the upper Capacity \cref{eq:upper_generation_capacity_constraint} is binding. Thus it is these times steps which push investments in $\capacityGeneration$. If $\muuppergeneration = 0$, the generation $\generation$ is not bound and investments are not necessary. 
 When summing over all CAPEX payments to generator $(m,s)$ each generator retrieves exactly the cost that were spent to build the capacity $\capacityGeneration$,
 
 \begin{align}
  \sum_{n,t} \allocateCapexGeneration[n \rightarrow (m,s)] = \capexGeneration \, \capacityGeneration
 \label{eq:no_profit_capex_generation}
 \end{align}
-where we used \cref{eq:complementary_slackness_upper_generation,eq:capexGeneration_duality}. Hence, throughout all time steps each generator $(m,s)$ receives the money it spends for invesments and operation (non-profit rule). 
+where we used \cref{eq:complementary_slackness_upper_generation,eq:capexGeneration_duality}. So in total, throughout all time steps each generator $(m,s)$ receives the money it spends for invesments and operation (non-profit rule). 
 % The non-profit rule can also be seen when looking at the the total revenue per generator, 
 % \begin{align}
 %  \sum_t \lmp \, \generation &= \sum_t \opexGeneration \generation + \muuppergeneration \generation - \mulowergeneration \, \generation &\Forall{n,s} \\
@@ -373,7 +399,7 @@ which expands the allocation of the electricity cost in \cref{eq:lmp_allocation}
 \end{align}
 
 
-
+\newpage
 \section*{Showcase}
 
 \subsection*{Network with CO$_2$ constraint}
@@ -464,35 +490,7 @@ We illustrate the flow based cost allocation under use of the fictive network sh
 % The P2P relation can be further broke down to allocating generator specific $ \generationshare \, \allocatePeer $ where $\generationshare = \generation/\sum_s \generation$ denotes the share of generator $s$ of the nodel production. Similarly the allocation to consumers a are given by and consumer specific $ \demandshare[m] \allocatePeer$ with the nodal comsumer share given by $\demandshare = \demand/\sum_a \demand$.
 % \end{appendix}
 
-\newpage
-\subsection*{Appendix: Allocation and Choices of Slack}
 
-The presented cost allocation is sensitive to the choice of slack $\slack[m]$. The latter shift the shares of $\allocateOpex$, $\allocateCapexGeneration$, $\allocateCapexFlow$ and $\allocateEmissionCost$ for each node, whereas the total payment per node remains the same. In the following we show the connection of this cost allocation to established flow allocation methods. \\
-
-\subsection*{Marginal Participation}
-
-
-The peer-to-peer allocation for the MP scheme is given by 
-\begin{align}
-\allocatePeer &= \selfconsumption + \netconsumption  \, \dfrac{\netproduction[m]}{\totalnetproduction}
-\end{align}
-
-where 
-\begin{itemize}
- \item $\injection = \left( \generationnodal - \demandnodal \right) $ denotes the nodal injection
- \item $\netproduction = \text{min}\left( \injection, 0 \right) $ the nodal net production 
- \item $\netconsumption = \text{min}\left( - \injection, 0 \right)$ the nodal net consumption and
- \item $\selfconsumption = \text{min}\left( \netproduction, \netconsumption \right)$ the nodal self-consumption. That is the power generated and at the same time consumed at node $n$. 
-\end{itemize}
-
-
-
-In order to allocate all gross demand $\demand$ to the slack, the latter is defined by 
-\begin{align}
-\slack[m,n] &= \dfrac{\selfconsumption + \netconsumption  \, \dfrac{\netproduction[m]}{\totalnetproduction}}{\demand}
-\end{align}
-
-...
 
 
 
