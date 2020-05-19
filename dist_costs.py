@@ -48,7 +48,7 @@ plot = n.plot(bus_sizes=bus_sizes/1e4, line_widths=n.lines.s_nom_opt/1e2,
        link_widths=n.links.p_nom_opt/1e2, ax=ax)
 ntl.plot.annotate_bus_names(n, ax, shift=(0,0.3),
                             transform=ccrs.PlateCarree(),
-                            bbox=dict(facecolor='white', alpha=0.5, edgecolor='None'))
+                            bbox='fancy')
 ax.legend(*ntl.plot.handles_labels_for(n.carriers.color), loc='upper left')
 fig.canvas.draw(); fig.tight_layout()
 fig.savefig(f'figures/network{tag}.png')
