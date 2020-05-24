@@ -12,7 +12,7 @@ import pypsa
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import seabor as sns
+import seaborn as sns
 from config import to_symbol_dict, color
 plt.rc('text', usetex=False)
 
