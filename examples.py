@@ -128,4 +128,5 @@ for i, v in enumerate(payoff):
     sns.heatmap(df, cmap='Blues', ax=ax, annot=True, fmt='10.0f', cbar=False)
     ax.set_title(to_symbol_dict[v])
 fig.tight_layout()
+fig.savefig(f'figures/example_payoff{tag}.png', bbox_inches='tight')
 

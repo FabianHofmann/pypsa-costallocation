@@ -15,8 +15,9 @@ from mpl_toolkits.axisartist.axislines import SubplotZero
 plt.rc('patch', facecolor='k')
 
 
-cost_i = ['CAPEX Production', 'CAPEX Transmission System',
-          'OPEX Production', 'Other Cost (e.g. CO$_2$ Cost)']
+cost_i = ['CAPEX Production', 'CAPEX Transmission',
+          'OPEX Production', 'Other Cost Terms \n(CO$_2$, Maintenance etc.)']
+
 lmp = pd.DataFrame([[25, 8, 15, 5]], index=['lmp'], columns=cost_i)
 c = pd.Series(color[['one_port_investment_cost', 'branch_investment_cost',
                      'one_port_operational_cost', 'co2_cost']].values,
@@ -46,10 +47,11 @@ for i, c in enumerate(lmp):
     y = bottom + .5 * lmp.at['lmp', c]
     # ax.bar(1, lmp.at['lmp', c], 0.2, bottom)
     bottom += lmp.at['lmp', c]
-    ax.annotate(c, xy=(.67, y), xytext=(.9, y-.7), zorder=8,
-                arrowprops=dict(arrowstyle='-'))
+    ax.annotate(c, xy=(.67, y), xytext=(.9, y), zorder=8,
+                arrowprops=dict(arrowstyle='-'),
+                verticalalignment='center')
 
-ax.set_ylabel('Electricity price  [€/MW]')
+ax.set_ylabel('$\lambda_{n,t}$  [€/MWh]')
 ax.set_xticks([])
 ax.set_yticklabels([])
 
