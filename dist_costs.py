@@ -26,7 +26,7 @@ to_symbol_dict = dict(one_port_investment_cost = '$\mathcal{C}^{G}_{n,t}$',
 
 n = ntl.test.get_network_ac_dc()
 n.carriers = n.carriers.drop('battery')
-n.generators['p_nom_min'] = 0
+# n.generators['p_nom_min'] = 0
 
 tag = ''
 relax_co2 = False

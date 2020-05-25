@@ -16,18 +16,18 @@ import seaborn as sns
 from config import to_symbol_dict, color
 plt.rc('text', usetex=False)
 
-tag = ''
-add_gen_args = {}
+# tag = ''
+# add_gen_args = {}
 
-# tag = '_constraint_capacity'
-# add_gen_args = {'p_nom_max': 80}
+tag = '_constraint_capacity'
+add_gen_args = {'p_nom_max': 100}
 
 
 n = pypsa.Network()
 n0 = '0'
 n1 = '1'
-d0 = 50
-d1 = 80
+d0 = 60
+d1 = 90
 o0 = 50
 o1 = 200
 c0 = 500
@@ -60,35 +60,44 @@ ca_df = ca_sum.sel(snapshot=sn, drop=True).to_dataframe()
 dc_df = dc.sel(snapshot=sn, drop=True).to_dataframe()
 
 # %%
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(12,5))
 
 n.plot(flow=ntl.network_flow(n, sn).to_series()/50, margin=0.3, ax=ax,
        geomap=False, bus_sizes = ca_df.stack().clip(lower=0)/5e6, bus_colors=color)
 bbox = dict(facecolor='w', alpha=0.3, edgecolor='grey', boxstyle='round')
-textkwargs = dict(size=12, color='darkslategray', ha="left", va="top",
+textkwargs = dict(size=12, color='darkslategray', va="top",
                   bbox=bbox, zorder=8)
+wpad = 0.04
+
 bus0_fix = (f'Fixed:  \n\no = {o0} €/MW\nc = {c0} €/MW\nd = {d0} MW')
 bus0_opt = (f'Optimized:  \n\ng = {g0} MW\nG = {G0} MW')
 bus0_pay = (f'Fix quantities:  \n\no = {o0} €/MW\nc = {c0} €/MW\nd = {d0} MW')
-ax.text(n.buses.x[0]-.22, n.buses.y[0]+.26, bus0_fix, **textkwargs)
-ax.text(n.buses.x[0], n.buses.y[0]+.26, bus0_opt, **textkwargs)
+
+dy = .3
+ax.text(n.buses.x[0]-wpad, n.buses.y[0]+dy, bus0_fix, ha='right', **textkwargs)
+ax.text(n.buses.x[0], n.buses.y[0]+dy, bus0_opt, ha='left', **textkwargs)
 
 bus1_fix = (f'Fixed:  \n\no = {o1} €/MW\nc = {c1} €/MW\nd = {d1} MW')
 bus1_opt = (f'Optimized:  \n\ng = {g1} MW\nG = {G1} MW')
 bus0_pay = (f'Fix quantities:  \n\no = {o0} €/MW\nc = {c0} €/MW\nd = {d0} MW')
-ax.text(n.buses.x[1]-.18, n.buses.y[1]-.12, bus1_fix, **textkwargs)
-ax.text(n.buses.x[1]+.04, n.buses.y[1]-.12, bus1_opt, **textkwargs)
+
+dy = - .15
+dx = .1
+ax.text(n.buses.x[1]+dx, n.buses.y[1]+dy, bus1_fix, ha='right', **textkwargs)
+ax.text(n.buses.x[1]+dx+wpad, n.buses.y[1]+dy, bus1_opt, ha='left', **textkwargs)
 
 line_fix = (f'Fixed:  \n\nc = {c_l} €/MW')
 line_opt = (f'Optimized:  \n\nf = {F} MW\nF = {F} MW')
 bus0_pay = (f'Fix quantities:  \n\no = {o0} €/MW\nc = {c0} €/MW\nd = {d0} MW')
-ax.text(n.buses.x.mean()-.2, n.buses.y.mean()+.25, line_fix, **textkwargs)
-ax.text(n.buses.x.mean()+.02, n.buses.y.mean()+.25, line_opt, **textkwargs)
+
+dy = 0.3
+ax.text(n.buses.x.mean()-wpad, n.buses.y.mean()+dy, line_fix, ha='right', **textkwargs)
+ax.text(n.buses.x.mean(), n.buses.y.mean()+dy, line_opt, ha='left', **textkwargs)
 
 ax.legend(*handles_labels_for(color[ca_df.columns].rename(to_symbol_dict)),
-          ncol=1, loc='upper left')
+          ncol=3, loc='upper left', frameon=False, fontsize='large')
 ntl.plot.annotate_bus_names(n, ax, shift=0, bbox='fancy')
-# fig.tight_layout()
+fig.tight_layout()
 fig.savefig(f'figures/example_network{tag}.png', bbox_inches='tight')
 
 # %%
@@ -117,16 +126,23 @@ fig.savefig(f'figures/example_cost_shares{tag}.png', bbox_inches='tight')
 
 to_indices = pd.Series(dict(payer='n', receiver_nodal_cost='m',
                             receiver_transmission_cost='$\ell$'))
-fig, axes = plt.subplots(1, 3, figsize=(10,3))
+fig, axes = plt.subplots(1, 3, figsize=(5,2.5), sharey=True,
+                          gridspec_kw={'width_ratios':[0.4,.4,.2]})
 L = len(ca.receiver_transmission_cost)
 payoff = ca.sum(['snapshot', 'receiver_carrier'])\
            .assign_coords(receiver_transmission_cost=range(L))
 payoff = payoff.rename(to_indices)
+vmax = payoff.to_array().max()
 for i, v in enumerate(payoff):
     ax = axes[i]
     df = payoff[v].to_pandas().T
-    sns.heatmap(df, cmap='Blues', ax=ax, annot=True, fmt='10.0f', cbar=False)
+    annot = df.round(0).div(1e3).astype(int).astype(str) + 'k €'
+    sns.heatmap(df, cmap='Reds', ax=ax, annot=annot, fmt='s',
+                cbar=False, vmin=-1000, vmax=vmax, linewidths=1, square=True,
+                annot_kws={'horizontalalignment': 'left'})
+    if i:
+        ax.set_ylabel('')
     ax.set_title(to_symbol_dict[v])
-fig.tight_layout()
+fig.tight_layout(w_pad=0)
 fig.savefig(f'figures/example_payoff{tag}.png', bbox_inches='tight')
 

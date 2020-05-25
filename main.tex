@@ -27,13 +27,18 @@
 \newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
 \newcommand{\note}[1]{\textcolor{Orange}{#1}}
 \newcommand{\vpad}{\vspace{1mm}}
+\newcommand{\hpad}{\hspace{15pt}}
 
 \newcommand{\generation}[1][n]{g_{#1,s,t}}
 \newcommand{\generationpotential}{\bar{g}_{n,s,t}}
 \newcommand{\generationshare}[1][n]{\omega_{#1,s,t}}
 \newcommand{\nodalgeneration}[1][n]{g_{#1,t}}
 \newcommand{\capacityGeneration}{G_{n,s}}
+\newcommand{\capacityGenerationUpper}{\bar{G}_{n,s}}
+\newcommand{\capacityGenerationLower}{\ubar{G}_{n,s}}
 \newcommand{\capacityFlow}{F_{\ell}}
+\newcommand{\capacityFlowUpper}{\bar{F}_{\ell}}
+\newcommand{\capacityFlowLower}{\ubar{F}_{\ell}}
 \newcommand{\capexGeneration}{c_{n,s}}
 \newcommand{\capexFlow}{c_{\ell}}
 \newcommand{\opexGeneration}[1][n]{o_{#1,s}}
@@ -133,42 +138,42 @@ Maximizing the welfare of all market participants within a power system is a com
 	\end{tabular}
 \end{table}
 
-\subsubsection*{Cost Terms of the LMP}
+\section{Economic Context}
 
-In a power system with minimized total cost $\totalcost$, the Locational Market Price (LMP) describes the marginal price for an incremental increase of electricity demand $\demand$ of consumer $a$ at bus $n$. It is given by the derivative of the total system cost $\totalcost$ with respect to the local demand $\demand$
-\begin{align}
- \lmp = \pdv{\,\totalcost}{\,\demand}
-\end{align}
-For long term operation and investment planning models, $\totalcost$ includes all operational expenditures (OPEX) $\totalOpexGeneration$ and capital expenditures (CAPEX) $\totalCapexGeneration$ and $\totalCapexFlow$ for production  and transmission respectively, thus
+In long-term operation and investment planning models, the total costs $\totalcost$ of a power system include all operational expenditures (OPEX) $\totalOpexGeneration$ and capital expenditures (CAPEX) $\totalCapexGeneration$ and $\totalCapexFlow$ for production  and transmission respectively, thus
 \begin{align}
   \totalcost &= \totalOpexGeneration + \totalCapexGeneration +  \totalCapexFlow + \text{rest}
   \label{eq:total_cost_terms}
 \end{align}
+In a network design with minimal $\totalcost$, the Locational Market Price (LMP) describes the marginal price for an incremental increase of electricity demand $\demand$ of any consumer $a$ at bus $n$. It is given by the derivative of the total system cost $\totalcost$ with respect to the local demand $\demand$
+\begin{align}
+ \lmp = \pdv{\,\totalcost}{\,\demand}
+ \label{eq:total_cost_derivative}
+\end{align}
+This leads to a nodal pricing where over the span of optimized timesteps $t$, the system costs are totally payed back by the consumers 
+\begin{align}
+ \totalcost &=  \sum_{n,a,t} \lmp \, \demand
+ \label{eq:total_cost_sum}
+\end{align}
 % 
 \begin{figure}[h]
- \includegraphics[width=0.9\linewidth]{figures/price_decomposition.png}
+\centering
+ \includegraphics[width=.8\linewidth]{figures/price_decomposition.png}
  \caption{Schematic decomposition of the Locational Market Price $\lmp$. In power system model with optimal long-term operation and planning, the total system costs $\totalcost$ split into different cost terms, \textit{i.e} OPEX and CAPEX for production and transmission and possibly other expenditures. As $\,\totalcost$ is fully payed by the consumers, each LMP $\lmp$ can be decomposed into cost terms compensating the different expenditures at timestep $t$.}
  \label{fig:price_decomposition}
 \end{figure}
 
-Over the span of optimized timesteps $t$, the system costs are totally payed back by the consumers 
-\begin{align}
- \totalcost &=  \sum_{n,a,t} \lmp \, \demand
- \label{eq:total_cost_sum}
- \end{align}
 % 
-As a direct consequence of \cref{eq:total_cost_terms,eq:total_cost_sum}, the LMP splits into different cost terms assigned to OPEX and CAPEX for production and transmission and eventual other expenditures. We schematically show this behaviour in \cref{fig:price_decomposition}. 
+As a direct consequence of \cref{eq:total_cost_terms,eq:total_cost_derivative,eq:total_cost_sum}, the LMP splits into different cost terms assigned to OPEX and CAPEX for production and transmission and eventual other expenditures. We schematically show this behaviour in \cref{fig:price_decomposition}. 
 Extensive investigations of the LMP as done in \cite{schweppe_spot_1988} already showed this connection however leave the question open how the costs are allocated among the components. In the following we will show how the above presented cost decomposition is extended to full peer-to-peer cost allocation including all network components. 
 
 
 
-% \section{Mathematical Theory}
+\section{Mathematical Theory}
 
 
 
-
-
-\subsubsection*{Power Transfer Distribition Factors and Flow Allocation}
+\subsection{Power Transfer Distribition Factors and Flow Allocation}
 
 
 In linear power flow models, the Power Transfer Distribition Factors (PTDF) $\ptdf$ determine the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$. Thus for a given production $\generation$ and demand $\demand$, they directly link to the the resulting flow on each line, 
@@ -235,7 +240,7 @@ The solution to $\slackk$ follows from combining \cref{eq:allocate_peer,eq:sum_n
 
 
 
-\subsubsection*{Network Optimisation}
+\subsection{Network Optimisation}
 
 % Maximise $f(x_l)$, with equality constraints $g_i(x_l)$ and inequality constraints $h_j(x_l)$
 % 
@@ -248,8 +253,8 @@ The solution to $\slackk$ follows from combining \cref{eq:allocate_peer,eq:sum_n
 We linearly cost-optimize the capacity and dispatch of a simple power system. 
 
 \begin{align}
-    \underset{\generation, \capacityGeneration, \capacityFlow}{\text{max}}
-    \left(-\sum_{n,s} \capexGeneration \capacityGeneration - \sum_{n, s, t} \opexGeneration \generation - \sum_{\ell} \capexFlow \, \capacityFlow \right) \label{eq:minisation}
+    \underset{\generation, \capacityGeneration, \capacityFlow}{\text{min}}
+    \left(\sum_{n,s} \capexGeneration \capacityGeneration + \sum_{n, s, t} \opexGeneration \generation + \sum_{\ell} \capexFlow \, \capacityFlow \right) \label{eq:minisation}
 \end{align}
 subject to following physical constraints. 
 \\
@@ -297,7 +302,7 @@ set the respective KKT for flows staying below the thermal limit to zero.
 
 
 
-\subsubsection*{Decomposing the Locational Marginal Prices and Allocating the Electricity Costs}
+\subsection{Allocating Nodal Payments}
 \begin{align}
 \notag
  & \lagrangian\left(\generation, \flow, \capacityGeneration, \capacityFlow, \boldsymbol{\lambda}, \boldsymbol{\mu} \right)   =   \\  
@@ -434,7 +439,8 @@ where we used the complementary slackness \cref{eq:complementary_slackness_upper
 % The transmission lines carry power from nodes with lower LMP to nodes with higher LMP, the price difference times the transported power is their congestion revenue. \note{Sign is different to Tom's paper (there a minus is missing).}
 
 
-\subsubsection*{Adding CO$_2$ Constraints}
+\subsection{Adding Further Constraints}
+\subsubsection*{CO$_2$ Constraint}
 
 Imposing an additional CO$_2$ constraint limiting the total emission to K,  
 \begin{align}
@@ -463,8 +469,37 @@ which expands the allocation of the electricity cost in \cref{eq:lmp_allocation}
  \label{eq:lmp_allocation_with_emission}
 \end{align}
 
+\subsubsection*{Lower and Upper Capacity Limits}
 
-% \newpage
+Constraining the capacities $\capacityGeneration$  for a subset $S$ of generators to lower or upper limits in the form of 
+\begin{align}
+ \capacityGeneration \ge \capacityGenerationLower \hpad \forall{n,s \in S} \\
+ \capacityGeneration \le \capacityGenerationUpper \hpad \forall{n,s \in S}
+\end{align}
+or doing likewise with a subset $L$ of transmission lines,
+\begin{align}
+ \capacityFlow \ge \capacityFlowLower \hpad \forall{\ell \in \textit{L}} \\
+ \capacityFlow \le \capacityFlowUpper \hpad \forall{\ell \in \textit{L}}
+\end{align}
+does not have any effect on the above presented allocation. The additional cost directly translate t<o the Quality of Supply $\muuppergeneration$ for production and $\muupperflow - \mulowerflow$ for transmission respectively. This also counts for limiting the overall production capacity $\sum_{n,s}\capacityGeneration$ or transmission capacity $\sum_\ell \capacityFlow$. 
+
+\section{Numerical Example}
+
+\begin{figure*}[h]
+\centering
+ \includegraphics[width=\linewidth]{example_network_constraint_capacity.png}
+ \caption{Illustrative Example of a two bus optimized network with one time step. }
+ \label{fig:example_network}
+\end{figure*}
+
+\begin{figure}[h]
+\centering
+ \includegraphics[width=\linewidth]{example_payoff_constraint_capacity.png}
+ \caption{Full cost allocation for the example setup shown in \cref{fig:example_network}. The payments on the basis of \cref{eq:allocate_opexGeneration_detailed,eq:allocate_capexGeneration_detailed,eq:allocate_capexFlow_detailed}}
+ \label{fig:example_payoff}
+\end{figure}
+
+\newpage
 % \section*{Showcase}
 % 
 % \subsection*{Network with CO$_2$ constraint}
