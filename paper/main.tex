@@ -110,7 +110,7 @@
 \maketitle
 
 \begin{abstract}
-Maximizing the welfare of all market participants within a power system is a common approach in energy system modelling. It leads to perfectly scheduled operations of generators and  
+Maximizing the welfare of all market participants within a power system is a common approach in energy system modelling. It leads to perfectly scheduled operations of generators and ... 
 \end{abstract}
 
 
@@ -307,14 +307,14 @@ set the respective KKT for flows staying below the thermal limit to zero.
 \notag
  & \lagrangian\left(\generation, \flow, \capacityGeneration, \capacityFlow, \boldsymbol{\lambda}, \boldsymbol{\mu} \right)   =   \\  
  \notag
- & - \sum_{n,s} \capexGeneration \capacityGeneration - \sum_{n, s, t} \opexGeneration \generation - \sum_{\ell} \capexFlow \, \capacityFlow  \\
+ & \;\;\; \sum_{n,s} \capexGeneration \capacityGeneration + \sum_{n, s, t} \opexGeneration \generation + \sum_{\ell} \capexFlow \, \capacityFlow  \\
  \notag
- &- \sum_{n,t} \lmp \left(\sum_\ell \incidence \, \flow  - \sum_s \generation + \sum_a \demand  \right)  \\ 
+ &+ \sum_{n,t} \lmp \left(\sum_\ell \incidence \, \flow  - \sum_s \generation + \sum_a \demand  \right)  \\ 
  \notag
- &- \sum_{\ell,c,t} \cycleprice \, \cycle \, \impedance \, \flow  \\
+ &+ \sum_{\ell,c,t} \cycleprice \, \cycle \, \impedance \, \flow  \\
  \notag
- &- \sum_{n,s,t} \muuppergeneration \left( \generation - \generationpotential \capacityGeneration \right)  + \sum_{n,s,t} \mulowergeneration \generation  \\
- &- \sum_{\ell,t} \muupperflow \left( \flow - \capacityFlow \right) + \sum_{\ell,t} \mulowerflow \left( \flow + \capacityFlow \right)     
+ &+ \sum_{n,s,t} \muuppergeneration \left( \generation - \generationpotential \capacityGeneration \right)  - \sum_{n,s,t} \mulowergeneration \generation  \\
+ &+ \sum_{\ell,t} \muupperflow \left( \flow - \capacityFlow \right) - \sum_{\ell,t} \mulowerflow \left( \flow + \capacityFlow \right)     
  \label{eq:full_lagrangian}
 \end{align}
 % 
@@ -347,13 +347,13 @@ It connects the LMP directly with the local operational price and prices for the
 \begin{align}
  0 =& \pdv{\lagrangian}{\flow}  \\
  \notag
- 0 =& - \sum_{m,\ell,t} \lmp[m] \, \incidence[m]  - \sum_{\ell} \left( \muupperflow - \mulowerflow \right)  \\
- & -\sum_{\ell,c,t} \cycleprice \, \cycle \, \impedance
+ 0 =&  \sum_{m,\ell,t} \lmp[m] \, \incidence[m]  + \sum_{\ell} \left( \muupperflow - \mulowerflow \right)  \\
+ & +\sum_{\ell,c,t} \cycleprice \, \cycle \, \impedance
 \end{align}
 and multipying each term with the Power Transfer Distribution Factor $\ptdf$ leaves us with  
 
 \begin{align}
-  0 &= - \lmp + \sum_m \lmp[m] \, \slack[m]  - \sum_{\ell} \left( \muupperflow - \mulowerflow \right) \ptdf
+  0 &= \lmp - \sum_m \lmp[m] \, \slack[m]  + \sum_{\ell} \left( \muupperflow - \mulowerflow \right) \ptdf
   \label{eq:lmp_lmp1_reduced}
 \end{align}
 According to \cref{eq:slack}, the first term splits into the LMP at $n$ and the LMP weighted with the slack. The final term disappears as the $\cycle \, \impedance$ is the kernel of the PTDF $\ptdf$, so $\sum_l \cycle \, \impedance \ptdf = 0$. Solving \cref{eq:lmp_lmp1_reduced} for $\lmp$ and replacing $\lmp[m]$ of the right hand side with the expression of the Island Solution in \cref{eq:lmp1} leads to 
@@ -484,13 +484,16 @@ or doing likewise with a subset $L$ of transmission lines,
 does not have any effect on the above presented allocation. The additional cost directly translate t<o the Quality of Supply $\muuppergeneration$ for production and $\muupperflow - \mulowerflow$ for transmission respectively. This also counts for limiting the overall production capacity $\sum_{n,s}\capacityGeneration$ or transmission capacity $\sum_\ell \capacityFlow$. 
 
 \section{Numerical Example}
-
-\begin{figure*}[h]
+\begin{figure*}[t]
 \centering
  \includegraphics[width=\linewidth]{example_network_constraint_capacity.png}
  \caption{Illustrative Example of a two bus optimized network with one time step. }
  \label{fig:example_network}
 \end{figure*}
+The peer-to-peer cost allocation suits for any type of topology or network setup. In the following we showcase a two bus system with one optimized time step, shown in \cref{fig:example_network} and its resulting allocated payments. \\
+The two buses are connected via a transmission line and both have generators. Whereas the generator at bus 1 has an operational price of 50 \euro/\megawatthour, the generator at bus 2 has a higher operational price of 200 \euro/\megawatthour. Both generators have the same CAPEX rate of 500 \euro/MW and both are constraint to a maxmimal capacity of $\capacityGenerationUpper$ = 100 MW. The transmission line has a CAPEX rate of 100 \euro/MW and no upper capacity limit. With a demand of 60 MW at bus 1 and 90 MW at bus 2, the optimization  deploys the generator at bus 1 with its full limit of 100 MW. The 40\,MW excess power not consumed at bus 1, flow to bus 2 where the generator is only built with 50 MW.   
+
+
 
 \begin{figure}[h]
 \centering
@@ -499,89 +502,15 @@ does not have any effect on the above presented allocation. The additional cost 
  \label{fig:example_payoff}
 \end{figure}
 
-\newpage
-% \section*{Showcase}
-% 
-% \subsection*{Network with CO$_2$ constraint}
-% We illustrate the flow based cost allocation under use of the fictive network shown in \cref{fig:network}. It consists of nine buses and ten time steps. The solver optimizes the capacity of two generators, wind and gas, per bus. ...   
-% 
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width=\textwidth]{compare_allocation.png}
-%     \caption{Comparison between the flow based cost allocation and the LMP based cost per consumer. The left bars consist of the allocated OPEX $\allocateOpex$, the allocated CO$_2$ cost $\allocateEmissionCost$, the allocated generator CAPEX $\allocateCapexGeneration$ and transmission CAPEX $\allocateCapexFlow$, while the right bars show the of the nodal consumption times the LMP. }
-%     \label{fig:cost_allocation}
-% \end{figure}
-% 
-% \begin{figure}[h]
-% \begin{subfigure}{.5\textwidth}
-% \centering
-%  \includegraphics[width=\textwidth]{network.png}
-%  \caption{}
-%  \label{fig:network}
-% \end{subfigure}
-% \begin{subfigure}{.5\textwidth}   
-%     \centering
-%     \includegraphics[width=\textwidth]{nodal_payments.png}
-%     \caption{}
-%     \label{fig:nodal_payments}
-% \end{subfigure}
-% \caption{Network used for showcasing. (a) shows the distributing of generation capacities $\capacityGeneration$, the widths of the transmission lines are proportional to their thermal limit $\capacityFlow$. (b) shows the total nodal payments according to the cost allocation.}
-% \end{figure}
-% 
-% 
-% 
-% 
-% 
-% \newpage
-% \subsubsection*{Relaxed CO$_2$ Constraint}
-% 
-% 
-% \begin{figure}[h]
-% \begin{subfigure}{.5\textwidth}
-% \centering
-%  \includegraphics[width=\textwidth]{network_relaxed_co2.png}
-%  \caption{}
-%  \label{fig:network_relaxed_co2}
-% \end{subfigure}
-% \begin{subfigure}{.5\textwidth}   
-%     \centering
-%     \includegraphics[width=\textwidth]{nodal_payments_relaxed_co2.png}
-%     \caption{}
-%     \label{fig:nodal_payments_relaxed_co2}
-% \end{subfigure}
-% \caption{Similar to \cref{fig:network} and \cref{fig:nodal_payments} but without CO$_2$ constraint.}
-% \end{figure}
-% 
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width=\textwidth]{compare_allocation_relaxed_co2.png}
-%     \caption{Comparison of the stacked flow based cost allocation with the LMP based cost per consumer for each time step $t$ without CO$_2$ \cref{eq:co2_constraint}. Only one time-step $t=6$ determines the allocation of generator CAPEX $\allocateCapexGeneration$, as for all other time-steps \cref{eq:upper_generation_capacity_constraint} is not binding. Again note the cost scale difference between time step 6 and all others.}
-%     \label{fig:cost_allocation_relaxed_co2}
-% \end{figure}
-% 
-% \subsection*{How does the cost flow through the network}
-% 
-% \begin{figure}[h]
-%     \begin{subfigure}{.5\textwidth}
-%       \centering
-%       \includegraphics[width=\textwidth]{opex_flow.png}
-%       \label{fig:opex_flow}
-%     \end{subfigure}%
-%     \begin{subfigure}{.5\textwidth}
-%       \centering
-%       \includegraphics[width=\textwidth]{capex_flow.png}
-%       \label{fig:capex_flow}
-%     \end{subfigure}
-%     \caption{}
-%     \label{fig:fig}
-% \end{figure}
+% \bibliographystyle{ieeetr}
+\printbibliography
 
-\newpage
+\clearpage
 \appendix
 
 \section{Appendix}
 
-\subsection{Proof \Cref{eq:allocate_peer}}
+\subsection{\texorpdfstring{Proof \Cref{eq:allocate_peer}}{First Proof}}
 \label{sec:proof_allocate_peer}
 
 \Cref{eq:allocate_peer} follows from summing $\allocateTransaction$ over all incoming flows to $n$ and taking into account the power that $n$ provides by itsself, $\slackk \, \nodaldemand$, which leads us to
@@ -597,7 +526,7 @@ where we used \cref{eq:slack} and the fact that the equally distributed slack am
 
 
 
-\subsection{Proof of \Cref{eq:sum_n_allocate_peer}}
+\subsection{\texorpdfstring{Proof of \Cref{eq:sum_n_allocate_peer}}{Second proof}}
 \label{sec:proof_sum_n_allocate_peer}
 The relation follows from multiplying \cref{eq:flow_from_demand} with $\sum_m \incidence[m]$, and solving for $\allocatePeer$
 \begin{align}
@@ -609,7 +538,7 @@ The relation follows from multiplying \cref{eq:flow_from_demand} with $\sum_m \i
 
 
 
-\subsection{Solution Space of $\boldsymbol{\slackk[m]}$}
+\subsection{\texorpdfstring{Solution Space of $\boldsymbol{\slackk[m]}$}{Solution Space of the Slack}}
 \label{sec:solution_space_of_the_slack}
 
 All choices of $\slackk[m]$ fulfilling \cref{eq:flow_from_demand} determine the solution space of $\slackk$. In the $N \times N$ nodal space this translates to the constraint given by \cref{eq:sum_n_allocate_peer} which denotes
@@ -644,8 +573,6 @@ where
 
 
 
-% \bibliographystyle{ieeetr}
-\printbibliography
 
 
 \end{document}

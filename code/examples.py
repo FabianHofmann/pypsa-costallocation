@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from config import to_symbol_dict, color
-plt.rc('text', usetex=False)
+# plt.rc('text.latex', preamble=r'\Large')
 
 # tag = ''
 # add_gen_args = {}
@@ -24,8 +24,8 @@ add_gen_args = {'p_nom_max': 100}
 
 
 n = pypsa.Network()
-n0 = '0'
-n1 = '1'
+n0 = '1'
+n1 = '2'
 d0 = 60
 d1 = 90
 o0 = 50
@@ -38,19 +38,18 @@ n.madd('Bus', [n0, n1], x=[0, 1], y=[0, 0.5])
 n.madd('Load', [0, 1], bus=[n0, n1], p_set=[d0, d1])
 n.madd('Generator', [0, 1], bus=[n0, n1], p_nom_extendable=True,
        marginal_cost=[o0, o1], capital_cost=[c0, c1], **add_gen_args)
-n.madd('Line', [0], s_nom_extendable=True, x=0.01, bus0=[n0], bus1=[n1],
+n.madd('Line', [1], s_nom_extendable=True, x=0.01, bus0=[n0], bus1=[n1],
        capital_cost=c_l)
 n.lopf(pyomo=False, keep_shadowprices=True)
 
 sn = 'now'
 
-G0 = int(n.generators.p_nom_opt[0])
-G1 = int(n.generators.p_nom_opt[1])
-F = int(n.lines.s_nom_opt[0])
+G0, G1 = n.generators.p_nom_opt
+F = n.lines.s_nom_opt.item()
+Gupper = add_gen_args.get('p_nom_max', None)
 
-g0 = int(n.generators_t.p['0']['now'])
-g1 = int(n.generators_t.p['1']['now'])
-f = int(n.lines_t.p0['0']['now'])
+g0, g1 = n.generators_t.p.loc['now']
+f = n.lines_t.p0.loc['now'].item()
 
 ds = ntl.allocate_flow(n, method='ebe', q=0, aggregated=False)
 dc = ntl.cost.nodal_demand_cost(n).rename(bus='payer')
@@ -65,32 +64,33 @@ fig, ax = plt.subplots(figsize=(12,5))
 n.plot(flow=ntl.network_flow(n, sn).to_series()/50, margin=0.3, ax=ax,
        geomap=False, bus_sizes = ca_df.stack().clip(lower=0)/5e6, bus_colors=color)
 bbox = dict(facecolor='w', alpha=0.3, edgecolor='grey', boxstyle='round')
-textkwargs = dict(size=12, color='darkslategray', va="top",
+textkwargs = dict(size=13, color='darkslategray', va="top",
                   bbox=bbox, zorder=8)
 wpad = 0.04
 
-bus0_fix = (f'Fixed:  \n\no = {o0} €/MW\nc = {c0} €/MW\nd = {d0} MW')
-bus0_opt = (f'Optimized:  \n\ng = {g0} MW\nG = {G0} MW')
-bus0_pay = (f'Fix quantities:  \n\no = {o0} €/MW\nc = {c0} €/MW\nd = {d0} MW')
+bus0_fix = r'Fixed:\vspace{5pt} \\ o = %i €/MWh\\ c = %i €/MW\\ d = %i MW'%(o0, c0, d0)
+bus0_opt = r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW'%(g0, G0)
+if Gupper:
+    bus0_fix += r'\\ $\bar{\textrm{G}}$ = %i MW'%Gupper
 
 dy = .3
 ax.text(n.buses.x[0]-wpad, n.buses.y[0]+dy, bus0_fix, ha='right', **textkwargs)
 ax.text(n.buses.x[0], n.buses.y[0]+dy, bus0_opt, ha='left', **textkwargs)
 
-bus1_fix = (f'Fixed:  \n\no = {o1} €/MW\nc = {c1} €/MW\nd = {d1} MW')
-bus1_opt = (f'Optimized:  \n\ng = {g1} MW\nG = {G1} MW')
-bus0_pay = (f'Fix quantities:  \n\no = {o0} €/MW\nc = {c0} €/MW\nd = {d0} MW')
+bus1_fix = r'Fixed:\vspace{5pt} \\ o = %i €/MWh\\ c = %i €/MW\\ d = %i MW'%(o1, c1, d1)
+bus1_opt = r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW'%(g1, G1)
+if Gupper:
+    bus1_fix += r'\\ $\bar{\textrm{G}}$ = %i MW'%Gupper
 
 dy = - .15
 dx = .1
 ax.text(n.buses.x[1]+dx, n.buses.y[1]+dy, bus1_fix, ha='right', **textkwargs)
 ax.text(n.buses.x[1]+dx+wpad, n.buses.y[1]+dy, bus1_opt, ha='left', **textkwargs)
 
-line_fix = (f'Fixed:  \n\nc = {c_l} €/MW')
-line_opt = (f'Optimized:  \n\nf = {F} MW\nF = {F} MW')
-bus0_pay = (f'Fix quantities:  \n\no = {o0} €/MW\nc = {c0} €/MW\nd = {d0} MW')
+line_fix = r'Fixed:\vspace{5pt} \\ c = %i €/MW'%(c_l)
+line_opt = r'Optimized:\vspace{5pt} \\ f = %i MW\\ F = %i MW'%(f,F)
 
-dy = 0.3
+dy = 0.25
 ax.text(n.buses.x.mean()-wpad, n.buses.y.mean()+dy, line_fix, ha='right', **textkwargs)
 ax.text(n.buses.x.mean(), n.buses.y.mean()+dy, line_opt, ha='left', **textkwargs)
 
@@ -99,27 +99,6 @@ ax.legend(*handles_labels_for(color[ca_df.columns].rename(to_symbol_dict)),
 ntl.plot.annotate_bus_names(n, ax, shift=0, bbox='fancy')
 fig.tight_layout()
 fig.savefig(f'figures/example_network{tag}.png', bbox_inches='tight')
-
-# %%
-fig, ax = plt.subplots(figsize=(6,6))
-d = dict(stacked=True, zorder=3, width=.3, legend=False, ax=ax)
-
-ca_df.plot.bar(position=1.1, color=color[ca_df.columns], **d)
-dc_df.plot.bar(position=0, color=color[dc_df.columns], **d)
-
-ax.set_xlim(left=-.5)
-ax.ticklabel_format(axis="y", style="sci", scilimits=(5,2))
-ax.set_xlabel('')
-ax.grid(axis='y', zorder=1, linestyle='dashed')
-
-handles, labels = ax.get_legend_handles_labels()
-labels = [to_symbol_dict[l] for l in labels]
-fig.legend(handles[:-1], labels[:-1], ncol=4, frameon=False, loc='lower center',
-           bbox_to_anchor=(0.3, 1), fontsize='large', title='Flow Based (left bars)')
-fig.legend(handles[-1:], labels[-1:], ncol=1, frameon=False, loc='lower center',
-           bbox_to_anchor=(0.7, 1), fontsize='large', title='LMP Based (right bars)')
-fig.tight_layout()
-fig.savefig(f'figures/example_cost_shares{tag}.png', bbox_inches='tight')
 
 
 # %% payoff matrix
@@ -137,8 +116,8 @@ for i, v in enumerate(payoff):
     ax = axes[i]
     df = payoff[v].to_pandas().T
     annot = df.round(0).div(1e3).astype(int).astype(str) + 'k €'
-    sns.heatmap(df, cmap='Reds', ax=ax, annot=annot, fmt='s',
-                cbar=False, vmin=-1000, vmax=vmax, linewidths=1, square=True,
+    sns.heatmap(df, cmap='PRGn', ax=ax, annot=annot, fmt='s',
+                cbar=False, vmin=-vmax, vmax=vmax, linewidths=1, square=True,
                 annot_kws={'horizontalalignment': 'left'})
     if i:
         ax.set_ylabel('')

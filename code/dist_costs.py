@@ -4,6 +4,10 @@
 Created on Thu Feb 20 14:13:56 2020
 
 @author: fabian
+We illustrate the flow based cost allocation under use of the fictive network .
+It consists of nine buses and ten time steps. The solver optimizes the capacity
+of two generators, wind and gas, per bus. ...
+
 """
 
 import pypsa
@@ -41,6 +45,12 @@ n.buses.loc[n.buses.index.str.contains('DC'), 'y'] += 1
 n.buses.loc[n.buses.index.str.contains('DC'), 'x'] -= .5
 
 # %% Network plot
+'''
+Network used for showcasing. (a) shows the distributing of generation capacities
+$\capacityGeneration$, the widths of the transmission lines are proportional to
+their thermal limit $\capacityFlow$. (b) shows the total nodal payments
+according to the cost allocation.
+'''
 
 fig, ax = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()}, figsize=(6,5))
 bus_sizes = n.generators.groupby(['bus', 'carrier']).p_nom_opt.sum()
@@ -60,6 +70,14 @@ ca = ntl.allocate_cost(n, method=ds, q=0)
 ca = ca.sum([d for d in ca.dims if d not in ['payer', 'snapshot']])
 
 # %% Allocation plot
+'''
+Comparison between the flow based cost allocation and the LMP based cost
+per consumer. The left bars consist of the allocated OPEX $\allocateOpex$,
+the allocated CO$_2$ cost $\allocateEmissionCost$, the allocated generator
+CAPEX $\allocateCapexGeneration$ and transmission CAPEX $\allocateCapexFlow$,
+while the right bars show the of the nodal consumption times the LMP.
+'''
+
 
 color = pd.Series({'one_port_operational_cost': 'darkkhaki',
                    'co2_cost': 'tomato',
