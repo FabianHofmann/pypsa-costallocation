@@ -13,13 +13,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from config import to_symbol_dict, color
-# plt.rc('text.latex', preamble=r'\Large')
+from netallocation.plot import injection_plot_kwargs
+from config import to_static_symbol, color
+# plt.rc('tex', preamble=r'\Large')
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
 
-# tag = ''
-# add_gen_args = {}
 
-tag = '_constraint_capacity'
+tag = ''
 add_gen_args = {'p_nom_max': 100}
 
 
@@ -38,7 +39,7 @@ n.madd('Bus', [n0, n1], x=[0, 1], y=[0, 0.5])
 n.madd('Load', [0, 1], bus=[n0, n1], p_set=[d0, d1])
 n.madd('Generator', [0, 1], bus=[n0, n1], p_nom_extendable=True,
        marginal_cost=[o0, o1], capital_cost=[c0, c1], **add_gen_args)
-n.madd('Line', [1], s_nom_extendable=True, x=0.01, bus0=[n0], bus1=[n1],
+n.madd('Line', ['1'], s_nom_extendable=True, x=0.01, bus0=[n0], bus1=[n1],
        capital_cost=c_l)
 n.lopf(pyomo=False, keep_shadowprices=True)
 
@@ -50,8 +51,10 @@ Gupper = add_gen_args.get('p_nom_max', None)
 
 g0, g1 = n.generators_t.p.loc['now']
 f = n.lines_t.p0.loc['now'].item()
+l0, l1 = n.buses_t.marginal_price.loc['now']
 
 ds = ntl.allocate_flow(n, method='ebe', q=0, aggregated=False)
+ds = ntl.convert.peer_to_peer(ds, n)
 dc = ntl.cost.nodal_demand_cost(n).rename(bus='payer')
 ca = ntl.allocate_cost(n, method=ds, q=0)
 ca_sum = ca.sum([d for d in ca.dims if d not in ['payer', 'snapshot']])
@@ -63,13 +66,12 @@ fig, ax = plt.subplots(figsize=(12,5))
 
 n.plot(flow=ntl.network_flow(n, sn).to_series()/50, margin=0.3, ax=ax,
        geomap=False, bus_sizes = ca_df.stack().clip(lower=0)/5e6, bus_colors=color)
-bbox = dict(facecolor='w', alpha=0.3, edgecolor='grey', boxstyle='round')
-textkwargs = dict(size=13, color='darkslategray', va="top",
-                  bbox=bbox, zorder=8)
+bbox = dict(facecolor='w', alpha=0.3, boxstyle='round')
+textkwargs = dict(size=13, va="top", bbox=bbox, zorder=8)
 wpad = 0.04
 
 bus0_fix = r'Fixed:\vspace{5pt} \\ o = %i €/MWh\\ c = %i €/MW\\ d = %i MW'%(o0, c0, d0)
-bus0_opt = r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW'%(g0, G0)
+bus0_opt = r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW\\ $\lambda$ = %i €'%(g0, G0, l0)
 if Gupper:
     bus0_fix += r'\\ $\bar{\textrm{G}}$ = %i MW'%Gupper
 
@@ -78,7 +80,7 @@ ax.text(n.buses.x[0]-wpad, n.buses.y[0]+dy, bus0_fix, ha='right', **textkwargs)
 ax.text(n.buses.x[0], n.buses.y[0]+dy, bus0_opt, ha='left', **textkwargs)
 
 bus1_fix = r'Fixed:\vspace{5pt} \\ o = %i €/MWh\\ c = %i €/MW\\ d = %i MW'%(o1, c1, d1)
-bus1_opt = r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW'%(g1, G1)
+bus1_opt = r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW\\ $\lambda$ = %i €'%(g1, G1, l1)
 if Gupper:
     bus1_fix += r'\\ $\bar{\textrm{G}}$ = %i MW'%Gupper
 
@@ -94,11 +96,11 @@ dy = 0.25
 ax.text(n.buses.x.mean()-wpad, n.buses.y.mean()+dy, line_fix, ha='right', **textkwargs)
 ax.text(n.buses.x.mean(), n.buses.y.mean()+dy, line_opt, ha='left', **textkwargs)
 
-ax.legend(*handles_labels_for(color[ca_df.columns].rename(to_symbol_dict)),
+ax.legend(*handles_labels_for(color[ca_df.columns].rename(to_static_symbol)),
           ncol=3, loc='upper left', frameon=False, fontsize='large')
 ntl.plot.annotate_bus_names(n, ax, shift=0, bbox='fancy')
 fig.tight_layout()
-fig.savefig(f'figures/example_network{tag}.png', bbox_inches='tight')
+fig.savefig(f'../figures/example_network{tag}.png', bbox_inches='tight')
 
 
 # %% payoff matrix
@@ -107,9 +109,8 @@ to_indices = pd.Series(dict(payer='n', receiver_nodal_cost='m',
                             receiver_transmission_cost='$\ell$'))
 fig, axes = plt.subplots(1, 3, figsize=(5,2.5), sharey=True,
                           gridspec_kw={'width_ratios':[0.4,.4,.2]})
-L = len(ca.receiver_transmission_cost)
 payoff = ca.sum(['snapshot', 'receiver_carrier'])\
-           .assign_coords(receiver_transmission_cost=range(L))
+           .assign_coords(receiver_transmission_cost=['1'])
 payoff = payoff.rename(to_indices)
 vmax = payoff.to_array().max()
 for i, v in enumerate(payoff):
@@ -121,7 +122,47 @@ for i, v in enumerate(payoff):
                 annot_kws={'horizontalalignment': 'left'})
     if i:
         ax.set_ylabel('')
-    ax.set_title(to_symbol_dict[v])
+    ax.set_title(to_static_symbol[v])
 fig.tight_layout(w_pad=0)
-fig.savefig(f'figures/example_payoff{tag}.png', bbox_inches='tight')
+fig.savefig(f'../figures/example_payoff{tag}.png', bbox_inches='tight')
+
+# %% sub flows
+
+# fig, axes = plt.subplots(1, 1, figsize=(5, 5))
+bcolor = 'cadetblue'
+fcolor = 'darksalmon'
+
+# for bus, ax in zip(n.buses.index, axes):
+for bus in n.buses.index:
+
+    fig, ax = plt.subplots(1, 1, figsize=(5, 3))
+    subflow = ds.virtual_flow_pattern.sel(snapshot='now', bus=bus).to_series()
+    p2p = ds.peer_to_peer.sel(sink=bus, snapshot='now').to_series()
+
+    n.plot(flow=subflow*5e-2, bus_sizes=p2p*3e-4, ax=ax, geomap=False,
+           bus_colors=bcolor, line_colors=fcolor)
+    ntl.plot.annotate_bus_names(n, ax, shift=0, bbox='fancy')
+
+    for b in n.buses.index:
+        bbox.update({'facecolor': bcolor, 'edgecolor': 'None', 'pad':.5, 'alpha':1})
+        A = r'$A_{%s, %s} = %i$'%(b, bus, p2p[b])
+        ax.text(*n.buses.loc[b, ['x', 'y']] + [0, 0.25], A, zorder=8, color='white',
+                ha='center', va='center', bbox=bbox)
+
+    source = p2p.drop(bus).index.item()
+
+    bbox.update({'facecolor': fcolor})
+    A = r'$A_{%s \rightarrow %s,1} = %+i$'%(source, bus, round(subflow.item()))
+    ax.text(*n.buses[['x', 'y']].mean() + [0, 0.24], A, zorder=8,
+            ha='center', va='center', color='white',
+            bbox=bbox)
+
+    fig.tight_layout(h_pad=-2, w_pad=0)
+    fig.savefig(f'../figures/example_allocation{tag}_bus{bus}.pdf')
+
+# fig.tight_layout(h_pad=-2)
+# fig.savefig(f'../figures/example_allocation{tag}.png', bbox_inches='tight')
+
+
+
 

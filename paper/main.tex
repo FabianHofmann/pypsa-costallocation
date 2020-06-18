@@ -5,14 +5,15 @@
 \usepackage[colorlinks]{hyperref}
 \usepackage[backend=biber]{biblatex}
 \usepackage{eurosym}
-\usepackage[dvipsnames]{xcolor} 
+\usepackage[dvipsnames]{xcolor}
 \usepackage{subcaption}
 \usepackage{accents}
 \usepackage[capitalise]{cleveref}
 
 
+
 \addbibresource{main.bib}
-\graphicspath{{figures/}}
+\graphicspath{{../figures/}}
 
 \crefname{relation}{Rel.}{Rels.}
 \creflabelformat{relation}{(#2#1#3)}
@@ -158,7 +159,7 @@ This leads to a nodal pricing where over the span of optimized timesteps $t$, th
 % 
 \begin{figure}[h]
 \centering
- \includegraphics[width=.8\linewidth]{figures/price_decomposition.png}
+ \includegraphics[width=.8\linewidth]{price_decomposition.png}
  \caption{Schematic decomposition of the Locational Market Price $\lmp$. In power system model with optimal long-term operation and planning, the total system costs $\totalcost$ split into different cost terms, \textit{i.e} OPEX and CAPEX for production and transmission and possibly other expenditures. As $\,\totalcost$ is fully payed by the consumers, each LMP $\lmp$ can be decomposed into cost terms compensating the different expenditures at timestep $t$.}
  \label{fig:price_decomposition}
 \end{figure}
@@ -486,21 +487,44 @@ does not have any effect on the above presented allocation. The additional cost 
 \section{Numerical Example}
 \begin{figure*}[t]
 \centering
- \includegraphics[width=\linewidth]{example_network_constraint_capacity.png}
- \caption{Illustrative Example of a two bus optimized network with one time step. }
+ \includegraphics[width=\linewidth]{example_network.png}
+ \caption{Illustrative example of a 2-bus network with one optimized time step. Fixed prices and constraining values are given in the left box for each bus and the transmission line. Optimized values are given in the right boxes. Bus~1 has a cheaper operational price $o$, capital prices are the same for both. As both generator capacities are constraint to 100~MW, the optimization also deploys the generator at bus~2. The resulting electricity prices $\lambda$ are then a composition of all prices for operation and capital investments. }
  \label{fig:example_network}
 \end{figure*}
-The peer-to-peer cost allocation suits for any type of topology or network setup. In the following we showcase a two bus system with one optimized time step, shown in \cref{fig:example_network} and its resulting allocated payments. \\
-The two buses are connected via a transmission line and both have generators. Whereas the generator at bus 1 has an operational price of 50 \euro/\megawatthour, the generator at bus 2 has a higher operational price of 200 \euro/\megawatthour. Both generators have the same CAPEX rate of 500 \euro/MW and both are constraint to a maxmimal capacity of $\capacityGenerationUpper$ = 100 MW. The transmission line has a CAPEX rate of 100 \euro/MW and no upper capacity limit. With a demand of 60 MW at bus 1 and 90 MW at bus 2, the optimization  deploys the generator at bus 1 with its full limit of 100 MW. The 40\,MW excess power not consumed at bus 1, flow to bus 2 where the generator is only built with 50 MW.   
+The peer-to-peer cost allocation suits for any type of topology and network setup. In the following we showcase a two bus system with one optimized time step and its resulting allocated payments, illustrated in \cref{fig:example_network}. \\
 
-
-
+The two buses are connected via one transmission line, each has one generator. Whereas the generator at bus~1 has an operational price of 50 \euro/\megawatthour, the generator at bus~2 has a higher operational price of 200~\euro/\megawatthour. For both the CAPEX rate is set to 500~\euro/MW and the maxmimal capacity is limited to $\capacityGenerationUpper$~=~100~MW. The transmission line has a CAPEX rate of 100~\euro/MW and no upper capacity limit. With a demand of 60~MW at bus~1 and 90~MW at bus~2, the optimization expands the cheaper generator at bus~1 to its full limit of 100~MW. The 40~MW excess power not consumed at bus~1, flow to bus~2 where the generator is built with only 50~MW.  \\
+\begin{figure}[h!]
+    \begin{subfigure}[c]{\linewidth}
+       \includegraphics[width=\linewidth]{../figures/example_allocation_bus1.png}
+       \vspace{-30pt}
+       \subcaption{Allocations to Bus 1}
+       \label{fig:example_allocation_bus1}
+    \end{subfigure}
+    \begin{subfigure}[c]{\linewidth}
+       \includegraphics[width=\linewidth]{../figures/example_allocation_bus2.png}
+       \vspace{-30pt}
+       \subcaption{Allocations to Bus 2}
+       \label{fig:example_allocation_bus2}
+    \end{subfigure}
+	\caption{Full power allocations for the example network in \cref{fig:example_network}. Bus~1 retrieves 40~MW from itself and 20~MW from bus~2. The latter in turn retrieves 60~MW from bus~1 and self supplyies 30~MW. The sum of both net flows equals the resulting flow of $f=40$~MW.}
+	\label{fig:example_allocation}
+\end{figure}
 \begin{figure}[h]
 \centering
- \includegraphics[width=\linewidth]{example_payoff_constraint_capacity.png}
- \caption{Full cost allocation for the example setup shown in \cref{fig:example_network}. The payments on the basis of \cref{eq:allocate_opexGeneration_detailed,eq:allocate_capexGeneration_detailed,eq:allocate_capexFlow_detailed}}
+ \includegraphics[width=\linewidth]{example_payoff.png}
+ \caption{Full cost allocation for the example setup shown in \cref{fig:example_network}. The payments are derived on the basis of \cref{eq:allocate_opexGeneration_detailed,eq:allocate_capexGeneration_detailed,eq:allocate_capexFlow_detailed}. Consumers at bus $n$ have to pay each generator proportional to their consumption. As we only consider one time step the proportionality applies for OPEX $\mathcal{O}_n$ and CAPEX $\mathcal{C}_n$. As bus~1 induces a relieving flow an line~1 and therefore ``prevents`` further tranmission expansion, it is rewarded proportional to the relief.}
  \label{fig:example_payoff}
 \end{figure}
+\Cref{fig:example_allocation} shows the allocated transactions for both buses 1~\&~2 separately. The resulting peer-to-peer payments are given in \cref{fig:example_payoff}.
+The upper graph \cref{fig:example_allocation_bus1} shows that $A_{1,1}=40$~MW at bus~1 are self-sustained. Consumers at bus~1 consequently pay 2k~\euro~OPEX and 22k~\euro~CAPEX to the generator at bus~1. The missing 20~MW in order to supply $d_1$ come from bus~2 and induce a subflow on line 1 of $A_{2 \rightarrow 1, 1} = -20$. As this flow is in contrary direction to the total flow, it is relieving the transmission system. This translates to a congestion reward for consumers at bus~1 of $c_{\ell=1} A_{2 \rightarrow 1, 1}$~=~2k~\euro\, which is exactly the cost that had to be spent on the transmission system if bus~1 didn't induce a relieving flow. 
+
+The lower graph \cref{fig:example_allocation_bus2} illustrates the impact of consumption at bus~2. As $d_2$ is higher than $d_1$ the retrievements from both generators are proportionately increased as well as the OPEX and CAPEX allocations to the generators, see \cref{fig:example_payoff}. But instead of a relieving flow, consumers at bus~2 drive the burdening flow in direction of congestion. Hence the payoff to the transmission system is positive and much higher than for bus~1.
+
+The sum of all rows in the payoff matrix in \cref{fig:example_payoff} yields the revenues of the assets $m, \ell$. These values match their overall spendings, \textit{e.g.} the total revenue of the transmission line is 4k~\euro\, which equals the cost for investments $c_{1}\,F_{1}$. The sum of all columns yields the total payment of consumers at bus $n$. For example the sum of payments of bus~1 is 36k~\euro. This is exactly the electricity price of 600~\euro/MW times the consumption of 60~MW, $\lambda_1 d_1$. 
+
+The fact that OPEX and CAPEX allocations are proportional to the total consumption at a bus... 
+
 
 % \bibliographystyle{ieeetr}
 \printbibliography
