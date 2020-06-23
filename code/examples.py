@@ -20,10 +20,6 @@ plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
 
-tag = ''
-add_gen_args = {'p_nom_max': 100}
-
-
 n = pypsa.Network()
 n0 = '1'
 n1 = '2'
@@ -35,10 +31,10 @@ c0 = 500
 c1 = 500
 c_l = 100
 
-n.madd('Bus', [n0, n1], x=[0, 1], y=[0, 0.5])
+n.madd('Bus', [n0, n1], x=[0, 1], y=[0, 0.4])
 n.madd('Load', [0, 1], bus=[n0, n1], p_set=[d0, d1])
 n.madd('Generator', [0, 1], bus=[n0, n1], p_nom_extendable=True,
-       marginal_cost=[o0, o1], capital_cost=[c0, c1], **add_gen_args)
+       marginal_cost=[o0, o1], capital_cost=[c0, c1], p_nom_max=100)
 n.madd('Line', ['1'], s_nom_extendable=True, x=0.01, bus0=[n0], bus1=[n1],
        capital_cost=c_l)
 n.lopf(pyomo=False, keep_shadowprices=True)
@@ -47,7 +43,7 @@ sn = 'now'
 
 G0, G1 = n.generators.p_nom_opt
 F = n.lines.s_nom_opt.item()
-Gupper = add_gen_args.get('p_nom_max', None)
+Gupper = n.generators.p_nom_max.unique().item()
 
 g0, g1 = n.generators_t.p.loc['now']
 f = n.lines_t.p0.loc['now'].item()
@@ -62,45 +58,51 @@ ca_df = ca_sum.sel(snapshot=sn, drop=True).to_dataframe()
 dc_df = dc.sel(snapshot=sn, drop=True).to_dataframe()
 
 # %%
-fig, ax = plt.subplots(figsize=(12,5))
+fig, ax = plt.subplots(figsize=(12,4))
 
 n.plot(flow=ntl.network_flow(n, sn).to_series()/50, margin=0.3, ax=ax,
        geomap=False, bus_sizes = ca_df.stack().clip(lower=0)/5e6, bus_colors=color)
-bbox = dict(facecolor='w', alpha=0.3, boxstyle='round')
+bbox = dict(facecolor='w', alpha=.15, boxstyle='round', pad=0.5)
 textkwargs = dict(size=13, va="top", bbox=bbox, zorder=8)
 wpad = 0.04
 
-bus0_fix = r'Fixed:\vspace{5pt} \\ o = %i €/MWh\\ c = %i €/MW\\ d = %i MW'%(o0, c0, d0)
-bus0_opt = r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW\\ $\lambda$ = %i €'%(g0, G0, l0)
-if Gupper:
-    bus0_fix += r'\\ $\bar{\textrm{G}}$ = %i MW'%Gupper
+# first bus box
+bus0_fix = (r'Fixed:\vspace{5pt} \\ o = %i €/MWh\\ c = %i €/MW\\ d = %i MW'
+            r'\\ $\bar{\textrm{G}}$ = %i MW')%(o0, c0, d0, Gupper)
+bus0_opt = (r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW\\ $\lambda$ = %i €'
+            )%(g0, G0, l0)
 
 dy = .3
 ax.text(n.buses.x[0]-wpad, n.buses.y[0]+dy, bus0_fix, ha='right', **textkwargs)
 ax.text(n.buses.x[0], n.buses.y[0]+dy, bus0_opt, ha='left', **textkwargs)
 
-bus1_fix = r'Fixed:\vspace{5pt} \\ o = %i €/MWh\\ c = %i €/MW\\ d = %i MW'%(o1, c1, d1)
-bus1_opt = r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW\\ $\lambda$ = %i €'%(g1, G1, l1)
-if Gupper:
-    bus1_fix += r'\\ $\bar{\textrm{G}}$ = %i MW'%Gupper
+# second bus box
+bus1_fix = (r'Fixed:\vspace{5pt} \\ o = %i €/MWh\\ c = %i €/MW\\ d = %i MW'
+            r'\\ $\bar{\textrm{G}}$ = %i MW')%(o1, c1, d1, Gupper)
+bus1_opt = (r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW\\ $\lambda$ = %i €'
+            )%(g1, G1, l1)
 
 dy = - .15
 dx = .1
 ax.text(n.buses.x[1]+dx, n.buses.y[1]+dy, bus1_fix, ha='right', **textkwargs)
 ax.text(n.buses.x[1]+dx+wpad, n.buses.y[1]+dy, bus1_opt, ha='left', **textkwargs)
 
+# line box
 line_fix = r'Fixed:\vspace{5pt} \\ c = %i €/MW'%(c_l)
 line_opt = r'Optimized:\vspace{5pt} \\ f = %i MW\\ F = %i MW'%(f,F)
 
 dy = 0.25
-ax.text(n.buses.x.mean()-wpad, n.buses.y.mean()+dy, line_fix, ha='right', **textkwargs)
-ax.text(n.buses.x.mean(), n.buses.y.mean()+dy, line_opt, ha='left', **textkwargs)
+dx = 0.05
+ax.text(n.buses.x.mean()+dx-wpad, n.buses.y.mean()+dy, line_fix, ha='right',
+        **textkwargs)
+ax.text(n.buses.x.mean()+dx, n.buses.y.mean()+dy, line_opt, ha='left',
+        **textkwargs)
 
 ax.legend(*handles_labels_for(color[ca_df.columns].rename(to_static_symbol)),
-          ncol=3, loc='upper left', frameon=False, fontsize='large')
+          ncol=3, loc='lower right', frameon=True, fontsize='large')
 ntl.plot.annotate_bus_names(n, ax, shift=0, bbox='fancy')
 fig.tight_layout()
-fig.savefig(f'../figures/example_network{tag}.png', bbox_inches='tight')
+fig.savefig(f'../figures/example_network.png', bbox_inches='tight')
 
 
 # %% payoff matrix
@@ -124,7 +126,7 @@ for i, v in enumerate(payoff):
         ax.set_ylabel('')
     ax.set_title(to_static_symbol[v])
 fig.tight_layout(w_pad=0)
-fig.savefig(f'../figures/example_payoff{tag}.png', bbox_inches='tight')
+fig.savefig(f'../figures/example_payoff.png', bbox_inches='tight')
 
 # %% sub flows
 
@@ -135,7 +137,7 @@ fcolor = 'darksalmon'
 # for bus, ax in zip(n.buses.index, axes):
 for bus in n.buses.index:
 
-    fig, ax = plt.subplots(1, 1, figsize=(5, 3))
+    fig, ax = plt.subplots(1, 1, figsize=(5, 2.5))
     subflow = ds.virtual_flow_pattern.sel(snapshot='now', bus=bus).to_series()
     p2p = ds.peer_to_peer.sel(sink=bus, snapshot='now').to_series()
 
@@ -146,19 +148,20 @@ for bus in n.buses.index:
     for b in n.buses.index:
         bbox.update({'facecolor': bcolor, 'edgecolor': 'None', 'pad':.5, 'alpha':1})
         A = r'$A_{%s, %s} = %i$'%(b, bus, p2p[b])
-        ax.text(*n.buses.loc[b, ['x', 'y']] + [0, 0.25], A, zorder=8, color='white',
+        ax.text(*n.buses.loc[b, ['x', 'y']] + [0, 0.2], A, zorder=8, color='white',
                 ha='center', va='center', bbox=bbox)
 
     source = p2p.drop(bus).index.item()
 
     bbox.update({'facecolor': fcolor})
     A = r'$A_{%s \rightarrow %s,1} = %+i$'%(source, bus, round(subflow.item()))
-    ax.text(*n.buses[['x', 'y']].mean() + [0, 0.24], A, zorder=8,
+    ax.text(*n.buses[['x', 'y']].mean() + [0, 0.2], A, zorder=8,
             ha='center', va='center', color='white',
             bbox=bbox)
 
-    fig.tight_layout(h_pad=-2, w_pad=0)
-    fig.savefig(f'../figures/example_allocation{tag}_bus{bus}.pdf')
+    fig.tight_layout(h_pad=0, w_pad=0)
+    fig.savefig(f'../figures/example_allocation_bus{bus}.png',
+                bbox_inches='tight')
 
 # fig.tight_layout(h_pad=-2)
 # fig.savefig(f'../figures/example_allocation{tag}.png', bbox_inches='tight')

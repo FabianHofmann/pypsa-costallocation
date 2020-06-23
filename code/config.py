@@ -25,7 +25,7 @@ color = pd.Series({'one_port_operational_cost': 'darkkhaki',
                    'co2_cost': 'tomato',
                    'one_port_investment_cost': 'palevioletred',
                    'branch_investment_cost': 'mediumaquamarine',
-                   'nodal_demand_cost': 'cadetblue'})
+                   'nodal_demand_cost': 'cadetblue'}).sort_index()
 
 latex_names = dict(p_nom_opt = '$G$', marginal_cost = '$o$', capital_cost='$c$',
                    bus='$n$')

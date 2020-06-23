@@ -57,4 +57,4 @@ ax.set_yticklabels([])
 
 
 # fig.tight_layout()
-fig.savefig('figures/price_decomposition.png', bbox_inches='tight')
+fig.savefig('../figures/price_decomposition.png', bbox_inches='tight')

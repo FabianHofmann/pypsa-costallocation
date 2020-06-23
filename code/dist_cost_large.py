@@ -7,28 +7,19 @@ Created on Thu Feb 20 14:13:56 2020
 """
 
 import pypsa
-import pandas as pd
-import numpy as np
 import netallocation as ntl
-from  netallocation.cost import (nodal_co2_cost, nodal_demand_cost,
-                                 nodal_production_revenue, congestion_revenue)
+from  netallocation.cost import (nodal_demand_cost, nodal_production_revenue)
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
+from config import to_symbol, color
 plt.rc('text', usetex=True)
 
 
-to_symbol_dict = dict(one_port_investment_cost = '$\mathcal{C}^{G}_{n,t}$',
-                      branch_investment_cost = '$\mathcal{C}^{F}_{n,t}$',
-                      one_port_operational_cost = '$\mathcal{O}_{n,t}$',
-                      co2_cost = '$\mathcal{E}_{n,t}$',
-                      nodal_demand_cost = '$\lambda_{n,t} \, d_{n,t}$')
-
-
-n = pypsa.Network('elec_s_50_ec_lvopt_Co2L-3H.nc')
+n = pypsa.Network('../elec_s_50_ec_lvopt_Co2L-3H.nc')
 n.calculate_dependent_values()
 n.snapshot_weightings[:] = 1
 n.generators['p_nom_extendable'] = True
-# n.lines['s_nom_min'] = 0
+n.lines['s_nom_min'] = 0
 # n.lines['s_nom_max'] = 6000
 # n.generators['p_nom_max'] = np.inf
 n.mremove('StorageUnit', n.storage_units.index)
@@ -44,7 +35,8 @@ tag = '_large'
 
 
 # %%
-ds = ntl.allocate_flow(n, method='ebe', q=0, aggregated=True)
+ds = ntl.allocate_flow(n, method='ptpf', aggregated=False, #q=0
+                       )
 pr = nodal_production_revenue(n).rename(bus='payer')
 dc = nodal_demand_cost(n).rename(bus='payer')
 ca = ntl.allocate_cost(n, method=ds)
@@ -61,17 +53,11 @@ plot = n.plot(bus_sizes=bus_sizes/1e5, line_widths=n.lines.s_nom_opt/1e3,
 ax.legend(*ntl.plot.handles_labels_for(n.carriers.color), loc='center left',
           bbox_to_anchor=(1, 0.5), ncol=1)
 fig.canvas.draw(); fig.tight_layout()
-fig.savefig(f'figures/network{tag}.png')
+fig.savefig(f'../figures/network{tag}.png')
 
 
 # %% Allocation plot
 
-color = pd.Series({'one_port_operational_cost': 'darkkhaki',
-                    'co2_cost': 'tomato',
-                    'one_port_investment_cost': 'palevioletred',
-                    'branch_investment_cost': 'mediumaquamarine',
-                    'nodal_demand_cost': 'cadetblue'})
-color.sort_index(inplace=True)
 
 fig, axes = plt.subplots(3,1, figsize=(12,7), sharex=True)
 
@@ -90,13 +76,13 @@ for sn, ax in zip(n.snapshots, axes.ravel()):
     ax.grid(axis='y', zorder=1, linestyle='dashed')
 
 handles, labels = ax.get_legend_handles_labels()
-labels = [to_symbol_dict[l] for l in labels]
+labels = [to_symbol[l] for l in labels]
 fig.legend(handles[:-1], labels[:-1], ncol=4, frameon=False, loc='lower center',
             bbox_to_anchor=(0.3, 1), fontsize='large', title='Flow Based (left bars)')
 fig.legend(handles[-1:], labels[-1:], ncol=1, frameon=False, loc='lower center',
             bbox_to_anchor=(0.7, 1), fontsize='large', title='LMP Based (right bars)')
 fig.tight_layout()
-fig.savefig(f'figures/compare_allocation{tag}.png', bbox_inches='tight')
+fig.savefig(f'../figures/compare_allocation{tag}.png', bbox_inches='tight')
 
 #%% LMP
 
@@ -105,9 +91,9 @@ fig, ax = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()}, figsize=(5
 bus_sizes = (payments).sum('snapshot').to_dataframe().stack().sort_index()
 n.plot(ax=ax, bus_sizes=bus_sizes/bus_sizes.sum()*3, bus_colors=color)
 handles, labels = ntl.plot.handles_labels_for(color[:-1])
-labels = ['$\sum_t' + to_symbol_dict[l][1:] for l in labels]
+labels = ['$\sum_t' + to_symbol[l][1:] for l in labels]
 ax.legend(handles, labels, loc='upper left')
 fig.canvas.draw(); fig.tight_layout()
-fig.savefig(f'figures/nodal_payments{tag}.png')
+fig.savefig(f'../figures/nodal_payments{tag}.png')
 
 
