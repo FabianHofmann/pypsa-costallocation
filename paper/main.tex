@@ -3,7 +3,7 @@
 \usepackage[left=1.80cm, right=1.80cm, top=2.00cm, bottom=2.00cm]{geometry}
 \usepackage{amsmath}
 \usepackage[colorlinks]{hyperref}
-\usepackage[backend=biber]{biblatex}
+\usepackage[backend=biber,style=draft]{biblatex}
 \usepackage{eurosym}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{subcaption}
@@ -495,7 +495,7 @@ or doing likewise with a subset $L$ of transmission lines,
 \capacityFlow \ge \capacityFlowLower \hpad \forall{\ell \in \textit{L}} \\
 \capacityFlow \le \capacityFlowUpper \hpad \forall{\ell \in \textit{L}}
 \end{align}
-does not have any effect on the above presented allocation in \cref{eq:lmp_allocation}. The additional cost directly translate to the Quality of Supply $\muuppergeneration$ for production and $\muupperflow - \mulowerflow$ for transmission respectively. This also counts for limiting the overall production capacity $\sum_{n,s}\capacityGeneration$ or transmission capacity $\sum_\ell \capacityFlow$. However it will distort the no profit rule for generators \cref{eq:no_profit_capex_generation} and transmission \cref{eq:no_profit_capex_flow} respectively. As shown in \cite{brown}
+does not have any effect on the above presented allocation in \cref{eq:lmp_allocation}. The additional cost directly translate to the Quality of Supply $\muuppergeneration$ for production and $\muupperflow - \mulowerflow$ for transmission respectively. This also counts for limiting the overall production capacity $\sum_{n,s}\capacityGeneration$ or transmission capacity $\sum_\ell \capacityFlow$. However it will distort the no profit rule for generators \cref{eq:no_profit_capex_generation} and transmission \cref{eq:no_profit_capex_flow} respectively. As shown in \cite{brown_decreasing_2020}
 
 \section{Numerical Example}
 \label{sec:numerical_example}
@@ -554,37 +554,41 @@ The fact that OPEX and CAPEX allocations are proportional to the total consumpti
 % \section{\texorpdfstring{Extended Solution Space of $\boldsymbol{\slackk[m]}$}{Solution Space of the Slack}}
 \label{sec:localizing_allocations}
 
-We recap that the fundamental constraint for the solution space $\slackk[m]$ is given by 
+We recap the fundamental constraint for the solution space $\slackk[m]$ which is given by 
+% 
 \begin{align}
 \nodalgeneration[m] = \sum_n \slackk[m] \, \nodaldemand  
 \label{eq:solution_space_slack}
 \end{align}
-which results from \cref{eq:allocate_peer,eq:sum_n_allocate_peer} in \cref{sec:theory}. The summation over $n$ allows for extending $\slackk[m]$ to a set of individual solution for each bus $n$
+% 
+and results from \cref{eq:allocate_peer,eq:sum_n_allocate_peer} in \cref{sec:theory}. The summation over $n$ allows for extending $\slackk[m]$ to a set of individual solution for each bus $n$
+% 
 \begin{align}
 \slackk[m] \rightarrow \Slackk  
 \end{align}
 which fulfills \cref{eq:solution_space_slack}. In the following we link the solution space $\Slackk$ to established flow allocation methods. Principally two options exist \textit{what} is allocated 
+% 
 \begin{enumerate}
 \item gross power injections \label{gross}
 \item net power injections \label{net}
 \end{enumerate}
-
-Further it is important \textit{what assumptions} define the allocation, \ie what method is used to define the pairs of sources and sinks. The three suitable approaches we derive from established flow allocation schemes are
+% 
+Further it is important \textit{what assumptions} define the allocation, \ie what method is used to define the pairs of sources and sinks. The three suitable approaches we present here are
+% 
 \begin{enumerate}[label=\alph*., ref=\alph*]
 \item Equivalent Bilateral Exchanges (EBE) \cite{galiana_transmission_2003} which assumes
 that every producer supplies every consumer proportional to its share in the total consumption. \label{ebe} 
 \item Average Participation (AP) \cite{bialek_tracing_1996,achayuthakan_electricity_2010-1} which traces the flow from producer to consumer following the law of proportional sharing. \label{ap}
 \item Flow Based Market Coupling (FBMC) which uses zonal PTDF for allocating power within predefined regions. The interregional exchange is only allocating net power decifit or excess of the regions. \label{fbmc}
 \end{enumerate}
+% 
+The solution presented in \cref{sec:ptdf_and_flow_allocation} and used throughout the example in \cref{sec:numerical_example} corresponds to type \ref{gross}\ref{ebe}, allocating gross power injections according to the EBE principle. \Cref{sec:net_ebe} derives the distributed slack $\Slackk$ for net injections following the EBE principal (type \ref{net}\ref{ebe}). It leads to less P2P trades as power from a bus $n$ with $\nodalgeneration \le \nodaldemand$ is not assigned to other buses, only to $n$. 
 
-The solution presented in \cref{sec:ptdf_and_flow_allocation} and used throughout the example in \cref{sec:numerical_example} corresponds to type \ref{gross}\ref{ebe} allocating gross power injections according to the EBE principle. \Cref{sec:net_ebe} derives the distributed slack $\Slackk$ for net injections following the EBE principal, corresponding to type \ref{net}\ref{ebe}. It leads to less P2P trades as power from a bus $n$ with $\nodalgeneration \le \nodaldemand$ is not assigned to other buses, only to $n$. 
-
-However, literature has often pointed out that the EBE principal does not suit for large networks where remote buses would interconnect in the same way as buses in close vicinity\cite{gil_multiarea_2005}. The AP based choice of slack $\Slackk$ formulated in \cref{sec:net_ap,sec:gross_ap} tackles this problem by restricting P2P trades to those which are traceable when applying the proportional sharing principal. Therefore $\allocatePeer$ denotes that part of power produced by bus $m$ which, when only following in the direction of $\flow$, ends up at bus $n$. This leads to intuitive and spatially justifiable P2P allocations. Note however that the subflows $\allocateTransaction$ do not 
+However, literature has often pointed out that the EBE principal does not suit for large networks where remote buses would interconnect in the same way as buses in close vicinity \cite{gil_multiarea_2005}. The AP based choice of slack $\Slackk$ formulated in \cref{sec:net_ap,sec:gross_ap} tackles this problem by restricting P2P trades to those which are traceable when applying the proportional sharing principal. Therefore $\allocatePeer$ denotes that part of power produced by bus $m$ which, when only following in the direction of $\flow$, ends up at bus $n$. This leads to intuitive and spatially justifiable P2P allocations. Note however that the subflows $\allocateTransaction$ do not 
 
 
 \section{Application Case}
 
-% \bibliographystyle{ieeetr}
 
 \clearpage
 \appendix

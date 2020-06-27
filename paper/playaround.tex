@@ -1,0 +1,220 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage{graphicx}
+\usepackage[left=1.80cm, right=1.80cm, top=2.00cm, bottom=2.00cm]{geometry}
+\usepackage{amsmath}
+\usepackage[colorlinks]{hyperref}
+\usepackage[backend=biber,style=draft]{biblatex}
+\usepackage{eurosym}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{subcaption}
+\usepackage{enumitem} % for alphabetical enumeration 
+\usepackage{accents}
+\usepackage[capitalise]{cleveref}
+
+
+%opening
+\title{}
+\author{Fabian Hofmann}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+% style operators
+\newcommand{\ie}{\textit{i.e.} }
+\newcommand{\eg}{\textit{e.g.} }
+\newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
+\newcommand{\note}[1]{\textcolor{Orange}{#1}}
+\newcommand{\vpad}{\vspace{1mm}}
+\newcommand{\hpad}{\hspace{15pt}}
+
+% general symbols
+\newcommand{\generation}[1][n]{g_{#1,s,t}}
+\newcommand{\generationpotential}{\bar{g}_{n,s,t}}
+\newcommand{\generationshare}[1][n]{\omega_{#1,s,t}}
+\newcommand{\nodalgeneration}[1][n]{g_{#1,t}}
+\newcommand{\capacityGeneration}{G_{n,s}}
+\newcommand{\capacityGenerationUpper}{\bar{G}_{n,s}}
+\newcommand{\capacityGenerationLower}{\ubar{G}_{n,s}}
+\newcommand{\capacityFlow}{F_{\ell}}
+\newcommand{\capacityFlowUpper}{\bar{F}_{\ell}}
+\newcommand{\capacityFlowLower}{\ubar{F}_{\ell}}
+\newcommand{\capexGeneration}{c_{n,s}}
+\newcommand{\capexFlow}{c_{\ell}}
+\newcommand{\opexGeneration}[1][n]{o_{#1,s}}
+\newcommand{\demand}[1][n]{d_{#1,a,t}}
+\newcommand{\nodaldemand}[1][n]{d_{#1,t}}
+\newcommand{\demandshare}[1][n]{\omega_{#1,a,t}}
+\newcommand{\utility}{U_{n,a,t}}
+\newcommand{\incidence}[1][n]{K_{#1,\ell}}
+\newcommand{\ptdf}[1][n]{H_{\ell,#1}}
+\newcommand{\ptdfEqual}[1][n]{\ptdf[#1]^\circ}
+\newcommand{\slackflow}{k_{\ell}}
+\newcommand{\slack}[1][n]{k_{#1}}
+\newcommand{\slackk}[1][n]{k^*_{#1}}
+\newcommand{\Slack}{k_{m,n}}
+\newcommand{\Slackk}{k^*_{m,n}}
+\newcommand{\mulowergeneration}[1][n]{\ubar{\mu}_{#1,s,t}}
+\newcommand{\muuppergeneration}[1][n]{\bar{\mu}_{#1,s,t}}
+\newcommand{\mulowerflow}{\ubar{\mu}_{\ell,t}}
+\newcommand{\muupperflow}{\bar{\mu}_{\ell,t}}
+\newcommand{\lmp}[1][n]{\lambda_{#1,t}}
+\newcommand{\flow}{f_{\ell,t}}
+\newcommand{\cycle}{C_{\ell,c}}
+\newcommand{\impedance}{x_\ell}
+\newcommand{\cycleprice}{\lambda_{c,t}}
+\newcommand{\injection}{p_{n,t}}
+\newcommand{\netconsumption}[1][n]{p^{-}_{#1,t}}
+\newcommand{\netproduction}[1][n]{p^{+}_{#1,t}}
+\newcommand{\selfconsumption}[1][n]{p^{\circ}_{#1,t}}
+
+% matrix notation
+\newcommand{\incidenceM}{K}
+\newcommand{\flowM}{f}
+\newcommand{\injectionM}{p}
+\newcommand{\slackM}{k}
+\newcommand{\DirectedIncidence}{\mathcal{K}}
+\newcommand{\InverseAPInjection}{\mathcal{J}}
+\newcommand\diag[1]{\operatorname{diag}\left(#1\right)}
+
+% totals
+\newcommand{\totalnetconsumption}{p^{-}_{t}}
+\newcommand{\totalnetproduction}{p^{+}_{t}}
+\newcommand{\totalselfconsumption}{p^{\circ}_{t}}
+
+\newcommand{\lagrangian}{\mathcal{L}}
+
+% allocation quantities
+\newcommand{\allocatePeer}[1][(m, s) \rightarrow n]{A_{#1,t}}
+\newcommand{\allocateFlow}[1][n]{F_{#1,\ell,t}}
+\newcommand{\allocateTransaction}[1][m \rightarrow n]{A_{#1,\ell,t}}
+\newcommand{\allocateCapexGeneration}[1][n]{\mathcal{C}^{G}_{#1,t}}
+\newcommand{\allocateCapexFlow}[1][n]{\mathcal{C}^{F}_{#1,t}}
+\newcommand{\allocateOpex}[1][n]{\mathcal{O}_{#1,t}}
+\newcommand{\allocateEmissionCost}[1][n]{\mathcal{E}_{#1,t}}
+
+
+\newcommand{\emission}[1][n]{e_{#1,s}}
+\newcommand{\emissionPrice}{\mu_{\text{CO2}}}
+\newcommand{\megawatthour}{MWh$_\text{el}$}
+\newcommand{\totalcost}{\mathcal{TC}}
+\newcommand{\totalOpexGeneration}{\mathcal{O}}
+\newcommand{\totalOpexFlow}{\mathcal{O}^F}
+\newcommand{\totalCapexGeneration}{\mathcal{C}^G}
+\newcommand{\totalCapexFlow}{\mathcal{C}^F}
+\newcommand{\totalEmissionCost}{\mathcal{E}}
+
+%math 
+\newcommand{\resultsin}[1]{\hspace{6pt} \bot  \hspace{6pt} #1}
+\newcommand{\Forall}[1]{\hspace{10pt} \forall \,\, #1 }
+\newcommand{\pdv}[2]{\dfrac{\partial #1}{\partial #2}}
+
+
+The total cost $\totalcost$ are composed of
+\begin{align}
+\totalcost &= \totalOpexGeneration + \totalCapexGeneration +  \totalCapexFlow  \\
+&= \sum_{n,t} \left(  \pdv{\totalOpexGeneration}{\nodaldemand} + \pdv{\totalCapexGeneration}{\nodaldemand} + \pdv{\totalCapexFlow}{\nodaldemand} \right) \nodaldemand 
+\label{eq:total_cost_terms}
+\end{align}
+% 
+The total OPEX is given by 
+\begin{align}
+ \totalOpexGeneration& = \sum_{m,s,t} \opexGeneration[m]\,  \generation[m] 
+\end{align}
+% 
+The OPEX payments assigned to node $n$ at time step $t$ is given by 
+% 
+\begin{align}
+\allocateOpex  = \pdv{\totalOpexGeneration}{\nodaldemand} \, \nodaldemand & =  \sum_{m,s,t}\opexGeneration[m] \,  \allocatePeer
+\end{align}
+% 
+with $\allocatePeer$ being defined as the power produced by generator $(m, s)$ and consumed at node $n$
+\begin{align}
+ \allocatePeer = \pdv{\generation[m]}{\nodaldemand} \, \nodaldemand
+\end{align}
+% 
+The derivative $\partial \generation[m] / \partial \nodaldemand$ is not well-defined but implies a degree of freedom. However it is constraint to allocating exactly the amount of power which is produced by generator $(m,s)$, thus 
+\begin{align}
+\generation[m] = \sum_n \allocatePeer 
+\label{eq:solution_space_slack}
+\end{align}
+% 
+The direct payment of node $n$ to generator $(m,s)$ is then  
+% 
+\begin{align}
+ \allocateOpex[n \rightarrow (m,s)] &= 
+\opexGeneration[m] \,  \pdv{\generation[m]}{\nodaldemand} \, \nodaldemand
+\label{eq:allocate_opexGeneration_detailed}\\
+\end{align}
+
+
+
+
+
+% \begin{align}
+% \allocateCapexGeneration[n \rightarrow (m,s)] &= 
+% \muuppergeneration[m] \, \generationshare[m] \, \allocatePeer
+% \label{eq:allocate_capexGeneration_detailed} \\
+% \allocateCapexFlow[n \rightarrow \ell] &=  
+% \left( \muupperflow - \mulowerflow\right) \sum_{m} \allocateTransaction  
+% \label{eq:allocate_capexFlow_detailed}
+% \end{align}
+
+
+
+The CAPEX for the transmission system is given by 
+
+\begin{align}
+ \totalCapexFlow & = \sum_\ell \capexFlow \capacityFlow = \sum_{\ell,t} \left( \muupperflow - \mulowerflow \right)  \flow 
+\end{align}
+
+The individual cost terms are 
+\begin{align}
+\allocateCapexFlow = \pdv{\totalCapexFlow}{\nodaldemand}\nodaldemand & = \pdv{\left( \sum_{\ell,t} \left( \muupperflow - \mulowerflow \right)  \flow \right) }{\nodaldemand} \\
+&= \sum_{\ell,t} \left( \muupperflow - \mulowerflow \right) \ptdf 
+\end{align}
+
+\begin{align}
+ \pdv{\muupperflow}{\nodaldemand} = 0 \;\; ?
+\end{align}
+
+\begin{align}
+\pdv{\lagrangian}{\demand} & = \pdv{\lagrangian}{\muupperflow} \,  \pdv{\muupperflow} {\nodaldemand} \\
+&= \left( \flow - \capacityFlow \right)  \,  \pdv{\muupperflow} {\nodaldemand}
+\end{align}
+
+
+\begin{align}
+\notag
+ \pdv{\lagrangian}{\demand}
+ =&    \sum_{m, s, t} \opexGeneration[m] \Slack  \\
+\notag
+&+ \sum_{m,t} \lmp[m] \left(\sum_\ell \incidence[m] \, \ptdf  - \Slack + \delta_{m,n}  \right)  \\ 
+\notag
+&+ \sum_{n,s,t} \muuppergeneration \generationshare \Slack %  - \sum_{n,s,t} \mulowergeneration \generation  
+\\
+&+ \sum_{\ell,t} \left( \muupperflow - \mulowerflow \right) \ptdf      
+\label{eq:full_lagrangian}
+\end{align}
+
+
+
+\subsubsection*{Production CAPEX}
+\begin{align}
+ \totalCapexGeneration& = \sum_{n,s} \capexGeneration \capacityGeneration\\
+ &= \sum_{n,t} \muuppergeneration  \generation 
+\end{align}
+
+and taking the derivative 
+
+\begin{align}
+\pdv{\totalCapexGeneration}{\nodaldemand} & = \pdv{ \left(  \sum_{m,t} \muuppergeneration[m]  \generation[m] \right) }{\nodaldemand} \\
+&= \sum_{m,t} \generationshare  \muuppergeneration \, \Slack
+\end{align}
+
+
+\end{document}
