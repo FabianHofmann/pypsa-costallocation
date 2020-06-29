@@ -10,6 +10,16 @@ import pypsa
 import pandas as pd
 
 def n1_t1_g2_wo(d = 70, marginal_cost=[5, 10], p_nom=40):
+    """
+    $G_1 < d < G_1 + G_2$
+
+    Note, for such a system the total system cost $TC$ are less then the nodal
+    payments as soon as one generator is at its limit:
+
+    $\lambda = o_s + \bar{\mu_s} \;\;\;\;\; \forall s$
+
+    $d \, \lambda = d \, (o_s + \bar{\mu_s} ) \ge \sum_s g_s \, o_s = TC$
+    """
     n = pypsa.Network()
     n.add('Bus', 'Bus1')
     n.add('Load', 0, bus='Bus1', p_set=d)
@@ -20,6 +30,11 @@ def n1_t1_g2_wo(d = 70, marginal_cost=[5, 10], p_nom=40):
 
 
 def n1_t1_g2_w(d = 70, marginal_cost=[5, 10], capital_cost=[100, 30]):
+    """
+    Here the total cost are payed by the consumers
+
+    $TC = \lambda d$
+    """
     n = pypsa.Network()
     n.add('Bus', 'Bus1')
     n.add('Load', 0, bus='Bus1', p_set=d)
