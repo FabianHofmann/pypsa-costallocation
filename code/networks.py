@@ -43,12 +43,12 @@ def n1_t1_g2_w(d = 70, marginal_cost=[5, 10], capital_cost=[100, 30]):
     return n
 
 
-def n1_t9_g2_w(d = 70, marginal_cost=[5, 10], capital_cost=[100, 30]):
+def n1_t9_g2_w(d = 70, marginal_cost=[2, 5], capital_cost=[50, 30]):
     """Initialize network with base and one peak demand at one bus."""
-    load = pd.DataFrame([[50, 50, 50, 50, 50, 90, 50, 50, 50]], index=[0])
+    load = pd.DataFrame({0: [50, 49, 48, 47, 46, 90, 46.5, 47.5, 48.5]})
 
     n = pypsa.Network()
-    n.set_snapshots(range(len(load)))
+    n.set_snapshots(list(range(len(load))))
     n.add('Bus', 'Bus1')
     n.madd('Load', [0], bus='Bus1', p_set=load)
     n.madd('Generator', ['Gen0', 'Gen1'], bus='Bus1', p_nom_extendable=True,
