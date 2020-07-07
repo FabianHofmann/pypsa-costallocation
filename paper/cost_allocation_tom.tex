@@ -1,0 +1,581 @@
+%%
+%% Copyright 2007, 2008, 2009 Elsevier Ltd
+%% Title should be 75 characters
+%
+%Decreasing market value of variable renewables a result to policy and not variability
+%% This file is part of the 'Elsarticle Bundle'.
+%% ---------------------------------------------
+%%
+%% It may be distributed under the conditions of the LaTeX Project Public
+%% License, either version 1.2 of this license or (at your option) any
+%% later version.  The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.2 or later is part of all distributions of LaTeX
+%% version 1999/12/01 or later.
+%%
+%% The list of all files belonging to the 'Elsarticle Bundle' is
+%% given in the file `manifest.txt'.
+%%
+
+%% Template article for Elsevier's document class `elsarticle'
+%% with numbered style bibliographic references
+%% SP 2008/03/01
+
+%\documentclass[sort&compress,preprint,review,3p]{elsarticle}
+
+%% Use the option review to obtain double line spacing
+%% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
+
+%% Use the options 1p,twocolumn; 3p; 3p,twocolumn; 5p; or 5p,twocolumn
+%% for a journal layout:
+%% \documentclass[final,1p,times]{elsarticle}
+%% \documentclass[final,1p,times,twocolumn]{elsarticle}
+%% \documentclass[final,3p,times]{elsarticle}
+%% \documentclass[final,3p,times,twocolumn]{elsarticle}
+%% \documentclass[final,5p,times]{elsarticle}
+%\documentclass[final,3p,times]{elsarticle}
+\documentclass[final,3p,times]{elsarticle}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+
+%% For including figures, graphicx.sty has been loaded in
+%% elsarticle.cls. If you prefer to use the old commands
+%% please give \usepackage{epsfig}
+\graphicspath{{graphics/}}
+
+\DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+
+
+
+%% The amssymb package provides various useful mathematical symbols
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+%% The amsthm package provides extended theorem environments
+%% \usepackage{amsthm}
+\usepackage{float}
+
+\usepackage[normalem]{ulem}
+
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{threeparttable}
+% \usepackage{siunitx}
+
+\usepackage{url}
+\usepackage[colorlinks=true, citecolor=blue, linkcolor=blue, filecolor=blue,urlcolor=blue]{hyperref}
+
+\usepackage[gen]{eurosym}
+
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers.
+%% \usepackage{lineno}
+%\usepackage{lineno}
+
+
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}l@{}}#2\end{tabular}}
+
+%use this to add space between rows
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+
+
+\def\co{CO${}_2$}
+\def\el{${}_{\textrm{el}}$}
+\def\th{${}_{\textrm{th}}$}
+
+
+
+\newcommand{\ubar}[1]{\text{\b{$#1$}}}
+
+\def\l{\lambda}
+\def\K{\kappa}
+\def\m{\mu}
+\def\G{\Gamma}
+\def\d{\partial}
+\def\cL{\mathcal{L}}
+
+
+\newcommand*\rot{\rotatebox{90}}
+\newcommand*\OK{\ding{51}}
+
+
+
+\usepackage{tikz}
+
+
+\usepackage[europeanresistors,americaninductors]{circuitikz}
+\usepackage{adjustbox}
+
+% *** FLOAT PACKAGES ***
+%
+\usepackage{fixltx2e}
+% fixltx2e, the successor to the earlier fix2col.sty, was written by
+% Frank Mittelbach and David Carlisle. This package corrects a few problems
+% in the LaTeX2e kernel, the most notable of which is that in current
+% LaTeX2e releases, the ordering of single and double column floats is not
+% guaranteed to be preserved. Thus, an unpatched LaTeX2e can allow a
+% single column figure to be placed prior to an earlier double column
+% figure. The latest version and documentation can be found at:
+% http://www.ctan.org/tex-archive/macros/latex/base/
+
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor under-represents over-representation}
+
+
+\journal{}
+
+\begin{document}
+%\linenumbers
+\begin{frontmatter}
+
+%% Title, authors and addresses
+
+%% use the tnoteref command within \title for footnotes;
+%% use the tnotetext command for theassociated footnote;
+%% use the fnref command within \author or \address for footnotes;
+%% use the fntext command for theassociated footnote;
+%% use the corref command within \author for corresponding author footnotes;
+%% use the cortext command for theassociated footnote;
+%% use the ead command for the email address,
+%% and the form \ead[url] for the home page:
+%% \title{Title\tnoteref{label1}}
+%% \tnotetext[label1]{}
+%% \author{Name\corref{cor1}\fnref{label2}}
+%% \ead{email address}
+%% \ead[url]{home page}
+%% \fntext[label2]{}
+%% \cortext[cor1]{}
+%% \address{Address\fnref{label3}}
+%% \fntext[label3]{}
+
+
+
+\title{Cost allocation from KKT}
+
+
+%% use optional labels to link authors explicitly to addresses:
+%% \author[label1,label2]{}
+%% \address[label1]{}
+%% \address[label2]{}
+
+\author[kit]{T.~Brown\corref{cor1}}
+\ead{tom.brown@kit.edu}
+
+
+
+\cortext[cor1]{Corresponding author}
+\address[kit]{Institute for Automation and Applied Informatics, Karlsruhe Institute of Technology, Hermann-von-Helmholtz-Platz 1, 76344 Eggenstein-Leopoldshafen, Germany}
+
+
+\begin{abstract}
+  Blah.
+\end{abstract}
+
+
+\begin{keyword}
+%% keywords here, in the form: keyword \sep keyword
+%Here are some suggestions:
+ renewable energy policy \sep storage \sep large-scale integration of renewable power generation
+
+%% PACS codes here, in the form: \PACS code \sep code
+
+%% MSC codes here, in the form: \MSC code \sep code
+%% or \MSC[2008] code \sep code (2000 is the default)
+
+\end{keyword}
+
+\end{frontmatter}
+
+\tableofcontents
+
+\section{General optimisation problem}\label{sec:theory}
+
+Start with a generic linear objective function over $N$ variables $x_i$
+\begin{equation}
+ \min_{x_i} f(x) =  \min_{x_i}  \sum_{i=1}^N c_i x_i
+\end{equation}
+such that they respect linear inequality constraints
+\begin{equation}
+  \sum_i A_{ji} x_i \leq d_j \hspace{1cm} \m_j \hspace{1cm} j=1,\dots M
+\end{equation}
+    [Linear equality constraints $\sum_i b_i x_i = c$ with $\lambda$ can be replaced by two inequalities $\leq c$, $\geq c$ with $\lambda = \bar{\m} - \ubar{\m}$.]
+
+A subset $B$ of the inequality constraints will be binding at the
+optimum point $x^*$, i.e. for $j\in B$, $\sum_i A_{ji} x^*_i = d_j$. We
+write $A'_{ji}$ for the matrix that only runs over $j\in B$. For
+non-degenerate solutions these will be enough binding constraints to
+solve for a unique optimum $x^*$, i.e. $|B| = N \leq M$, so that $A'$ is an $N\times N$
+square matrix.  Therefore we can invert the saturation equation to get
+\begin{equation}
+  x^*_i = \sum_{k\in B} A^{\prime -1}_{ik} d_k
+\end{equation}
+It might seem that we've now lost all information about the objective function in this expression for $x^*$, but remember that it is the objective function which determines which constraints are binding, i.e. which vertex of the feasible simplex is the optimum.
+
+
+If we alter the problem to $d_j \to d_j + \varepsilon$ then the new optimum $x^{\varepsilon*}$ is related to the old by
+\begin{equation}
+  f(x^*) \to f(x^{\varepsilon*}) = f(x^*) + \mu_j^* \varepsilon
+\end{equation}
+If constraint $j$ was binding such that $\mu_j^* \geq 0$ then we have
+\begin{equation}
+  x^{\varepsilon*}_i = \sum_{k\in B} A^{\prime -1}_{ik} \left(d_k + \varepsilon \delta_{jk}\right) = x^*_i + \varepsilon A^{\prime -1}_{ij}
+\end{equation}
+
+Now we see that
+\begin{equation}
+  f(x^{\varepsilon*}) = f(x^*) + \mu_j^* \varepsilon = \sum_i c_i  x^{\varepsilon*}_i = \sum_i c_i \left(x^*_i + \varepsilon A^{\prime -1}_{ij}\right) = f(x^*) +   \varepsilon \sum_i c_i  A^{\prime -1}_{ij}
+\end{equation}
+
+So that
+\begin{equation}
+\mu_j^* = \sum_i c_i  A^{\prime -1}_{ij}
+\end{equation}
+This is nothing other than the solution of the KKT stationarity equations
+\begin{equation}
+ 0 =    \frac{\d \cL}{\d x_i} = c_i - \sum_j \mu_j^* A_{ji}
+\end{equation}
+where we have discarded the non-binding $j$ to solve for the binding $j\in B$ with $\mu_j^*\geq 0$.
+
+This is related to strong duality since
+\begin{equation}
+  \sum_{j=1}^M \mu_j^* d_j = \sum_{j\in B} \mu_j^* d_j = \sum_{i,j\in B} c_i  A^{\prime -1}_{ij} d_j = \sum_i c_i x^*_i
+\end{equation}
+
+[Normally strong duality is proved the other way around:]
+\begin{equation}
+ \sum_i c_i x^*_i = \sum_{i,j} x^*_i  \mu_j^* A_{ji} = \sum_{j} \mu_j^* d_j
+\end{equation}
+[First equality is stationarity, second is complementary slackness.]
+
+
+\subsection{Example 1: Electricity market with 2 generators}
+
+Consider an optimisation problem for a single period
+\begin{equation}
+  \min_{g_s} \sum_s o_s g_s
+\end{equation}
+such that
+\begin{align}
+  \sum_s g_s & = d  \hspace{1cm} \lambda \\
+  g_s & \leq G_s  \hspace{1cm} \bar{\mu}_s \\
+  -g_s & \leq 0  \hspace{1cm} \ubar{\mu}_s
+\end{align}
+For a 3-generator example, the constraint matrix is for $s\in\{1,2,3\}$
+\begin{equation}
+  A_{ji}=\left(\begin{matrix}
+    1 & 1 & 1\\
+    1 & 0 & 0 \\
+    -1 & 0 & 0 \\
+     0 & 1 & 0 \\
+     0 & -1 & 0 \\
+     0 & 0 & 1 \\
+     0 & 0 & -1
+  \end{matrix}\right)
+\end{equation}
+and the constant term is
+\begin{equation}
+d_{j}=\left(\begin{matrix}
+d  & G_1 & 0 & G_2 &  0 & G_3 & 0
+\end{matrix}\right)
+\end{equation}
+
+Suppose $G_1 < d < G_1+G_2$ so that generator 2 is setting the price. Then constraints $j\in \{1,2,7\}$ are binding and
+\begin{equation}
+A'_{ji}=\left(\begin{matrix}
+ 1 & 1 & 1\\
+ 1 & 0 & 0\\
+ 0 & 0 & -1
+\end{matrix}\right)
+\end{equation}
+The inverse is
+\begin{equation}
+ A^{\prime -1}_{ij}
+=\left(\begin{matrix}
+ 0 & 1 & 0\\
+ 1 & -1 & 1\\
+ 0 & 0 & -1
+\end{matrix}\right)
+\end{equation}
+So we get
+\begin{equation}
+g^*_i = \sum_j A^{\prime -1}_{ij} d_j
+=\left(\begin{matrix}
+ 0 & 1 & 0\\
+ 1 & -1 & 1\\
+ 0 & 0 & -1
+\end{matrix}\right)\left(\begin{matrix}
+ d\\
+ G_1\\
+ 0
+\end{matrix}\right) = \left(\begin{matrix}
+ G_1\\
+ d-G_1\\
+ 0
+\end{matrix}\right)
+\end{equation}
+and
+\begin{equation}
+\m^*_j =\left(\begin{matrix}
+ \m^*_1\\
+ \m^*_2\\
+ \m^*_7
+\end{matrix}\right) =\left(\begin{matrix}
+ \l^*\\
+ \bar{\m}^*_1\\
+ \ubar{\m}^*_3
+\end{matrix}\right) = \sum_i c_i A^{\prime -1}_{ij}
+= \left(\begin{matrix}
+ o_1 &
+ o_2 &
+ o_3
+\end{matrix}\right) \left(\begin{matrix}
+ 0 & 1 & 0\\
+ 1 & -1 & 1\\
+ 0 & 0 & -1
+\end{matrix}\right) = \left(\begin{matrix}
+ o_2\\
+ o_1-o_2\\
+ o_2-o_3
+\end{matrix}\right)
+\end{equation}
+
+The market price is $\l^* = o_2$, set by generator 2.
+
+Note that everything here is rather sparse.
+
+
+\subsection{Example 2: Electricity market with investment in 1 generator, 2 periods}
+
+Consider an optimisation problem with a single generator, investment, and 2 periods such that $d_1> d_2$
+\begin{equation}
+  \min_{g_1,g_2,G} \left[ cG + o(g_1 + g_2)\right]
+\end{equation}
+such that
+\begin{align}
+  g_1 & = d_1  \hspace{1cm} \lambda_1 \\
+  g_2 & = d_2  \hspace{1cm} \lambda_2 \\
+  g_t - G & \leq 0  \hspace{1cm} \bar{\mu}_t \\
+  -g_t & \leq 0  \hspace{1cm} \ubar{\mu}_t
+\end{align}
+The constraint matrix is
+\begin{equation}
+  A_{ji}=\left(\begin{matrix}
+    1 & 0 & 0\\
+    0 & 1 & 0 \\
+    1 & 0 & -1 \\
+     -1 & 0 & 0 \\
+     0 & 1 & -1 \\
+     0 & -1 & 0
+  \end{matrix}\right)
+\end{equation}
+and the constant term is
+\begin{equation}
+d_{j}=\left(\begin{matrix}
+d_1  & d_2 & 0 & 0 &  0 & 0
+\end{matrix}\right)
+\end{equation}
+
+Suppose $d_1 > d_2$ so that $g_1^* = d_1 = G^*$ and $g_2^* = d_2 < G^*$. Then constraints $j\in \{1,2,3\}$ are binding and
+\begin{equation}
+A'_{ji}=\left(\begin{matrix}
+ 1 & 0 & 0\\
+ 0 & 1 & 0\\
+ 1 & 0 & -1
+\end{matrix}\right)
+\end{equation}
+The inverse is
+\begin{equation}
+ A^{\prime -1}_{ij}
+=\left(\begin{matrix}
+ 1 & 0 & 0\\
+ 0 & 1 & 0\\
+ 1 & 0 & -1
+\end{matrix}\right)
+\end{equation}
+So we get
+\begin{equation}
+x^*_i = \left(\begin{matrix}
+ g^*_1\\
+ g^*_2\\
+ G^*
+\end{matrix}\right) = \sum_j A^{\prime -1}_{ij} d_j
+=\left(\begin{matrix}
+ 1 & 0 & 0\\
+ 0 & 1 & 0\\
+ 1 & 0 & -1
+\end{matrix}\right)\left(\begin{matrix}
+ d_1\\
+ d_2\\
+ 0
+\end{matrix}\right) = \left(\begin{matrix}
+ d_1\\
+ d_2\\
+ d_1
+\end{matrix}\right)
+\end{equation}
+and
+\begin{equation}
+\m^*_j =\left(\begin{matrix}
+ \m^*_1\\
+ \m^*_2\\
+ \m^*_3
+\end{matrix}\right) =\left(\begin{matrix}
+ \l_1^*\\
+ \l_2^*\\
+ \bar{\m}^*_1
+\end{matrix}\right) = \sum_i c_i A^{\prime -1}_{ij}
+= \left(\begin{matrix}
+ o &
+ o &
+ c
+\end{matrix}\right) \left(\begin{matrix}
+ 1 & 0 & 0\\
+ 0 & 1 & 0\\
+ 1 & 0 & -1
+\end{matrix}\right) = \left(\begin{matrix}
+ o + c \\
+ o\\
+ -c
+\end{matrix}\right)
+\end{equation}
+
+
+\section{Application to cost allocation}
+
+Now suppose we have our big objective function over $x_i = (g_{st},G_s,f_{\ell t}, F_\ell)$
+\begin{equation}
+  \min_{ x_i} \sum_i c_i x_i
+\end{equation}
+such that
+\begin{align}
+  \sum_s g_{s t}K_{ns}-\sum_\ell f_{\ell t}K_{n\ell}  & =  d_{n,t}  \hspace{1cm} \lambda_{n,t} \\
+  g_{s t} - G_s & \leq 0  \hspace{1cm} \bar{\mu}_{s,t} \\
+  -g_{s t} & \leq 0  \hspace{1cm} \ubar{\mu}_{s,t} \\
+  f_{\ell t} - F_\ell & \leq 0  \hspace{1cm} \bar{\mu}_{\ell,t} \\
+  -f_{\ell t} - F_\ell & \leq 0  \hspace{1cm} \ubar{\mu}_{\ell,t} \\
+  \sum_\ell C_{\ell c}x_\ell f_{\ell t} & = 0 \hspace{1cm} \lambda_{c,t}
+\end{align}
+$K_{ns}$ is 1 if generator $s$ is at node $n$, 0 otherwise.
+
+
+From strong duality we have cost recovery from the demand payments
+\begin{equation}
+  \sum_i c_i x^*_i = \sum_j d_j \mu^*_j = \sum_{n,t} \lambda_{n,t}^* d_{n,t}
+\end{equation}
+
+We now want to disaggregate the sum $ \sum_{n,t} \lambda_{n,t}^* d_{n,t}$ and find the fractions $r^i_{n,t}$ of the dispatch/capacity $x^*_i$ apportioned to each demand in each hour such that the payments in each hour covers it
+\begin{equation}
+  \lambda_{n,t}^* d_{n,t} = \sum_i  c_i r^i_{n,t}
+\end{equation}
+This must satisfy for each $i$
+\begin{equation}
+  \sum_{n,t} r^i_{n,t}  = x^*_i
+\end{equation}
+
+But we have a very natural way of doing this from Section \ref{sec:theory}!
+
+Find the $N\times N$ matrix $A'_{ji}$ of binding constraints $j\in B$. We have for the investment variables:
+\begin{equation}
+x^*_i = \sum_{j\in B} A^{\prime -1}_{ij} d_j
+\end{equation}
+But the only non-zero constants $d_j$ are the demands $d_{n,t}$ so we get
+\begin{equation}
+x^*_i = \sum_{n,t} A^{\prime -1}_{i(n,t)} d_{n,t}
+\end{equation}
+(NB: The energy balance constraints will always be binding.)
+
+This gives us a very natural definition of the $r^i_{n,t}$
+\begin{equation}
+  r^i_{n,t} = A^{\prime -1}_{i(n,t)} d_{n,t}
+\end{equation}
+
+Now we have
+\begin{equation}
+   \sum_i c_i r^i_{n,t} = \sum_i A^{\prime -1}_{i(n,t)} d_{n,t} c_i
+\end{equation}
+This is none other than our market price since remember
+\begin{equation}
+\mu_j^* = \sum_i c_i  A^{\prime -1}_{ij}
+\end{equation}
+Extract the term for the market prices
+\begin{equation}
+\lambda_{nt}^* = \sum_i c_i  A^{\prime -1}_{i(nt)} \label{eq:pricetocost}
+\end{equation}
+Thus we get
+\begin{equation}
+   \sum_i c_i r^i_{n,t} = \sum_i A^{\prime -1}_{i(n,t)} d_{n,t} c_i = \lambda_{nt}^* d_{n,t}
+\end{equation}
+
+This gives a unique way of extracting the contribution of revenue at node $n$ and time $t$ to the costs of the system.
+
+The difficulty in practical applications is computing $A^{\prime -1}_{ij}$ (see section below).
+
+Hopefully it is so sparse that the solutions are often obvious.
+
+\subsection{Interpretation}
+
+The critical factor is $A^{\prime -1}_{i(nt)}$ which tells us the share of cost-causing asset $i$ that accrues to node $n$ at time $t$.
+
+Equation \eqref{eq:pricetocost} shows us that the price is set by this factor, so that whatever the marginal asset is that is setting the price is where the cost allocation goes. This is natural.
+
+If generator $s$ is setting the price $\lambda^*_{n,t}$ at node $n$ and time $t$, then we should have for $i$ for $g_{s,t}$ that $A^{\prime -1}_{(st)(nt)} = 1$ and other values are zero for this $n$ and $t$, though I'm wary of this right now, because there could be complex linear combinations of $o_s$ and $c_s$.
+
+
+
+\subsection{Calculation}
+
+Note that we're interested only in the $A^{\prime -1}_{i(nt)}$, not in $A^{\prime -1}_{ij}$ for other $j$.
+
+Step 1: Find the binding constraints $j\in B$ (based on examining Gurobi solution), confirm that $|B| = N$ (you may need random numbers to force a unique solution to the problem) and build the sparse matrix $A^{\prime}_{ji}$.
+
+Step 2: For each pair $(n,t)$ solve the following sparse linear system of equations to find $y_i$:
+\begin{equation}
+  \sum_i A^{\prime}_{ji} y_i = \delta_{j(n,t)}
+\end{equation}
+The solution will be
+\begin{equation}
+  y_i =  A^{\prime -1}_{i(n,t)}
+\end{equation}
+
+Done!
+
+\subsection{Application away from long-term equilibrium}
+
+The method is quite general, so should also apply even if we fix $G_s$, $F_\ell$?
+
+We could introduce costs $o_{\ell t}$ for each direction of the link flows $f_{\ell t}$ to track who uses them.
+
+If we only have operation variables being optimised $g_{st}$ and $f_{\ell t}$ then we still get a factor $A^{\prime -1}_{i(nt)}$ to use for the cost allocation of usage, which we can then use to divide up the fixed costs of $G_s$ and $F_\ell$? But is the interpretation of $A^{\prime -1}_{i(nt)}$ correct as marginal cost or full cost?
+
+With these extra constants we move the constant to the RHS now, e.g.
+\begin{align}
+  g_{st}  & \leq G_s  \hspace{1cm} \bar{\mu}_{st}
+\end{align}
+
+Now we have for binding cases $g_{st}^* = G_s$ ($\bar{\mu}_{st}^* \leq 0$ by definition)
+\begin{equation}
+  \bar{\mu}_{st}^* = \sum_i c_i  A^{\prime -1}_{i(st)}
+\end{equation}
+So this just gives the combination of costs that reproduce the scarcity value of the limitation $G_s$.
+
+And for the strong duality
+\begin{equation}
+  \sum_i c_i x_i^* = \sum_{n,t} \lambda^*_{nt} d_{nt} + \sum_{s,t} \bar{\mu}^*_{st} G_{s}
+\end{equation}
+Since the second term is negative, we get the result that demand payments $ \sum_{n,t} \lambda^*_{nt} d_{nt}$ cover both operational costs $\sum_i c_i x_i^*$ and the scarcity value of the generator capacities $-\sum_{s,t} \bar{\mu}^*_{st} G_{s}$ which help to pay down their capital costs.
+
+
+\bibliographystyle{elsarticle-num}
+
+\biboptions{sort&compress}
+\bibliography{kkt_flow_tracing}
+
+
+
+\end{document}

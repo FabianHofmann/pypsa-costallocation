@@ -12,22 +12,46 @@ import pandas as pd
 from helpers import get_linear_system, noisy_lopf
 import networks
 
-n = networks.n2_t1_g2_w()
+n = networks.n_ac_dc()
+n.global_constraints['constant'] += 200
 noisy_lopf(n)
-
-print(n.generators_t.p)
-
 s = get_linear_system(n)
-A_, A_inv, c, x, d, m, r = (s[k].round(2) for k in
-                            ['A_', 'A_inv', 'c', 'x', 'd', 'm', 'r'])
+A_, A_inv, c, x, d, m, r, C = (s[k].round(5) for k in
+                            ['A_', 'A_inv', 'c', 'x', 'd', 'm', 'r', 'C'])
+# C = C.loc[:, d.round(1)!=0]
 
-print(r)
+
+sn = n.snapshots[0]
+bus = 'London'
+
+gen = n.generators_t.p.T.copy()
+TC = n.objective
+
+print(C)
 
 
-C = r.mul(c, 0)
+mu_co2 = n.global_constraints.mu.co2_limit
+n.global_constraints = n.global_constraints.drop('co2_limit')
 
-def pinv(df):
-    return pd.DataFrame(np.linalg.pinv(df), *df.T.axes).round(3)
+em = n.generators.carrier.map(n.carriers.co2_emissions)
+n.generators['marginal_cost'] += em * mu_co2 / n.generators.efficiency
 
-def inv(df):
-    return pd.DataFrame(np.linalg.inv(df), *df.T.axes).round(3)
+n.lopf(pyomo=False, keep_shadowprices=True, keep_references=True,
+        solver_name='gurobi')
+s = get_linear_system(n)
+A_, A_inv, c, x, d, m, r, C = (s[k].round(5) for k in
+                            ['A_', 'A_inv', 'c', 'x', 'd', 'm', 'r', 'C'])
+
+
+# n.loads_t.p_set.loc[sn,bus] += 1
+
+# n.lopf(pyomo=False, keep_shadowprices=True, keep_references=True,
+#         solver_name='gurobi')
+# print(n.generators_t.p.T - gen)
+# print(n.objective - TC)
+
+
+# n.global_constraints = n.global_constraints.drop('co2_limit')
+
+# print('Objective diff:', objective - n.objective)
+# print('CO2 cost diff:', total_co2_cost)

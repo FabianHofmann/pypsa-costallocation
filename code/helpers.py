@@ -21,13 +21,16 @@ from pandas import concat
 
 
 
-def add_noise(n, noise_order=1e-4):
+def add_noise(n, noise_order=1e-4, only_static=True):
     for c, attr in pypsa.descriptors.nominal_attrs.items():
         if n.df(c).empty:
             continue
 
         n.df(c)[attr + '_min'] += rand(len(n.df(c))) * noise_order
         n.df(c)[attr + '_max'] += rand(len(n.df(c))) * noise_order
+
+        if only_static:
+            continue
 
         min_pu = attr.replace('nom', 'min_pu')
         max_pu = attr.replace('nom', 'max_pu')
@@ -46,8 +49,8 @@ def add_noise(n, noise_order=1e-4):
             n.pnl(c)[min_pu] += rand(*n.pnl(c)[min_pu].shape) * noise_order
 
 
-def noisy_lopf(n, noise_order=1e-4):
-    add_noise(n, noise_order)
+def noisy_lopf(n, noise_order=1e-4, only_static=False):
+    add_noise(n, noise_order, only_static)
     n.lopf(pyomo=False, keep_shadowprices=True, keep_references=True,
        solver_name='gurobi')
 
@@ -119,10 +122,21 @@ def get_linear_system(n):
     s.d = Series(d[B], cons_index[B])
     s.m = Series(m[B], cons_index[B])
 
-    cost_effective_i = s.d[lambda ds: ds!=0].index
-    s.r = s.A_inv.loc[:, cost_effective_i] * s.d[cost_effective_i]
+    cost_eff_cons_i = s.d[lambda ds: ds!=0].index
+    cost_eff_vars_i = s.c[lambda ds: ds!=0].index
+
+    s.r = s.A_inv.loc[:, cost_eff_cons_i] * s.d[cost_eff_cons_i]
+    s.C = s.r.loc[cost_eff_vars_i].mul(s.c[cost_eff_vars_i], 0)
 
     assert_allclose(s.x, s.r.sum(1), **tolerance)
 
     return s
+
+
+def pinv(df):
+    return pd.DataFrame(np.linalg.pinv(df), *df.T.axes).round(3)
+
+def inv(df):
+    return pd.DataFrame(np.linalg.inv(df), *df.T.axes).round(3)
+
 

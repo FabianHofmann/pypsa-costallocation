@@ -43,7 +43,7 @@ def n1_t1_g2_w(d = 70, marginal_cost=[5, 10], capital_cost=[100, 30]):
     return n
 
 
-def n1_t9_g2_w(d = 70, marginal_cost=[2, 5], capital_cost=[50, 30]):
+def n1_t9_g2_w(d = 70, marginal_cost=[2, 4.], capital_cost=[50, 30]):
     """Initialize network with base and one peak demand at one bus."""
     load = pd.DataFrame({0: [50, 49, 48, 47, 46, 90, 46.5, 47.5, 48.5]})
 
@@ -53,6 +53,23 @@ def n1_t9_g2_w(d = 70, marginal_cost=[2, 5], capital_cost=[50, 30]):
     n.madd('Load', [0], bus='Bus1', p_set=load)
     n.madd('Generator', ['Gen0', 'Gen1'], bus='Bus1', p_nom_extendable=True,
            marginal_cost=marginal_cost, capital_cost=capital_cost)
+    return n
+
+
+def n2_t9_g2_w(d = 70, marginal_cost=[1, 2.4], capital_cost=[10, 4]):
+    """Initialize network with base and one peak demand at one bus."""
+    load = pd.DataFrame({0: [10, 10, 10, 11]})
+
+    n = pypsa.Network()
+    n.set_snapshots(list(range(len(load))))
+    n.add('Bus', 'Bus1')
+    n.add('Bus', 'Bus2')
+    n.madd('Load', [0], bus='Bus1', p_set=load)
+    n.madd('Generator', ['Base', 'Peak'], bus=['Bus1', 'Bus2'],
+           p_nom_extendable=True,
+           marginal_cost=marginal_cost, capital_cost=capital_cost)
+    n.madd('Line', ['1'], s_nom_extendable=True, x=0.01, bus0='Bus1',
+           bus1='Bus2', capital_cost=1)
     return n
 
 
@@ -74,6 +91,7 @@ def n_ac_dc():
 
     n = ntl.test.get_network_ac_dc()
     n.generators['p_nom'] = 0
+    n.generators['p_nom_min'] = 0
     n.links['p_nom'] = 0
     n.lines['s_nom'] = 0
     n.set_snapshots(n.snapshots[[0]])
