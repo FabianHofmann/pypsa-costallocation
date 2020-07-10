@@ -27,6 +27,11 @@ to_total_symbol = dict(one_port_investment_cost = '$\mathcal{C}^{G}$',
                       co2_cost = '$\mathcal{E}$',
                       nodal_demand_cost = '$\mathcal{TC}$')
 
+to_explanation = {'one_port_operational_cost': 'OPEX',
+                  'co2_cost': 'Emission Cost',
+                  'one_port_investment_cost': 'Production CAPEX',
+                  'branch_investment_cost': 'Transmission CAPEX'}
+
 color = pd.Series({'one_port_operational_cost': 'darkkhaki',
                    'co2_cost': 'tomato',
                    'one_port_investment_cost': 'palevioletred',

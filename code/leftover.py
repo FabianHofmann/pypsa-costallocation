@@ -60,3 +60,48 @@ c = 'Generator'
  + reindex_by_bus_carrier(n.pnl(c).mu_lower.loc[t], c, n) \
  + locational_market_price(n, t)
  )
+
+#%% comparison plot bars
+
+fig, axes = plt.subplots(3, 1, figsize=(12, 7), sharex=True)
+
+for sn, ax in zip(n.snapshots, axes.ravel()):
+    ca_df = payments.sel(snapshot=sn, drop=True).to_dataframe()
+    dc_df = dc.sel(snapshot=sn, drop=True).to_dataframe()
+    d = dict(stacked=True, zorder=3, width=0.3, legend=False, ax=ax)
+
+    ca_df.plot.bar(position=1.1, color=color[ca_df.columns], **d)
+    dc_df.plot.bar(position=0, color=color[dc_df.columns], **d)
+
+    ax.set_xlim(left=-0.5)
+    ax.ticklabel_format(axis="y", style="sci", scilimits=(5, 2))
+    ax.set_xlabel("")
+    ax.set_title(f"$t = %i$" % (sn.hour + 1))
+#     ax.grid(axis="y", zorder=1, linestyle="dashed")
+
+handles, labels = ax.get_legend_handles_labels()
+labels = [to_symbol[l] for l in labels]
+fig.legend(
+    handles[:-1],
+    labels[:-1],
+    ncol=4,
+    frameon=False,
+    loc="lower center",
+    bbox_to_anchor=(0.3, 1),
+    fontsize="large",
+    title="Flow Based (left bars)",
+)
+fig.legend(
+    handles[-1:],
+    labels[-1:],
+    ncol=1,
+    frameon=False,
+    loc="lower center",
+    bbox_to_anchor=(0.7, 1),
+    fontsize="large",
+    title="LMP Based (right bars)",
+)
+fig.tight_layout()
+fig.savefig(f"../figures/compare_allocation{tag}.png", bbox_inches="tight")
+
+
