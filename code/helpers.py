@@ -114,8 +114,11 @@ def get_linear_system(n):
     cons_index = constraint_index(n)
     s = Dict()
 
+    s.A = DataFrame.sparse.from_spmatrix(A, vars_index, cons_index)
+    s._d = Series(d, cons_index)
+    s._m = Series(m, cons_index)
+
     s.A_ = DataFrame.sparse.from_spmatrix(A_, vars_index, cons_index[B])
-    # A = DataFrame.sparse.from_spmatrix(A, vars_index, cons_index)
     s.A_inv = DataFrame.sparse.from_spmatrix(A_inv, vars_index, cons_index[B])
     s.c = Series(c, vars_index)
     s.x = Series(x, vars_index)

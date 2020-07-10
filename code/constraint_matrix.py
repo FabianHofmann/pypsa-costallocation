@@ -13,7 +13,8 @@ from helpers import get_linear_system, noisy_lopf
 import networks
 
 n = networks.n_ac_dc()
-n.global_constraints['constant'] += 200
+em = n.generators.carrier.map(n.carriers.co2_emissions) / \
+        n.generators.efficiency
 noisy_lopf(n)
 s = get_linear_system(n)
 A_, A_inv, c, x, d, m, r, C = (s[k].round(5) for k in
@@ -27,20 +28,23 @@ bus = 'London'
 gen = n.generators_t.p.T.copy()
 TC = n.objective
 
-print(C)
+print(n.generators_t.p @ em)
+print(m)
 
 
 mu_co2 = n.global_constraints.mu.co2_limit
 n.global_constraints = n.global_constraints.drop('co2_limit')
 
-em = n.generators.carrier.map(n.carriers.co2_emissions)
-n.generators['marginal_cost'] += em * mu_co2 / n.generators.efficiency
+n.generators['marginal_cost'] += em * mu_co2
 
 n.lopf(pyomo=False, keep_shadowprices=True, keep_references=True,
         solver_name='gurobi')
 s = get_linear_system(n)
 A_, A_inv, c, x, d, m, r, C = (s[k].round(5) for k in
                             ['A_', 'A_inv', 'c', 'x', 'd', 'm', 'r', 'C'])
+
+
+# print(n.generators_t.p @ em)
 
 
 # n.loads_t.p_set.loc[sn,bus] += 1

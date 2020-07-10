@@ -21,6 +21,12 @@ to_static_symbol = dict(one_port_investment_cost = '$\mathcal{C}^{G}_{n}$',
                       nodal_demand_cost = '$\lambda_{n} \, d_{n}$')
 
 
+to_total_symbol = dict(one_port_investment_cost = '$\mathcal{C}^{G}$',
+                      branch_investment_cost = '$\mathcal{C}^{F}$',
+                      one_port_operational_cost = '$\mathcal{O}$',
+                      co2_cost = '$\mathcal{E}$',
+                      nodal_demand_cost = '$\mathcal{TC}$')
+
 color = pd.Series({'one_port_operational_cost': 'darkkhaki',
                    'co2_cost': 'tomato',
                    'one_port_investment_cost': 'palevioletred',

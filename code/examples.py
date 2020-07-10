@@ -19,6 +19,10 @@ from config import to_static_symbol, color
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
+net = False
+altype = 'net' if net else 'gross'
+method = 'ptpf'
+
 
 n = pypsa.Network()
 n0 = '1'
@@ -37,7 +41,7 @@ n.madd('Generator', [0, 1], bus=[n0, n1], p_nom_extendable=True,
        marginal_cost=[o0, o1], capital_cost=[c0, c1], p_nom_max=100)
 n.madd('Line', ['1'], s_nom_extendable=True, x=0.01, bus0=[n0], bus1=[n1],
        capital_cost=c_l)
-n.lopf(pyomo=False, keep_shadowprices=True)
+n.lopf(pyomo=False, keep_shadowprices=True, solver_name='gurobi')
 
 sn = 'now'
 
@@ -49,7 +53,7 @@ g0, g1 = n.generators_t.p.loc['now']
 f = n.lines_t.p0.loc['now'].item()
 l0, l1 = n.buses_t.marginal_price.loc['now']
 
-ds = ntl.allocate_flow(n, method='ebe', q=0, aggregated=False)
+ds = ntl.allocate_flow(n, method='ebe', q=0, aggregated=net)
 ds = ntl.convert.peer_to_peer(ds, n)
 dc = ntl.cost.nodal_demand_cost(n).rename(bus='payer')
 ca = ntl.allocate_cost(n, method=ds, q=0)
@@ -102,7 +106,7 @@ ax.legend(*handles_labels_for(color[ca_df.columns].rename(to_static_symbol)),
           ncol=3, loc='lower right', frameon=True, fontsize='large')
 ntl.plot.annotate_bus_names(n, ax, shift=0, bbox='fancy')
 fig.tight_layout()
-fig.savefig(f'../figures/example_network.png', bbox_inches='tight')
+fig.savefig(f'../figures/example_network_{altype}_{method}.png', bbox_inches='tight')
 
 
 # %% payoff matrix
@@ -126,7 +130,7 @@ for i, v in enumerate(payoff):
         ax.set_ylabel('')
     ax.set_title(to_static_symbol[v])
 fig.tight_layout(w_pad=0)
-fig.savefig(f'../figures/example_payoff.png', bbox_inches='tight')
+fig.savefig(f'../figures/example_payoff_{altype}_{method}.png', bbox_inches='tight')
 
 # %% sub flows
 
@@ -160,7 +164,7 @@ for bus in n.buses.index:
             bbox=bbox)
 
     fig.tight_layout(h_pad=0, w_pad=0)
-    fig.savefig(f'../figures/example_allocation_bus{bus}.png',
+    fig.savefig(f'../figures/example_allocation_bus{bus}_{altype}_{method}.png',
                 bbox_inches='tight')
 
 # fig.tight_layout(h_pad=-2)

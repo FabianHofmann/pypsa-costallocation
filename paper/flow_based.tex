@@ -107,12 +107,12 @@
 
 
 \title{Flow-Based Cost Allocation in Linear Optimized Power Systems are non-unique but localizable}
-\author{F. Hofmann. T. Brown}
+\author{F. Hofmann}
 
 \maketitle
 
 \begin{abstract}
-Maximizing the welfare of all market participants within a power system is a common approach in energy system modelling. It leads to perfectly scheduled operations of generators and ... 
+% Maximizing the welfare of all market participants within a power system is a common approach in energy system modelling. It leads to perfectly scheduled operations of generators and ... 
 \end{abstract}
 
 
@@ -120,7 +120,17 @@ Maximizing the welfare of all market participants within a power system is a com
 
 % In the following, we show how Flow Allocation (FA) can be used for decomposing Locational Marginal Prices (LMP) in a linear optimized power system. We begin by revising the fundamentals of the Power Transfer Distribition Factors (PTDF) and the role of the slack, which plays a key role for FA. This will lead us to a generalized form of P2P allocations and transmission usage allocations based on the choice of slack. In a second step, we breakdown the full Lagrangian of a cost-optimization for a network with transmission and generation capacity expansion. By taking into account sensitivities of the flow with respect to changes in the nodal generation, we are able to derive a cost allocation which directly links to FA.  
 
+\subsection*{Highlights}
+\begin{itemize}
+ \item The LMP always breaks down into contributions of different cost terms (OPEX, CAPEX, etc.) of the system.
+ \item Breaking the LMP further down into contributions of components (generator, transmission line, etc.) requires assumptions on power flow assignments.
+ \item Methods like Average Participation or Flow Based Market Coupling allow for localizing the P2P cost assignments and prioritize assignments within one market zone.
+\end{itemize}
+
+
 % \section{Introduction}
+
+
 
 \subsubsection*{Nomenclature}
 
@@ -214,7 +224,7 @@ The direct payment of node $n$ to generator $s$ is then given by
 \opexGeneration \,  \allocatePeer
 \label{eq:allocate_opexGeneration_detailed}
 \end{align}
-Accordingly, consumers at bus $n$ which retrieve power from a generators $s$, directly  compensate its operational costs. The cost allocation behaves like P2P tradings between producers and consumers for fixed production prices. In this way, the generator $s$ retrieves the exact amount of money from consumers that it spends on its operation, thus 
+Accordingly, consumers at bus $n$ which retrieve power from a generators $s$, directly  compensate its operational costs. The cost allocation behaves like P2P tradings between producers and consumers for fixed production prices. In this way,  generator $s$ retrieves the exact amount of money from consumers that it spends on its operation, thus 
 \begin{align}
 \sum_{n} \allocateOpex[n \rightarrow s] = \opexGeneration \, \generation
 \label{eq:no_profit_opex}
@@ -336,7 +346,8 @@ Again we can interpret the shadowprices $\muupperflow$ and $\mulowerflow$ as a m
 
 The P2P cost allocation suits for any type of topology and network setup. But so far, the question of how $\allocatePeer$ and $\allocateFlow$ are defined was left open. We recap that both rely on derivatives of $\generation$ and $\flow$  with respect to the nodal demand $\demand$ fulfilling \cref{eq:allocate_peer_constraint,eq:allocate_transaction_constraint}. \\
 % 
-In a first step we will show how the power flow allocation $\allocateFlow$ is linked to the peer-to-peer allacations $\allocatePeer$. Let $\ptdf$ denote Power Transfer Distribition Factors (PTDF) giving the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$.  Further let $\incidenceGenerators$ be 1 if generator $s$ is attached to bus $n$ and zero otherwise. We start from the linear power flow equation
+In fact, it turns out that ones the peer-to-peer allocations $\allocatePeer$ are defined, the power flow allocations $\allocateFlow$ are determined by the linear power flow equations.
+In order to show this, let $\ptdf$ denote Power Transfer Distribition Factors (PTDF) giving the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$.  Further let $\incidenceGenerators$ be 1 if generator $s$ is attached to bus $n$ and zero otherwise. The linear power flow equals the 
 \begin{align}
  \flow  = \sum_m \ptdf[m] \left( \nodalgeneration[m] - \demand[m] \right)  
 \end{align}
@@ -386,8 +397,7 @@ In the following we showcase a two bus system with one optimized time step and i
 \end{figure*}
 % 
 % 
-The two buses are connected via one transmission line, each has one generator. Whereas the generator at bus~1 has an operational price of 50 \euro/\megawatthour, the generator at bus~2 has a higher operational price of 200~\euro/\megawatthour. For both the CAPEX rate is set to 500~\euro/MW and the maxmimal capacity is limited to $\capacityGenerationUpper$~=~100~MW. The transmission line has a CAPEX rate of 100~\euro/MW and no upper capacity limit. With a demand of 60~MW at bus~1 and 90~MW at bus~2, the optimization expands the cheaper generator at bus~1 to its full limit of 100~MW. The 40~MW excess power not consumed at bus~1, flow to bus~2 where the generator is built with only 50~MW.  \\
-% 
+The two buses are connected via one transmission line, each has one generator. Whereas the generator at bus~1 has an operational price of 50 \euro/\megawatthour, the generator at bus~2 has a higher operational price of 200~\euro/\megawatthour. For both the CAPEX rate is set to 500~\euro/MW and the maxmimal capacity is limited to $\capacityGenerationUpper$~=~100~MW. The transmission line has a CAPEX rate of 100~\euro/MW and no upper capacity limit. With a demand of 60~MW at bus~1 and 90~MW at bus~2, the optimization expands the cheaper generator at bus~1 to its full limit of 100~MW. The 40~MW excess power not consumed at bus~1, flow to bus~2 where the generator is built with only 50~MW.  
 % 
 \begin{figure}[h!]
     \begin{subfigure}[c]{\linewidth}
@@ -428,11 +438,22 @@ The lower graph \cref{fig:example_allocation_bus2} illustrates the impact of con
 
 The sum of all rows in the payoff matrix in \cref{fig:example_payoff} yields the revenues of the assets $m, \ell$. These values match their overall spendings, \textit{e.g.} the total revenue of the transmission line is 4k~\euro\, which equals the cost for investments $c_{1}\,F_{1}$. The sum of all columns yields the total payment of consumers at bus $n$. For example the sum of payments of consumers at bus~1 is 36k~\euro. This is exactly the electricity price of 600~\euro/MW times the consumption of 60~MW, $\lambda_1 d_1$. \\
 
-The fact that OPEX and CAPEX allocations are proportional to the total consumption at a bus results from optimizing one time step only. In larger optimization problems with multiple time steps the CAPEX allocation takes effect only for time steps in which capacity contraints limit the operation of assets, \ie one or more of  \cref{eq:upper_generation_capacity_constraint,eq:lower_flow_capacity_constraint,eq:upper_flow_capacity_constraint} is binding.  
+The fact that OPEX and CAPEX allocations are proportional to the total consumption at a bus results from optimizing one time step only. In larger optimization problems with multiple time steps the CAPEX allocation takes effect only for time steps in which one or more of the capacity contraints  \cref{eq:upper_generation_capacity_constraint,eq:lower_flow_capacity_constraint,eq:upper_flow_capacity_constraint} become binding.  
+
 
 \subsubsection*{Allocating Net Power using EBE (\ref{net}\ref{ebe}) }
 
+In contrast the to equivalent allocation of gross power production, netting out injections for each bus leads to less P2P payments. The resulting payment given in \cref{fig:example_payoff_net_ebe} builds on the allocated power flow shown \cref{fig:example_allocation_net_ebe} in \cref{sec:example_plots}. As bus~2 does not produce excess power, none of its power production is assigned to bus~1 and thus no payment of bus~1 to bus~2 allocated. Neither has bus~1 to pay fee to the transmission system as it only exports power. So all its consumers pay to its local generators. Bus~2 in constrast bear all CAPEX for the transmission system as well as CAPEX and OPEX for generators at bus~1.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{example_payoff_net_ebe.png}
+\caption{Full P2P cost allocation for the example setup shown in \cref{fig:example_network} when equivalently allocation net power injection (scheme \ref{ebe}\ref{net}).}
+\label{fig:example_payoff_net_ebe}
+\end{figure}
 
+Again the cummulative payments per bus meet the nodal spendings $\lmp \, \demand$. The cummulative revenues per generator and transmission line meet the all CAPEX and OPEX.  
+
+As the other schemes \ref{ap}\ref{gross} - \ref{fbmc}\ref{net} apart from the EBE scheme don't distinguishably modify allocations within the presented example, we move on to a more realistic setup where systemic and local effects show up.
 
 
 \section{Application Case}
@@ -699,6 +720,26 @@ The distributed slack is for time step $t$ is then given by
 \allocatePeer[s \rightarrow m] = \InverseAPInjection_{m,n} \, \generation \, \demand
 \end{align}
 
+
+\subsection{Example: Power Flow Allocations of different Types}
+\label{sec:example_plots}
+
+\begin{figure}[h!]
+    \begin{subfigure}[c]{\linewidth}
+    \includegraphics[width=\linewidth]{example_allocation_bus1_net_ebe.png}
+    \vspace{-40pt}
+    \subcaption{}
+    \label{fig:example_allocation_bus1_net_ebe}
+    \end{subfigure}
+    \begin{subfigure}[c]{\linewidth}
+    \includegraphics[width=\linewidth]{example_allocation_bus2_net_ebe.png}
+    \vspace{-40pt}
+    \subcaption{}
+    \label{fig:example_allocation_bus2_net_ebe}
+    \end{subfigure}
+    \caption{Power allocations for bus~1 (a) and bus~2 (b) of the example network in \cref{fig:example_network} using equivalently allcated net power injections (scheme \ref{net}\ref{ebe}). Bus~1 retrieves 60~MW from itself and nothing from bus~2. The latter in turn retrieves 40~MW from bus~1 and self supplies 50~MW. The P2P trades are less in number and more intuitive then with allocating gross flow.}
+    \label{fig:example_allocation_net_ebe}
+\end{figure}
 
 
 \clearpage
