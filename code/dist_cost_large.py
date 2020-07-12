@@ -23,14 +23,6 @@ n.set_snapshots(n.snapshots[:10])
 tag = "_large"
 
 
-# %%
-ds = ntl.allocate_flow(n, method="ptpf", aggregated=True,)  # q=0
-pr = nodal_production_revenue(n).rename(bus="payer")
-dc = nodal_demand_cost(n).rename(bus="payer")
-ca = ntl.allocate_cost(n, method=ds)
-payments = ca.sum([d for d in ca.dims if d not in ["payer", "snapshot"]])
-dc = nodal_demand_cost(n).rename(bus="payer")
-
 # %% total cost
 plt.rc("text", usetex=False)
 ca.sum().to_array().to_series().reindex_like(color).dropna()\
@@ -38,25 +30,7 @@ ca.sum().to_array().to_series().reindex_like(color).dropna()\
     .plot.pie(colors=color, explode=[.01]*len(ca), autopct='%1.0f%%')
 plt.rc("text", usetex=True)
 
-# %% Network plot
 
-fig, ax = plt.subplots(subplot_kw={"projection": ccrs.PlateCarree()}, figsize=(6, 5))
-bus_sizes = n.generators.groupby(["bus", "carrier"]).p_nom_opt.sum()
-plot = n.plot(
-    bus_sizes=bus_sizes / 1e5,
-    line_widths=n.lines.s_nom_opt / 1e3,
-    link_widths=n.links.p_nom_opt / 1e3,
-    ax=ax,
-)
-ax.legend(
-    *ntl.plot.handles_labels_for(n.carriers.color),
-    loc="center left",
-    bbox_to_anchor=(1, 0.5),
-    ncol=1,
-)
-fig.canvas.draw()
-fig.tight_layout()
-fig.savefig(f"../figures/network{tag}.png")
 
 
 #%% LMP

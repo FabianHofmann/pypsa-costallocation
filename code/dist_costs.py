@@ -39,7 +39,7 @@ if relax_co2:
     tag = '_relaxed_co2'
 
 sns = n.snapshots
-n.lopf(pyomo=False, keep_shadowprices=True)
+n.lopf(pyomo=False, keep_shadowprices=True, solver_name='gurobi')
 n.carriers.loc['wind', 'color'] = 'steelblue'
 n.buses.loc[n.buses.index.str.contains('DC'), 'y'] += 1
 n.buses.loc[n.buses.index.str.contains('DC'), 'x'] -= .5
@@ -67,7 +67,7 @@ fig.savefig(f'figures/network{tag}.png')
 ds = ntl.allocate_flow(n, method='ebe', q=0, aggregated=False)
 dc = nodal_demand_cost(n).rename(bus='payer')
 ca = ntl.allocate_cost(n, method=ds, q=0)
-ca = ca.sum([d for d in ca.dims if d not in ['payer', 'snapshot']])
+# ca = ca.sum([d for d in ca.dims if d not in ['payer', 'snapshot']])
 
 # %% Allocation plot
 '''

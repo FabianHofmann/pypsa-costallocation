@@ -10,3 +10,4 @@ code/__pycache__
 *.synctex.gz
 *.out
 *.nc
+pypsa-eur
