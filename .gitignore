@@ -11,3 +11,4 @@ code/__pycache__
 *.out
 *.nc
 pypsa-eur
+.snakemake
