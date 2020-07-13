@@ -12,3 +12,4 @@ code/__pycache__
 *.nc
 pypsa-eur
 .snakemake
+resources/*

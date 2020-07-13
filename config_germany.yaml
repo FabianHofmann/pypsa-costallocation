@@ -16,8 +16,8 @@ scenario:
 countries: ['DE']
 
 snapshots:
-  start: "2013-03-01"
-  end: "2013-04-01"
+  start: "2013-01-01"
+  end: "2014-01-01"
   closed: 'left' # end is not inclusive
 
 

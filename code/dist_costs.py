@@ -30,7 +30,7 @@ to_symbol_dict = dict(one_port_investment_cost = '$\mathcal{C}^{G}_{n,t}$',
 
 n = ntl.test.get_network_ac_dc()
 n.carriers = n.carriers.drop('battery')
-# n.generators['p_nom_min'] = 0
+n.generators['p_nom_max'] = 3500
 
 tag = ''
 relax_co2 = False
@@ -61,13 +61,13 @@ ntl.plot.annotate_bus_names(n, ax, shift=(0,0.3),
                             bbox='fancy')
 ax.legend(*ntl.plot.handles_labels_for(n.carriers.color), loc='upper left')
 fig.canvas.draw(); fig.tight_layout()
-fig.savefig(f'figures/network{tag}.png')
+# fig.savefig(f'figures/network{tag}.png')
 
 # %%
 ds = ntl.allocate_flow(n, method='ebe', q=0, aggregated=False)
 dc = nodal_demand_cost(n).rename(bus='payer')
 ca = ntl.allocate_cost(n, method=ds, q=0)
-# ca = ca.sum([d for d in ca.dims if d not in ['payer', 'snapshot']])
+ca = ca.sum([d for d in ca.dims if d not in ['payer', 'snapshot']])
 
 # %% Allocation plot
 '''
@@ -108,7 +108,7 @@ fig.legend(handles[:-1], labels[:-1], ncol=4, frameon=False, loc='lower center',
 fig.legend(handles[-1:], labels[-1:], ncol=1, frameon=False, loc='lower center',
            bbox_to_anchor=(0.7, 1), fontsize='large', title='LMP Based (right bars)')
 fig.tight_layout()
-fig.savefig(f'figures/compare_allocation{tag}.png', bbox_inches='tight')
+# fig.savefig(f'figures/compare_allocation{tag}.png', bbox_inches='tight')
 
 # %% Nodal payments
 
@@ -119,7 +119,7 @@ handles, labels = ntl.plot.handles_labels_for(color[:-1])
 labels = ['$\sum_t' + to_symbol_dict[l][1:] for l in labels]
 ax.legend(handles, labels, loc='upper left')
 fig.canvas.draw(); fig.tight_layout()
-fig.savefig(f'figures/nodal_payments{tag}.png')
+# fig.savefig(f'figures/nodal_payments{tag}.png')
 
 
 #%% opex flow
@@ -143,7 +143,7 @@ n.plot(flow=norm(opex_flow) * 100, bus_sizes=norm(opex_injection.abs()) * 0.5,
        bus_colors=buscolors(opex_injection), title=f'OPEX flow Hour {t}',
        ax=ax, line_colors='teal', link_colors='teal')
 fig.canvas.draw(); fig.tight_layout()
-fig.savefig(f'figures/opex_flow{tag}.png')
+# fig.savefig(f'figures/opex_flow{tag}.png')
 
 
 #%% capex flow
@@ -161,5 +161,5 @@ n.plot(flow=norm(capex_flow) * 100, bus_sizes=norm(capex_injection.abs()) * 0.5,
         bus_colors=buscolors(capex_injection), title=f'CAPEX flow Hour {t}',
         ax=ax, line_colors='teal', link_colors='teal')
 fig.canvas.draw(); fig.tight_layout()
-fig.savefig(f'figures/capex_flow{tag}.png')
+# fig.savefig(f'figures/capex_flow{tag}.png')
 

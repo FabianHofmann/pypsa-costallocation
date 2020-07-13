@@ -6,44 +6,54 @@ subworkflow pypsade:
     configfile: "config_germany.yaml"
 
 
-rule sanitize_network:
+rule solve_and_sanitize_german_network:
     input:
-        network = pypsade('results/networks/elec_s_{clusters}_ec_lvopt_Ep.nc')
-    output: 
-        network = 'resources/german_network_{clusters}.nc'
-
-rule plot_german_network:
-    input:
-        network = 'resources/german_network_{clusters}.nc',
+        network = pypsade('networks/elec_s_{clusters}_ec_lvopt_Ep.nc'),
         regions = pypsade('resources/regions_onshore_elec_s_{clusters}.geojson')
-    output: 'figures/german_network_{clusters}.png'
+    output: 
+        network = 'resources/de{clusters}.nc',
+        regions = 'resources/de{clusters}_regions.geojson'
+    script: 'code/solve_and_sanitize_network.py'
+
+
+rule plot_network:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson'
+    output: 'figures/{nname}.png'
     script: 'code/plot_network.py'
 
 
 rule allocate_network:
     input:
-        network = 'resources/german_network_{clusters}.nc'
+        network = 'resources/{nname}.nc'
     output:
-        costs = 'resources/allocated_costs_{clusters}_{method}_{power}.nc',
-        payments = 'resources/allocated_payments_{clusters}_{method}_{power}.nc'
+        costs = 'resources/costs_{nname}_{method}_{power}.nc',
+        payments = 'resources/payments_{nname}_{method}_{power}.nc'
     script: 'code/allocate_network.py'
 
 
 rule plot_total_costs:
     input:
-        costs = 'resources/allocated_costs_{clusters}_ptpf_net.nc'
-    output: 'figures/total_costs_{clusters}.png'
+        costs = 'resources/costs_{nname}_ptpf_net.nc'
+    output: 'figures/total_costs_{nname}.png'
     script: 'code/plot_total_costs.py'
 
 rule plot_price_maps:
     input:
-        network = 'resources/german_network_{clusters}.nc',
-        regions = pypsade('resources/regions_onshore_elec_s_{clusters}.geojson'),
-        payments = 'resources/allocated_payments_{clusters}_{method}_{power}.nc'
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+        payments = 'resources/payments_{nname}_{method}_{power}.nc'
     output:
-        folder = directory('figures/price_maps_{clusters}_{method}_{power}')
+        folder = directory('figures/price_maps_{nname}_{method}_{power}')
     script: 'code/plot_price_map.py'
 
+rule plot_bars:
+    input:
+        network = 'resources/{nname}.nc',
+        payments = 'resources/payments_{nname}_{method}_{power}.nc'
+    output: 'figures/bars_{nname}_{method}_{power}.png'
+    script: 'code/plot_bars.py'
 
 
 # Local Variables:
