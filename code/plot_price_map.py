@@ -43,7 +43,7 @@ for col, name in to_explanation.items():
     ax.outline_patch.set_visible(False)
     priceregions.plot(column=col, legend=True, ax=ax,
                       transform=ccrs.PlateCarree(),
-                      legend_kwds={'label': f'Average LMP for {name} [€/MWh]'})
+                      legend_kwds={'label': f'Average LMP for \n {name} [€/MWh]'})
     fig.canvas.draw()
     fig.tight_layout()
     fig.savefig(snakemake.output.folder + f'/{col}_average.png')
