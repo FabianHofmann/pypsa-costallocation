@@ -2,7 +2,7 @@ configfile: "config_germany.yaml"
 
 
 wildcard_constraints:
-    clusters="[0-9]+m?|all",
+    clusters="[0-9][0-9]",
     field="(bf|gf)"
 
 
