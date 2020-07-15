@@ -18,19 +18,16 @@ from  netallocation.cost import (nodal_co2_cost, nodal_demand_cost,
                                  nodal_production_revenue, congestion_revenue)
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
+from config import to_symbol
+
 plt.rc('text', usetex=True)
 
-
-to_symbol_dict = dict(one_port_investment_cost = '$\mathcal{C}^{G}_{n,t}$',
-                      branch_investment_cost = '$\mathcal{C}^{F}_{n,t}$',
-                      one_port_operational_cost = '$\mathcal{O}_{n,t}$',
-                      co2_cost = '$\mathcal{E}_{n,t}$',
-                      nodal_demand_cost = '$\lambda_{n,t} \, d_{n,t}$')
 
 
 n = ntl.test.get_network_ac_dc()
 n.carriers = n.carriers.drop('battery')
-n.generators['p_nom_max'] = 3500
+n.generators['p_nom_min'] = 500
+
 
 tag = ''
 relax_co2 = False
@@ -68,6 +65,8 @@ ds = ntl.allocate_flow(n, method='ebe', q=0, aggregated=False)
 dc = nodal_demand_cost(n).rename(bus='payer')
 ca = ntl.allocate_cost(n, method=ds, q=0)
 ca = ca.sum([d for d in ca.dims if d not in ['payer', 'snapshot']])
+# ca = ntl.breakdown.expand_by_sink_type(ca, n, dim='payer')
+        # .sel(sink_carrier='Load', drop=True).fillna(0)
 
 # %% Allocation plot
 '''
@@ -102,7 +101,7 @@ for sn, ax in zip(n.snapshots, axes.ravel()):
     ax.grid(axis='y', zorder=1, linestyle='dashed')
 
 handles, labels = ax.get_legend_handles_labels()
-labels = [to_symbol_dict[l] for l in labels]
+labels = [to_symbol[l] for l in labels]
 fig.legend(handles[:-1], labels[:-1], ncol=4, frameon=False, loc='lower center',
            bbox_to_anchor=(0.3, 1), fontsize='large', title='Flow Based (left bars)')
 fig.legend(handles[-1:], labels[-1:], ncol=1, frameon=False, loc='lower center',
@@ -112,54 +111,54 @@ fig.tight_layout()
 
 # %% Nodal payments
 
-fig, ax = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()}, figsize=(5,4))
-bus_sizes = ca.sum('snapshot').to_dataframe().stack()
-n.plot(ax=ax, bus_sizes=bus_sizes/bus_sizes.sum()*3, bus_colors=color)
-handles, labels = ntl.plot.handles_labels_for(color[:-1])
-labels = ['$\sum_t' + to_symbol_dict[l][1:] for l in labels]
-ax.legend(handles, labels, loc='upper left')
-fig.canvas.draw(); fig.tight_layout()
-# fig.savefig(f'figures/nodal_payments{tag}.png')
+# fig, ax = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()}, figsize=(5,4))
+# bus_sizes = ca.sum('snapshot').to_dataframe().stack()
+# n.plot(ax=ax, bus_sizes=bus_sizes/bus_sizes.sum()*3, bus_colors=color)
+# handles, labels = ntl.plot.handles_labels_for(color[:-1])
+# labels = ['$\sum_t' + to_symbol[l][1:] for l in labels]
+# ax.legend(handles, labels, loc='upper left')
+# fig.canvas.draw(); fig.tight_layout()
+# # fig.savefig(f'figures/nodal_payments{tag}.png')
 
 
-#%% opex flow
-from netallocation.cost import (allocate_one_port_operational_cost,
-                                allocate_one_port_investment_cost)
-from netallocation.plot import pos_neg_buscolors as buscolors
-norm = lambda ds: ds/ ds.abs().sum()
-t = n.snapshots[0]
-F = ds.virtual_flow_pattern
-P = ds.virtual_injection_pattern
+# #%% opex flow
+# from netallocation.cost import (allocate_one_port_operational_cost,
+#                                 allocate_one_port_investment_cost)
+# from netallocation.plot import pos_neg_buscolors as buscolors
+# norm = lambda ds: ds/ ds.abs().sum()
+# t = n.snapshots[0]
+# F = ds.virtual_flow_pattern
+# P = ds.virtual_injection_pattern
 
-opex_flow = allocate_one_port_operational_cost(F, n, dim='bus')\
-            .sel(snapshot=t).sum(['source_carrier', 'bus']).to_series()
+# opex_flow = allocate_one_port_operational_cost(F, n, dim='bus')\
+#             .sel(snapshot=t).sum(['source_carrier', 'bus']).to_series()
 
-opex_injection = allocate_one_port_operational_cost(P, n, dim='injection_pattern')\
-                 .sel(snapshot=t).sum(['source_carrier', 'injection_pattern'])\
-                 .to_series()
+# opex_injection = allocate_one_port_operational_cost(P, n, dim='injection_pattern')\
+#                  .sel(snapshot=t).sum(['source_carrier', 'injection_pattern'])\
+#                  .to_series()
 
-fig, ax = plt.subplots(subplot_kw={'projection': ccrs.EqualEarth()}, figsize=(8,6))
-n.plot(flow=norm(opex_flow) * 100, bus_sizes=norm(opex_injection.abs()) * 0.5,
-       bus_colors=buscolors(opex_injection), title=f'OPEX flow Hour {t}',
-       ax=ax, line_colors='teal', link_colors='teal')
-fig.canvas.draw(); fig.tight_layout()
-# fig.savefig(f'figures/opex_flow{tag}.png')
+# fig, ax = plt.subplots(subplot_kw={'projection': ccrs.EqualEarth()}, figsize=(8,6))
+# n.plot(flow=norm(opex_flow) * 100, bus_sizes=norm(opex_injection.abs()) * 0.5,
+#        bus_colors=buscolors(opex_injection), title=f'OPEX flow Hour {t}',
+#        ax=ax, line_colors='teal', link_colors='teal')
+# fig.canvas.draw(); fig.tight_layout()
+# # fig.savefig(f'figures/opex_flow{tag}.png')
 
 
-#%% capex flow
-t = n.snapshots[5]
+# #%% capex flow
+# t = n.snapshots[5]
 
-capex_flow = allocate_one_port_investment_cost(F, n, dim='bus')\
-            .sel(snapshot=t).sum(['source_carrier', 'bus']).to_series()
+# capex_flow = allocate_one_port_investment_cost(F, n, dim='bus')\
+#             .sel(snapshot=t).sum(['source_carrier', 'bus']).to_series()
 
-capex_injection = allocate_one_port_investment_cost(P, n, dim='injection_pattern')\
-                 .sel(snapshot=t).sum(['source_carrier', 'injection_pattern'])\
-                 .to_series()
+# capex_injection = allocate_one_port_investment_cost(P, n, dim='injection_pattern')\
+#                  .sel(snapshot=t).sum(['source_carrier', 'injection_pattern'])\
+#                  .to_series()
 
-fig, ax = plt.subplots(subplot_kw={'projection': ccrs.EqualEarth()}, figsize=(8,6))
-n.plot(flow=norm(capex_flow) * 100, bus_sizes=norm(capex_injection.abs()) * 0.5,
-        bus_colors=buscolors(capex_injection), title=f'CAPEX flow Hour {t}',
-        ax=ax, line_colors='teal', link_colors='teal')
-fig.canvas.draw(); fig.tight_layout()
-# fig.savefig(f'figures/capex_flow{tag}.png')
+# fig, ax = plt.subplots(subplot_kw={'projection': ccrs.EqualEarth()}, figsize=(8,6))
+# n.plot(flow=norm(capex_flow) * 100, bus_sizes=norm(capex_injection.abs()) * 0.5,
+#         bus_colors=buscolors(capex_injection), title=f'CAPEX flow Hour {t}',
+#         ax=ax, line_colors='teal', link_colors='teal')
+# fig.canvas.draw(); fig.tight_layout()
+# # fig.savefig(f'figures/capex_flow{tag}.png')
 

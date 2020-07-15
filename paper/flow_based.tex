@@ -64,8 +64,12 @@
 \newcommand{\Slackk}{k^*_{m,n}}
 \newcommand{\mulowergeneration}{\ubar{\mu}_{s,t}}
 \newcommand{\muuppergeneration}{\bar{\mu}_{s,t}}
+\newcommand{\muuppergenerationnom}{\bar{\mu}^\text{nom}_{s}}
+\newcommand{\mulowergenerationnom}{\ubar{\mu}^\text{nom}_{s}}
 \newcommand{\mulowerflow}{\ubar{\mu}_{\ell,t}}
 \newcommand{\muupperflow}{\bar{\mu}_{\ell,t}}
+\newcommand{\muupperflownom}{\bar{\mu}^\text{nom}_{\ell}}
+\newcommand{\mulowerflownom}{\ubar{\mu}^\text{nom}_{\ell}}
 \newcommand{\lmp}[1][n]{\lambda_{#1,t}}
 \newcommand{\flow}{f_{\ell,t}}
 \newcommand{\cycle}{C_{\ell,c}}
@@ -324,21 +328,6 @@ The peer-to-peer cost allocation for the transmission CAPEX is then defined as
 Again we can interpret the shadowprices $\muupperflow$ and $\mulowerflow$ as a measure for necessity of transmission investments at $\ell$ at time $t$. Consumers which retrieve power flowing on congested lines, yielding a bound \cref{eq:upper_flow_capacity_constraint} or \eqref{eq:lower_flow_capacity_constraint}, pay compensations for the resulting investments. Again the sum of all CAPEX payments to line $\ell$ equals the total CAPEX spent. This is seen when summing \cref{eq:allocate_capexFlow_detailed} over all buses and time steps and using \cref{eq:allocate_transaction_constraint,eq:no_profit_capex_flow}
  
 
-% \subsection{LMP independent Cost  Terms}
-% 
-% Example: \\
-% Constraining the capacities $\capacityGeneration$  for a subset $S$ of generators to lower or upper limits in the form of 
-% \begin{align}
-% \capacityGeneration \ge \capacityGenerationLower \hpad \forall{n,s \in S} \\
-% \capacityGeneration \le \capacityGenerationUpper \hpad \forall{n,s \in S}
-% \end{align}
-% or doing likewise with a subset $L$ of transmission lines,
-% \begin{align}
-% \capacityFlow \ge \capacityFlowLower \hpad \forall{\ell \in \textit{L}} \\
-% \capacityFlow \le \capacityFlowUpper \hpad \forall{\ell \in \textit{L}}
-% \end{align}
-% does not have any effect on the above presented allocation in \cref{eq:lmp_allocation}. The additional cost directly translate to the Quality of Supply $\muuppergeneration$ for production and $\muupperflow - \mulowerflow$ for transmission respectively. This also counts for limiting the overall production capacity $\sum_{n,s}\capacityGeneration$ or transmission capacity $\sum_\ell \capacityFlow$. However it will distort the no profit rule for generators \cref{eq:no_profit_capex_generation} and transmission \cref{eq:no_profit_capex_flow} respectively. As shown in \cite{brown_decreasing_2020}
-
 
 \section{Assumptions on Power Allocations}
 % \section{\texorpdfstring{Extended Solution Space of $\boldsymbol{\slackk[m]}$}{Solution Space of the Slack}}
@@ -468,7 +457,51 @@ The nodal balance constraint ensures that the amount of power that flows into a 
     \sum_l \incidence \, \flow  - \nodalgeneration + \nodaldemand &= 0 \resultsin{\lmp} \Forall{n,t}
     \label[constraint]{eq:nodal_balance_lin}
 \end{align}
-Its shadow price mirrors the Locational Marginal Prizes (LMP) $\lmp$ per bus and time step. In a power market this is the \euro/\megawatthour-price which a consumer has to pay. Note that the flow $\flow$ in \cref{eq:nodal_balance_lin} is a passive variable only, given by \cref{eq:flow_from_ptdf}.\\
+Its shadow price mirrors the Locational Marginal Prizes (LMP) $\lmp$ per bus and time step. In a power market this is the \euro/\megawatthour-price which a consumer has to pay.\\
+
+\subsection{Full Lagrangian}
+\label{sec:full_lagrangian}
+\begin{align}
+\notag
+& \lagrangian\left(\generation, \flow, \capacityGeneration, \capacityFlow, \boldsymbol{\lambda}, \boldsymbol{\mu} \right)   =   \\  
+\notag
+& \;\;\; \sum_{n,s} \capexGeneration \capacityGeneration + \sum_{n, s, t} \opexGeneration \generation + \sum_{\ell} \capexFlow \, \capacityFlow  \\
+\notag
+&+ \sum_{n,t} \lmp \left(\sum_\ell \incidence \, \flow  - \sum_s \incidenceGenerators\, \generation +  \demand  \right)  \\ 
+\notag
+&+ \sum_{\ell,c,t} \cycleprice \, \cycle \, \impedance \, \flow  \\
+\notag
+&+ \sum_{n,s,t} \muuppergeneration \left( \generation - \generationpotential \capacityGeneration \right)  - \sum_{n,s,t} \mulowergeneration \generation  \\
+&+ \sum_{\ell,t} \muupperflow \left( \flow - \capacityFlow \right) - \sum_{\ell,t} \mulowerflow \left( \flow + \capacityFlow \right)     
+\label{eq:full_lagrangian}
+\end{align}
+% 
+where $\boldsymbol{\lambda} = \left\lbrace \lmp, \cycleprice \right\rbrace $ and $\boldsymbol{\mu} = \left\lbrace \muuppergeneration, \mulowergeneration, \muupperflow, \mulowerflow \right\rbrace $ denote the set of related KKT variables. The global maximum of the Lagrangian requires stationarity with respect to all variables. The stationarity of the generation capacity variable leads to 
+\begin{align}
+\pdv{\lagrangian}{\capacityGeneration}  = 0 \,\, \rightarrow \,\, 
+\capexGeneration =  \sum_t \muuppergeneration \, \generationpotential  \Forall{n,s}
+\label{eq:capex_generation_duality}
+\end{align}
+
+the stationarity of the transmission capacity to
+\begin{align}
+\pdv{\lagrangian}{\capacityFlow} = 0 \,\, \rightarrow \,\, 
+\capexFlow =  \sum_t \left( \muupperflow - \mulowerflow \right) \Forall{\ell}
+\label{eq:capexFlow_duality}
+\end{align}
+
+
+and the stationarity of the generation to 
+\begin{align}
+\pdv{\lagrangian}{\generation} &= 0 \,\, \rightarrow \,\,  
+\opexGeneration =  \incidenceGenerators \, \lmp - \muuppergeneration + \mulowergeneration \Forall{n,s} \label{eq:opex_duality}
+\end{align}
+
+\begin{align}
+0 &= \pdv{\lagrangian}{\flow}  \\ 
+0 &= \sum_n \incidence \lmp  + \cycleprice \cycle \impedance  - \muupperflow + \mulowerflow \Forall{n,s} \label{eq:opex_flow_duality}
+\end{align}
+
 
 
 \subsection{Proof Generation Capacity Payback}
@@ -485,64 +518,41 @@ As stated in \cite{brown_decreasing_2020} the capical cost of a generator $s$ is
 \mulowergeneration  \, \generation &= 0 \Forall{n,s,t}
 \label{eq:complementary_slackness_lower_generation} 
 \end{align}
-Multiplying both sides of \cref{eq:complementary_slackness_upper_generation} with $\capacityGeneration$ and using \cref{eq:capital_price_generation_sum} leads to 
+Multiplying both sides of \cref{eq:capex_generation_duality} with $\capacityGeneration$ and using \cref{eq:complementary_slackness_upper_generation} leads to 
 \begin{align}
  \capexGeneration \, \capacityGeneration  = \sum_t \muuppergeneration \, \generation 
  \label{eq:capital_price_generation_sum}
 \end{align}
+The zero-profit rule for generators is obtained by multiplying \cref{eq:opex_duality} with $\generation$ and using \cref{eq:complementary_slackness_lower_generation,eq:capital_price_generation_sum} which results in 
+\begin{align}
+  \capexGeneration \, \capacityGeneration + \sum_t \opexGeneration \generation = \sum_t \lmp \incidenceGenerators \generation
+\end{align}
+It states that over the whole time span, all OPEX and CAPEX for generator $s$ (left hand side) are payed back by its revenue (right hand side).
 
 \subsection{Proof Flow Capacity Payback}
 
-The yielding KKT variables $\muupperflow$ and $\mulowerflow$ are only non-zero if $\flow$ is limited by the trasmission capacity in positive or negative direction, i.e. \cref{eq:upper_flow_capacity_constraint} or \cref{eq:lower_flow_capacity_constraint} are binding. The complementary slackness 
+The yielding KKT variables $\muupperflow$ and $\mulowerflow$ are only non-zero if $\flow$ is limited by the trasmission capacity in positive or negative direction, i.e. \cref{eq:upper_flow_capacity_constraint} or \cref{eq:lower_flow_capacity_constraint} are binding. For flows below the thermal limit, the complementary slackness 
 \begin{align}
 \muupperflow \left( \flow - \capacityFlow \right)  &= 0 \Forall{\ell,t}
 \label{eq:complementary_slackness_upper_flow} \\
 \mulowerflow \left( \flow - \capacityFlow \right) &=  0 \Forall{\ell,t}
 \label{eq:complementary_slackness_lower_flow} 
 \end{align}
-set the respective KKT for flows staying below the thermal limit to zero. 
-
-
-
-
-
-\subsection{Full Lagrangian}
-\label{sec:full_lagrangian}
+sets the respective KKT to zero. 
+When multipying \cref{eq:capexFlow_duality} with $\capacityFlow$ and using the complementary slackness \cref{eq:complementary_slackness_upper_flow,eq:complementary_slackness_lower_flow} we obtain 
 \begin{align}
-\notag
-& \lagrangian\left(\generation, \flow, \capacityGeneration, \capacityFlow, \boldsymbol{\lambda}, \boldsymbol{\mu} \right)   =   \\  
-\notag
-& \;\;\; \sum_{n,s} \capexGeneration \capacityGeneration + \sum_{n, s, t} \opexGeneration \generation + \sum_{\ell} \capexFlow \, \capacityFlow  \\
-\notag
-&+ \sum_{n,t} \lmp \left(\sum_\ell \incidence \, \flow  - \sum_s \generation + \sum_a \demand  \right)  \\ 
-\notag
-&+ \sum_{\ell,c,t} \cycleprice \, \cycle \, \impedance \, \flow  \\
-\notag
-&+ \sum_{n,s,t} \muuppergeneration \left( \generation - \generationpotential \capacityGeneration \right)  - \sum_{n,s,t} \mulowergeneration \generation  \\
-&+ \sum_{\ell,t} \muupperflow \left( \flow - \capacityFlow \right) - \sum_{\ell,t} \mulowerflow \left( \flow + \capacityFlow \right)     
-\label{eq:full_lagrangian}
+ \capexFlow \, \capacityFlow = \sum_t \left( \muupperflow - \mulowerflow \right)  \, \flow
+ \label{eq:capital_price_flow_sum}
 \end{align}
-% 
-where $\boldsymbol{\lambda} = \left\lbrace \lmp, \cycleprice \right\rbrace $ and $\boldsymbol{\mu} = \left\lbrace \muuppergeneration, \mulowergeneration, \muupperflow, \mulowerflow \right\rbrace $ denote the set of related KKT variables. The global maximum of the Lagrangian requires stationarity with respect to all variables. The stationarity of the generation capacity variable leads to 
+Againg we can use this to formulate the zero-profit rule for transmission lines. We mulitply \cref{eq:opex_flow_duality} with $\flow$, which finally leads us to 
 \begin{align}
-\pdv{\lagrangian}{\capacityGeneration}  = 0 \,\, \rightarrow \,\, 
-\capexGeneration =  \sum_t \muuppergeneration \, \generationpotential  \Forall{n,s}
-\label{eq:capexGeneration_duality}
+\capexFlow \, \capacityFlow = \sum_n \incidence\, \lmp\, \flow + \cycleprice\, \cycle\, \impedance\, \flow 
 \end{align}
-
-the stationarity of the transmission capacity to
-\begin{align}
-\pdv{\lagrangian}{\capacityFlow} = 0 \,\, \rightarrow \,\, 
-\capexFlow =  \sum_t \left( \muupperflow - \mulowerflow \right) \Forall{\ell}
-\label{eq:capexFlow_duality}
-\end{align}
+It states that the congestion revenue of a line (first term right hand side) substracted by the cost for cycle constraint exactly matches its CAPEX. 
 
 
-and the stationarity of the generation to 
-\begin{align}
-\pdv{\lagrangian}{\generation} &= 0 \,\, \rightarrow \,\,  
-\opexGeneration =  \lmp - \muuppergeneration + \mulowergeneration \Forall{n,s} \label{eq:opex_duality}
-\end{align}
+
+
 
 \subsection{CO$_2$ constraint}
 
@@ -722,7 +732,6 @@ The distributed slack is for time step $t$ is then given by
 
 \subsection{Example: Power Flow Allocations of different Types}
 \label{sec:example_plots}
-
 \begin{figure}[h!]
     \begin{subfigure}[c]{\linewidth}
     \includegraphics[width=\linewidth]{example_allocation_bus1_net_ebe.png}
@@ -739,6 +748,57 @@ The distributed slack is for time step $t$ is then given by
     \caption{Power allocations for bus~1 (a) and bus~2 (b) of the example network in \cref{fig:example_network} using equivalently allcated net power injections (scheme \ref{net}\ref{ebe}). Bus~1 retrieves 60~MW from itself and nothing from bus~2. The latter in turn retrieves 40~MW from bus~1 and self supplies 50~MW. The P2P trades are less in number and more intuitive then with allocating gross flow.}
     \label{fig:example_allocation_net_ebe}
 \end{figure}
+
+\subsection{Brownfield Optimization and Capacity Restricitions}
+
+Constraining the capacities $\capacityGeneration$  for a subset $S$ of generators to lower or upper limits in the form of
+\begin{align}
+\capacityGeneration \ge \capacityGenerationLower \resultsin{\mulowergenerationnom} \hpad \forall{n,s \in S} \\
+\capacityGeneration \le \capacityGenerationUpper \resultsin{\muuppergenerationnom} \hpad \forall{n,s \in S}
+\end{align}
+% or doing likewise with a subset $L$ of transmission lines,
+% \begin{align}
+% \capacityFlow \ge \capacityFlowLower \resultsin{\mulowerflownom} \hpad \forall{\ell \in \textit{L}} \\
+% \capacityFlow \le \capacityFlowUpper \resultsin{\muupperflownom} \hpad \forall{\ell \in \textit{L}}
+% \end{align}
+alters the objective value as soon as one of those become bounding. 
+The complementary slackness state is 
+\begin{align}
+ \muuppergenerationnom \left( \capacityGeneration - \capacityGenerationUpper \right) =0 \\
+ \mulowergenerationnom \left( \capacityGeneration - \capacityGenerationLower \right) =0 \\
+\end{align}
+
+
+
+The CAPEX paybacks for generators %and transmission lines
+\cref{eq:capital_price_generation_sum,eq:capital_price_flow_sum} change to 
+\begin{align}
+\pdv{\lagrangian}{\capacityGeneration}  = 0 \,\, \rightarrow \,\, \\
+\capexGeneration =  \sum_t \muuppergeneration \, \generationpotential + \mulowergenerationnom - \muuppergenerationnom \Forall{n,s}
+\label{eq:capex_generation_duality_bf}
+\end{align}
+for generators. % and 
+% \begin{align}
+% \pdv{\lagrangian}{\capacityFlow}  = 0 \,\, \rightarrow \,\, \\
+% \capexFlow =  \sum_t \left( \muupperflow - \mulowerflow \right)  + \mulowerflownom - \muupperflownom \Forall{n,s}
+% \label{eq:capex_flow_duality_bf}
+% \end{align}
+% for transmission lines.
+Multiplying \cref{eq:capex_generation_duality_bf} by $ \capacityGeneration$ 
+\begin{align}
+ \capexGeneration \, \capacityGeneration =  \sum_t \muuppergeneration \, \generation +  \mulowergenerationnom \capacityGenerationLower - \muuppergenerationnom \capacityGenerationUpper \Forall{n,s}
+\end{align}
+Multiplying \cref{eq:capex_generation_duality_bf} by the amount of expansion $\left( \capacityGeneration - \capacityGenerationLower \right) $
+\begin{align}
+  \capexGeneration \, \capacityGeneration^{exp} =  \sum_t \muuppergeneration \, \left( \generation - \generationpotential \, \capacityGenerationLower \right) + \muuppergenerationnom \left( \capacityGenerationUpper - \capacityGenerationLower \right) \Forall{n,s}
+\end{align}
+
+
+playaround 
+
+\begin{align}
+\capexGeneration \, \capacityGeneration =  \sum_t \muuppergeneration \, \generation +  \mulowergenerationnom \capacityGeneration - \muuppergenerationnom \capacityGeneration \Forall{n,s}
+\end{align}
 
 
 \clearpage

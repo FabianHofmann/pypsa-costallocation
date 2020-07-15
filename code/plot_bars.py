@@ -9,21 +9,22 @@ Created on Mon Jul 13 10:12:28 2020
 import xarray as xr
 import matplotlib.pyplot as plt
 import pypsa
-from config import color, to_symbol
+from config import color, to_symbol, sink_dims
 import netallocation as ntl
 
 
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_bars', nname='de50',
+        snakemake = mock_snakemake('plot_bars', nname='de10gf',
                                    method='ptpf', power='net')
 
 
 n = pypsa.Network(snakemake.input.network)
 payments = xr.open_dataset(snakemake.input.payments)
-demand = ntl.power_demand(n).rename(bus="payer")
-dc = demand * ntl.cost.locational_market_price(n).rename(bus="payer")
+demand = ntl.power_demand(n, per_carrier=True).rename(sink_dims)
+dc = demand * ntl.cost.locational_market_price(n).rename(bus='sink')
+dc = dc.sel(sink_carrier='Load', drop=True)
 
 fig, axes = plt.subplots(3, 1, figsize=(12, 7), sharex=True)
 

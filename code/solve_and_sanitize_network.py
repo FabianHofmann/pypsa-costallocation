@@ -14,7 +14,8 @@ import shutil
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('solve_and_sanitize_german_network', clusters=50)
+        snakemake = mock_snakemake('solve_and_sanitize_german_network',
+                                   clusters=10, field='bf')
 
 
 solver_opts = snakemake.config['solving']['solver']
@@ -25,10 +26,22 @@ n = pypsa.Network(snakemake.input.network)
 n.generators.p_nom_max.update(n.generators.query('not p_nom_extendable').p_nom)
 n.generators['p_nom_extendable'] = True
 
+
+if snakemake.wildcards.field == 'bf':
+    for c, attr in pypsa.descriptors.nominal_attrs.items():
+        n.df(c)[attr + '_min'] = n.df(c)[attr]
+else:
+    for c, attr in pypsa.descriptors.nominal_attrs.items():
+        n.df(c)[attr + '_min'] = 0
+        n.df(c)[attr] = 0
+
+
 n.lopf(pyomo=False, solver_name=solver_name, solver_options=solver_opts,
         keep_shadowprices=True)
 
 n.mremove('Line', n.lines.query('num_parallel == 0').index)
+
+n.name = snakemake.output.network.split('/')[-1].replace('.nc', '')
 
 n.export_to_netcdf(snakemake.output.network)
 

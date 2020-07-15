@@ -1,5 +1,11 @@
 configfile: "config_germany.yaml"
 
+
+wildcard_constraints:
+    clusters="[0-9]+m?|all",
+    field="(bf|gf)"
+
+
 subworkflow pypsade:
     workdir: "pypsa-eur"
     snakefile: "pypsa-eur/Snakefile"
@@ -11,8 +17,8 @@ rule solve_and_sanitize_german_network:
         network = pypsade('networks/elec_s_{clusters}_ec_lvopt_Ep.nc'),
         regions = pypsade('resources/regions_onshore_elec_s_{clusters}.geojson')
     output: 
-        network = 'resources/de{clusters}.nc',
-        regions = 'resources/de{clusters}_regions.geojson'
+        network = 'resources/de{clusters}{field}.nc',
+        regions = 'resources/de{clusters}{field}_regions.geojson'
     script: 'code/solve_and_sanitize_network.py'
 
 
@@ -47,6 +53,27 @@ rule plot_price_maps:
     output:
         folder = directory('figures/price_maps_{nname}_{method}_{power}')
     script: 'code/plot_price_map.py'
+
+rule plot_cost_maps:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+        payments = 'resources/payments_{nname}_{method}_{power}.nc'
+    output:
+        folder = directory('figures/cost_maps_{nname}_{method}_{power}')
+    script: 'code/plot_cost_map.py'
+
+
+rule plot_expenditure_maps:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+        costs = 'resources/costs_{nname}_{method}_{power}.nc'
+    output:
+        folder = directory('figures/expenditure_maps_{nname}_{method}_{power}')
+    script: 'code/plot_expenditure_map.py'
+
+
 
 rule plot_bars:
     input:

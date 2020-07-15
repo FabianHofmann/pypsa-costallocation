@@ -7,6 +7,13 @@ Created on Fri May 15 15:20:25 2020
 """
 
 import pandas as pd
+import matplotlib.pyplot as plt
+
+plt.rc('font', family='serif')
+plt.rcParams['savefig.dpi'] = 200
+
+source_dims = dict(bus='source', carrier='source_carrier')
+sink_dims = dict(bus='sink', carrier='sink_carrier')
 
 to_symbol = dict(one_port_investment_cost = '$\mathcal{C}^{G}_{n,t}$',
                       branch_investment_cost = '$\mathcal{C}^{F}_{n,t}$',

@@ -44,7 +44,7 @@ electricity:
   agg_p_nom_limits: ../data/agg_p_nom_minmax.csv
   extendable_carriers:
     Generator: [OCGT]
-    StorageUnit: []
+    StorageUnit: [battery, H2]
     Store: [] #battery, H2
 
   max_hours:
@@ -54,6 +54,12 @@ electricity:
   powerplants_filter: false # use pandas query strings here, e.g. Country not in ['Germany']
   custom_powerplants: false # use pandas query strings here, e.g. Country in ['Germany']
   conventional_carriers: [] # [nuclear, oil, OCGT, CCGT, coal, lignite, geothermal, biomass]
+
+  estimate_renewable_capacities_from_capacity_stats:
+  # Wind is the Fueltype in ppm.data.Capacity_stats, onwind,
+  # offwind-{ac,dc} the carrier in PyPSA-Eur
+    Wind: [onwind, offwind-ac, offwind-dc]
+    Solar: [solar]
 
 atlite:
   nprocesses: 4
@@ -227,8 +233,8 @@ plotting:
     'offwind-dc' : "#74c6f2"
     'offshore wind dc' : "#74c6f2"
     "hydro" : "#08ad97"
-    "hydro+PHS" : "#08ad97"
-    "PHS" : "#08ad97"
+    "hydro+PHS" : "#08ad70"
+    "PHS" : "#08ad70"
     "hydro reservoir" : "#08ad97"
     'hydroelectricity' : '#08ad97'
     "ror" : "#4adbc8"
@@ -318,6 +324,9 @@ plotting:
     offwind-dc: "Offshore Wind (DC)"
     onwind: "Onshore Wind"
     battery: "Battery Storage"
+    PHS: 'Pumped Hydro'
+    hydro: 'Reservoir'
+    solar: 'Solar'
     H2: "Hydrogen Storage"
     lines: "Transmission lines"
     ror: "Run of river"
