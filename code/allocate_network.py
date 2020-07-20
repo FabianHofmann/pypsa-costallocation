@@ -28,7 +28,7 @@ if __name__ == "__main__":
                                    method='ptpf', power='net')
 
 n = pypsa.Network(snakemake.input.network)
-n.set_snapshots(n.snapshots[:10])
+# n.set_snapshots(n.snapshots[:10])
 method = snakemake.wildcards.method
 aggregated = snakemake.wildcards.power == 'net'
 co2_price = snakemake.config['costs']['emission_prices']['co2']
