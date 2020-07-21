@@ -451,6 +451,13 @@ As the other schemes \ref{ap}\ref{gross} - \ref{fbmc}\ref{net} apart from the EB
 \appendix
 
 \section{Appendix}
+
+\renewcommand\theequation{\thesection.\arabic{equation}}
+\setcounter{equation}{0}
+
+\renewcommand\thefigure{\thesection.\arabic{figure}}    
+\setcounter{figure}{0}    
+
 \subsection{LMP from Optimization}
 The nodal balance constraint ensures that the amount of power that flows into a bus equals the power that flows out of a bus, thus reflects the Kirchhoff Current Law (KCL)
 \begin{align}
@@ -745,7 +752,7 @@ The distributed slack is for time step $t$ is then given by
     \subcaption{}
     \label{fig:example_allocation_bus2_net_ebe}
     \end{subfigure}
-    \caption{Power allocations for bus~1 (a) and bus~2 (b) of the example network in \cref{fig:example_network} using equivalently allcated net power injections (scheme \ref{net}\ref{ebe}). Bus~1 retrieves 60~MW from itself and nothing from bus~2. The latter in turn retrieves 40~MW from bus~1 and self supplies 50~MW. The P2P trades are less in number and more intuitive then with allocating gross flow.}
+    \caption{Power allocations for bus~1 (a) and bus~2 (b) of the example network in \cref{fig:example_network} using equivalently allocated net power injections (scheme \ref{net}\ref{ebe}). Bus~1 retrieves 60~MW from itself and nothing from bus~2. The latter in turn retrieves 40~MW from bus~1 and self supplies 50~MW. The P2P trades are less in number and more intuitive then with allocating gross flow.}
     \label{fig:example_allocation_net_ebe}
 \end{figure}
 
@@ -756,49 +763,65 @@ Constraining the capacities $\capacityGeneration$  for a subset $S$ of generator
 \capacityGeneration \ge \capacityGenerationLower \resultsin{\mulowergenerationnom} \hpad \forall{n,s \in S} \\
 \capacityGeneration \le \capacityGenerationUpper \resultsin{\muuppergenerationnom} \hpad \forall{n,s \in S}
 \end{align}
+alters the objective value as soon as one of those become bounding. 
+The complementary slackness for both are 
+\begin{align}
+    \muuppergenerationnom \left( \capacityGeneration - \capacityGenerationUpper \right) =0 \Forall{n,s \in S} \\
+    \mulowergenerationnom \left( \capacityGeneration - \capacityGenerationLower \right) =0 \Forall{n,s \in S}
+\end{align}
+   
+
+The CAPEX paybacks for generators and transmission lines
+\cref{eq:capital_price_generation_sum,eq:capital_price_flow_sum} change to 
+\begin{align}
+\pdv{\lagrangian}{\capacityGeneration}  = 0 \,\, \rightarrow \,\, \\
+\capexGeneration =  \sum_t \muuppergeneration \, \generationpotential + \mulowergenerationnom - \muuppergenerationnom \Forall{n,s \in S}
+\label{eq:capex_generation_duality_bf}
+\end{align}
+for generators. Multiplying \cref{eq:capex_generation_duality_bf} by $ \capacityGeneration$ leads us to 
+\begin{align}
+ \capexGeneration \, \capacityGeneration - \totalRest_s=  \sum_t \muuppergeneration \, \generation \Forall{n,s \in S}
+ \label{eq:capex_generation_duality_bf2}
+\end{align}
+where we define the cost resulting from the capacity expansion limits as
+\begin{align}
+    \totalRest_s = \left(\mulowergenerationnom - \muuppergenerationnom \right) \capacityGeneration
+    \Forall{s}
+\end{align}
+As $\mulowergenerationnom \ge 0$ and $\muuppergenerationnom \le 0$ the latter represents a net positive cost term.
+
+Multiplying \cref{eq:opex_duality}, which is still valid, with $\generation$ and inserting \cref{eq:capex_generation_duality_bf2} will bring us to the zero profit rule for generators with capacity expansion limits, 
+\begin{align}
+    \capexGeneration \capacityGeneration + \sum_t \opexGeneration \generation  - \totalRest_s = \sum_t \lmp \incidenceGenerators \generation \Forall{s \in S}
+\end{align}
+
+
 % or doing likewise with a subset $L$ of transmission lines,
 % \begin{align}
 % \capacityFlow \ge \capacityFlowLower \resultsin{\mulowerflownom} \hpad \forall{\ell \in \textit{L}} \\
 % \capacityFlow \le \capacityFlowUpper \resultsin{\muupperflownom} \hpad \forall{\ell \in \textit{L}}
 % \end{align}
-alters the objective value as soon as one of those become bounding. 
-The complementary slackness state is 
-\begin{align}
- \muuppergenerationnom \left( \capacityGeneration - \capacityGenerationUpper \right) =0 \\
- \mulowergenerationnom \left( \capacityGeneration - \capacityGenerationLower \right) =0 \\
-\end{align}
 
-
-
-The CAPEX paybacks for generators %and transmission lines
-\cref{eq:capital_price_generation_sum,eq:capital_price_flow_sum} change to 
-\begin{align}
-\pdv{\lagrangian}{\capacityGeneration}  = 0 \,\, \rightarrow \,\, \\
-\capexGeneration =  \sum_t \muuppergeneration \, \generationpotential + \mulowergenerationnom - \muuppergenerationnom \Forall{n,s}
-\label{eq:capex_generation_duality_bf}
-\end{align}
-for generators. % and 
+% and 
 % \begin{align}
-% \pdv{\lagrangian}{\capacityFlow}  = 0 \,\, \rightarrow \,\, \\
-% \capexFlow =  \sum_t \left( \muupperflow - \mulowerflow \right)  + \mulowerflownom - \muupperflownom \Forall{n,s}
-% \label{eq:capex_flow_duality_bf}
+%     \muupperflownom \left( \capacityFlow - \capacityFlowUpper \right) =0 \\
+%     \mulowerflownom \left( \capacityFlow - \capacityFlowLower \right) =0 \\
 % \end{align}
-% for transmission lines.
-Multiplying \cref{eq:capex_generation_duality_bf} by $ \capacityGeneration$ 
-\begin{align}
- \capexGeneration \, \capacityGeneration =  \sum_t \muuppergeneration \, \generation +  \mulowergenerationnom \capacityGenerationLower - \muuppergenerationnom \capacityGenerationUpper \Forall{n,s}
-\end{align}
-Multiplying \cref{eq:capex_generation_duality_bf} by the amount of expansion $\left( \capacityGeneration - \capacityGenerationLower \right) $
-\begin{align}
-  \capexGeneration \, \capacityGeneration^{exp} =  \sum_t \muuppergeneration \, \left( \generation - \generationpotential \, \capacityGenerationLower \right) + \muuppergenerationnom \left( \capacityGenerationUpper - \capacityGenerationLower \right) \Forall{n,s}
-\end{align}
+
+% \begin{align}
+%     \pdv{\lagrangian}{\capacityFlow}  = 0 \,\, \rightarrow \,\, \\
+%     \capexFlow =  \sum_t \left( \muupperflow - \mulowerflow \right)  + \mulowerflownom - \muupperflownom \Forall{n,s}
+%     \label{eq:capex_flow_duality_bf}
+%     \end{align}
+%     for transmission lines.
+    
 
 
-playaround 
+% Multiplying \cref{eq:capex_generation_duality_bf} by the amount of expansion $\left( \capacityGeneration - \capacityGenerationLower \right) $
+% \begin{align}
+%   \capexGeneration \, \capacityGeneration^{exp} =  \sum_t \muuppergeneration \, \left( \generation - \generationpotential \, \capacityGenerationLower \right) + \muuppergenerationnom \left( \capacityGenerationUpper - \capacityGenerationLower \right) \Forall{n,s}
+% \end{align}
 
-\begin{align}
-\capexGeneration \, \capacityGeneration =  \sum_t \muuppergeneration \, \generation +  \mulowergenerationnom \capacityGeneration - \muuppergenerationnom \capacityGeneration \Forall{n,s}
-\end{align}
 
 
 \clearpage
