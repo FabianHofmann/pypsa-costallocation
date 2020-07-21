@@ -1,0 +1,208 @@
+\documentclass[11pt,twocolumn]{article}
+\usepackage{graphicx}
+\usepackage[left=1.80cm, right=1.80cm, top=2.00cm, bottom=2.00cm]{geometry}
+\usepackage{amsmath}
+\usepackage[colorlinks]{hyperref}
+\usepackage[backend=biber]{biblatex}
+\usepackage{eurosym}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{subcaption}
+\usepackage{enumitem} % for alphabetical enumeration 
+\usepackage{accents}
+\usepackage[capitalise]{cleveref}
+
+
+
+\addbibresource{main.bib}
+\graphicspath{{../figures/}{../figures/example/}}
+
+\crefname{relation}{Rel.}{Rels.}
+\creflabelformat{relation}{(#2#1#3)}
+\crefname{constraint}{Constr.}{Constrs.}
+\creflabelformat{constraint}{(#2#1#3)}
+
+\setlength\parindent{8pt}
+
+% style operators
+\newcommand{\ie}{\textit{i.e.} }
+\newcommand{\eg}{\textit{e.g.} }
+\newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
+\newcommand{\note}[1]{\textcolor{Orange}{#1}}
+\newcommand{\vpad}{\vspace{1mm}}
+\newcommand{\hpad}{\hspace{15pt}}
+\newcommand{\resultsin}[1]{\hspace{6pt} \bot  \hspace{6pt} #1}
+\newcommand{\Forall}[1]{\hspace{10pt} \forall \,\, #1 }
+\newcommand{\pdv}[2]{\frac{\partial #1}{\partial #2}}
+
+
+% general symbols
+\newcommand{\generation}{g_{s,t}}
+\newcommand{\generationpotential}{\bar{g}_{s,t}}
+\newcommand{\generationshare}[1][n]{\omega_{#1,s,t}}
+\newcommand{\nodalgeneration}[1][n]{g_{#1,t}}
+\newcommand{\capacitygeneration}{G_{s}}
+\newcommand{\capacitygenerationupper}{\bar{G}_{s}}
+\newcommand{\capacitygenerationlower}{\ubar{G}_{s}}
+\newcommand{\capacityFlow}{F_{\ell}}
+\newcommand{\capacityFlowUpper}{\bar{F}_{\ell}}
+\newcommand{\capacityFlowLower}{\ubar{F}_{\ell}}
+\newcommand{\capitalpricegeneration}{c_{s}}
+\newcommand{\capitalpriceflow}{c_{\ell}}
+\newcommand{\operationalpricegeneration}{o_{s}}
+\newcommand{\demand}[1][n]{d_{#1,t}}
+\newcommand{\nodaldemand}[1][n]{d_{#1,t}}
+\newcommand{\demandshare}[1][n]{\omega_{#1,a,t}}
+\newcommand{\utility}{U_{n,a,t}}
+\newcommand{\incidence}[1][n]{K_{#1,\ell}}
+\newcommand{\incidencegenerator}[1][n]{K_{#1,s}}
+\newcommand{\ptdf}[1][n]{H_{\ell,#1}}
+\newcommand{\ptdfEqual}[1][n]{\ptdf[#1]^\circ}
+\newcommand{\slackflow}{k_{\ell}}
+\newcommand{\slack}[1][n]{k_{#1}}
+\newcommand{\slackk}[1][n]{k^*_{#1}}
+\newcommand{\Slack}{k_{m,n}}
+\newcommand{\Slackk}{k^*_{m,n}}
+\newcommand{\mulowergeneration}{\ubar{\mu}_{s,t}}
+\newcommand{\muuppergeneration}{\bar{\mu}_{s,t}}
+\newcommand{\muuppergenerationnom}{\bar{\mu}^\text{nom}_{s}}
+\newcommand{\mulowergenerationnom}{\ubar{\mu}^\text{nom}_{s}}
+\newcommand{\mulowerflow}{\ubar{\mu}_{\ell,t}}
+\newcommand{\muupperflow}{\bar{\mu}_{\ell,t}}
+\newcommand{\muupperflownom}{\bar{\mu}^\text{nom}_{\ell}}
+\newcommand{\mulowerflownom}{\ubar{\mu}^\text{nom}_{\ell}}
+\newcommand{\lmp}[1][n]{\lambda_{#1,t}}
+\newcommand{\flow}{f_{\ell,t}}
+\newcommand{\cycle}{C_{\ell,c}}
+\newcommand{\impedance}{x_\ell}
+\newcommand{\cycleprice}{\lambda_{c,t}}
+\newcommand{\injection}{p_{n,t}}
+\newcommand{\netconsumption}[1][n]{p^{-}_{#1,t}}
+\newcommand{\netproduction}[1][n]{p^{+}_{#1,t}}
+\newcommand{\selfconsumption}[1][n]{p^{\circ}_{#1,t}}
+
+\newcommand{\totalnetconsumption}{p^{-}_{t}}
+\newcommand{\totalnetproduction}{p^{+}_{t}}
+\newcommand{\totalselfconsumption}{p^{\circ}_{t}}
+\newcommand{\lagrangian}{\mathcal{L}}
+
+% allocation quantities
+\newcommand{\allocatepeer}[1][s \rightarrow n]{A_{#1,t}}
+\newcommand{\allocateflow}[1][n]{A_{\ell,#1,t}}
+\newcommand{\allocatetransaction}[1][s \rightarrow n]{A_{#1,\ell,t}}
+\newcommand{\allocatecapexgeneration}[1][n]{\mathcal{C}^{G}_{#1,t}}
+\newcommand{\allocatecapexflow}[1][n]{\mathcal{C}^{F}_{#1,t}}
+\newcommand{\allocateopex}[1][n]{\mathcal{O}_{#1,t}}
+\newcommand{\allocateemissioncost}[1][n]{\mathcal{E}_{#1,t}}
+
+\newcommand{\emission}{e_{s}}
+\newcommand{\emissionprice}{\mu_{\text{CO2}}}
+\newcommand{\megawatthour}{MWh$_\text{el}$}
+\newcommand{\totalcost}{\mathcal{TC}}
+\newcommand{\opexgeneration}{\mathcal{O}}
+\newcommand{\opexflow}{\mathcal{O}^F}
+\newcommand{\capexgeneration}{\mathcal{C}^G}
+\newcommand{\capexflow}{\mathcal{C}^F}
+\newcommand{\emissioncost}{\mathcal{E}}
+\newcommand{\remainingcost}{\mathcal{R}}
+
+\begin{document}
+
+\subsection{Power Transfer Distribition Factors and Flow Allocation}
+\label{sec:ptdf_and_flow_allocation}
+
+
+In linear power flow models, the Power Transfer Distribition Factors (PTDF) $\ptdf$ determine the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$. Thus for a given production $\generation$ and demand $\demand$, they directly link to the the resulting flow on each line, 
+\begin{align}
+\flow  =   \sum_n \ptdf  \left( \nodalgeneration- \nodaldemand \right)    
+\label{eq:flow_from_ptdf}
+\end{align}
+where $\nodalgeneration = \sum_s \generation$ and $\nodaldemand = \sum_a \demand$ combine all generators $s$ and all comsumers $a$ attached to $n$.
+The PTDF have a degree of freedom: The slack $\slack$ denotes the contribution of bus $n$ to balancing out total power excess or deficit in the system. It can be dedicated to one bus, a sinlge ``slackbus``, or to several or all buses. The choice of slack modifies the PTDF according to 
+\begin{align}
+\ptdf\left( \slack[m]\right)  = \ptdfEqual - \sum_m \ptdfEqual[m]  \, \slack[m]
+\label{eq:ptdf_slacked}
+\end{align}
+where $\ptdfEqual$ denote the PTDF with equally distributed slack.
+When bus $n$ injects excess power, it has to flow to the slack; when bus $n$ extract deficit power, it has to come from the slack. Summing over all ingoing and outgoing flow changes resulting from a positive injection at $n$ yields again the slack 
+\begin{align}
+\sum_\ell \incidence[m] \, \ptdf =  \delta_{m,n} - \slack[m] 
+\label{eq:slack}
+\end{align}
+Note that $\delta_{m,n}$ on the right hand side represents the positive injection at $n$.
+% As shown above, the choice of slack $\slack[m]$ decides on the generators and lines to which power imbalances are distributed to. 
+Established flow allocation schemes [cite] haved used this degree of freedom in order to allocate power flows and exchanges to market participants. Under the assumption that consumers account for all power flows in the grid, the slack is set to $\slack^*$ such that 
+\begin{align}
+\flow  = - \sum_n \ptdf\left( \slackk[m]\right) \, \nodaldemand  
+\label{eq:flow_from_demand}
+\end{align}
+With such a choice the flow can be reproduced from the demand-side of the system only. Now each term in the sum on the right hand side stands for the individual contribution of consumers at node $n$ to the network flow $\flow$. In other words, each nodal demand $\nodaldemand$ induces a subflow originating from the slack $\slackk$ which all together add up to $\flow$. These subflows, in turn, can be further broken down to contributions for each bus $m$ in the slack, such that we get the subflow of individual $m \rightarrow n$ relations, that is 
+\begin{align}
+\allocatetransaction = \left(  \ptdfEqual[m] - \ptdfEqual \right) \slackk[m] \, \nodaldemand
+\label{eq:allocate_transaction}
+\end{align}
+% 
+It indicates the flow on line $\ell$ coming from generators at $m$ and supplying the demand $\nodaldemand$. When summing over all sources $m$ it yields the total subflow induced by $\nodaldemand$, the same term as in the sum on the right hand side in \cref{eq:flow_from_demand}; 
+% \begin{align}
+% \sum_m \allocatetransaction = -\ptdf\left(\slackk[m] \right) \,  \nodaldemand
+% \end{align}
+when summing over all sources and sinks, it yields again the power flow, thus
+\begin{align}
+\flow = \sum_{m,n} \allocatetransaction
+\label{eq:transaction_sum}
+\end{align}
+% 
+As mentioned before, the consumed power $\nodaldemand$ has to come from the slack $\slackk[m]$. As proofen in \cref{sec:proof_allocate_peer}, for each P2P relation $m \rightarrow n$, the ``traded`` power $\allocatepeer$  amounts to
+\begin{align}
+\allocatepeer &= \slackk[m] \, \nodaldemand 
+\label{eq:allocate_peer}
+\end{align}
+% 
+Finally, when summing over all sinks the P2P trades yield the nodal generation (see \cref{sec:proof_sum_n_allocate_peer}) 
+\begin{align}
+\sum_n \allocatepeer = \nodalgeneration[m]
+\label{eq:sum_n_allocate_peer}
+\end{align}
+and summing over all sources yields the nodal demand 
+\begin{align}
+\sum_m \allocatepeer = \nodaldemand
+\label{eq:sum_m_allocate_peer}
+\end{align}
+which follows from the fact that $\sum_n \slackk = 1$.
+Both allocation quantities $\allocatepeer$ and $\allocatetransaction$ can be broken down to generators $s$ or consumers $a$ by multiplying with the nodal production share $\generationshare = \generation/\sum_s \generation$ and the nodal comsumer share $\demandshare = \demand/\sum_a \demand$ respectively. \\
+
+The solution to $\slackk$ follows from combining \cref{eq:allocate_peer,eq:sum_n_allocate_peer}, which sets it to the share of the total production $\slackk = c \, \nodalgeneration$ with $c$ being defined as $c = 1/\sum_n \nodalgeneration$. That leads to the demand $\demand$ of every single consumers $a$ being supplied by all generators $s$ in the network proportional to their gross production $\generation$. 
+
+
+\subsection{\texorpdfstring{Proof \Cref{eq:allocate_peer}}{First Proof}}
+\label{sec:proof_allocate_peer}
+
+\Cref{eq:allocate_peer} follows from summing $\allocatetransaction$ over all incoming flows to $n$ and taking into account the power that $n$ provides by itsself, $\slackk \, \nodaldemand$, which leads us to
+\begin{align*}
+\allocatepeer &= \slackk \, \nodaldemand - \sum_{\ell} \incidence \, \allocatetransaction \\
+&= \slackk \, \nodaldemand - \sum_\ell \incidence \left(  \ptdfEqual[m] - \ptdfEqual \right) \slackk[m] \, \nodaldemand  \\
+&= \slackk \, \nodaldemand - \left(  \delta_{n,m} - \dfrac{1}{N} - \delta_{n,n} + \dfrac{1}{N} \right) \slackk[m] \, \nodaldemand  \\
+&= \slackk \, \nodaldemand - \left(  \delta_{n,m} - 1 \right) \slackk[m] \, \nodaldemand  \\
+&= \slackk[m] \, \nodaldemand 
+\end{align*}
+where we used \cref{eq:slack} and the fact that the equally distributed slack amounts to $1/N$ for all N nodes in the network. 
+
+
+
+\subsection{\texorpdfstring{Proof of \Cref{eq:sum_n_allocate_peer}}{Second proof}}
+\label{sec:proof_sum_n_allocate_peer}
+The relation follows from multiplying \cref{eq:flow_from_demand} with $\sum_m \incidence[m]$, and solving for $\allocatepeer$
+\begin{align*}
+\sum_m \incidence[m] \, \flow &= - \sum_{m,n} \incidence[m] \, \ptdf \, \nodaldemand \\
+\nodalgeneration[m] - \nodaldemand[m] &= - \delta_{m,n} \, \nodaldemand + \slackk[m] \, \nodaldemand    \\
+\allocatepeer &= \nodalgeneration[m] - \nodaldemand[m] + \delta_{m,n} \nodaldemand \\
+\sum_n \allocatepeer &= \nodalgeneration[m]
+\end{align*}
+
+\subsection{Allocating Gross Injections with EBE}
+\label{sec:gross_ebe}
+Allocating gross injections using the Equivalent Bilateral Exchanges Principal is simplistic and straightforward scheme. Accordingly each generator supplies each bus proportional to its power demand. The allocation is given by 
+\begin{align}
+ \allocatepeer = \dfrac{\generation}{\sum_s \generation} \demand 
+\end{align}
+    
+\end{document}
