@@ -16,15 +16,22 @@ import netallocation as ntl
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_bars', nname='de10gf',
+        snakemake = mock_snakemake('plot_bars', nname='acdc',
                                    method='ptpf', power='net')
 
+load_only = True
 
 n = pypsa.Network(snakemake.input.network)
 payments = xr.open_dataset(snakemake.input.payments)
 demand = ntl.power_demand(n, per_carrier=True).rename(sink_dims)
 dc = demand * ntl.cost.locational_market_price(n).rename(bus='sink')
-dc = dc.sel(sink_carrier='Load', drop=True)
+
+if load_only:
+    dc = dc.sel(sink_carrier='Load', drop=True)
+    payments = payments.sel(sink_carrier='Load', drop=True)
+else:
+    dc = dc.sum('sink_carrier')
+    payments = payments.sum('sink_carrier')
 
 fig, axes = plt.subplots(3, 1, figsize=(12, 7), sharex=True)
 

@@ -21,9 +21,19 @@ rule solve_and_sanitize_german_network:
         regions = 'resources/de{clusters}{field}_regions.geojson'
     script: 'code/solve_and_sanitize_network.py'
 
+
+rule solve_tiny_network:
+    output: 'resources/acdc.nc'
+    script: 'code/solve_tiny_network.py'
+
+
 rule create_test_network:
-    input: 'resources/de{clusters}{field}.nc'
-    output: 'resources/test-de{clusters}{field}.nc'
+    input: 
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson'
+    output: 
+        network = 'resources/test-{nname}.nc',
+        regions = 'resources/test-{nname}_regions.geojson'
     script: 'code/create_test_network.py'
 
 rule plot_network:

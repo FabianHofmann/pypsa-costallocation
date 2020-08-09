@@ -18,7 +18,7 @@ import os
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_expenditure_maps', nname='de10gf',
+        snakemake = mock_snakemake('plot_expenditure_maps', nname='test-de10gf',
                                    method='ptpf', power='net')
 
 nice_names = snakemake.config['plotting']['nice_names']

@@ -18,17 +18,24 @@ import os
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_cost_maps', nname='de10gf',
+        snakemake = mock_snakemake('plot_cost_maps', nname='test-de10gf',
                                    method='ptpf', power='net')
+
+load_only = True
 
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions)
 
 payments = xr.open_dataset(snakemake.input.payments)
-costs = (payments).sum('snapshot').to_dataframe()
 
-costs = costs.assign(lmp = (n.buses_t.marginal_price * n.loads_t.p).sum())
-regions = regions.set_index('name').join(costs)
+if load_only:
+    payments = payments.sel(sink_carrier='Load', drop=True)
+else:
+    payments = payments.sum('sink_carrier')
+
+payments = (payments).sum('snapshot').to_dataframe()
+payments = payments.assign(lmp = (n.buses_t.marginal_price * n.loads_t.p).sum())
+regions = regions.set_index('name').join(payments)
 
 if not os.path.isdir(snakemake.output.folder):
     os.mkdir(snakemake.output.folder)

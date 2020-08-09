@@ -7,9 +7,13 @@ Created on Mon Jul 20 13:46:12 2020
 """
 
 import pypsa
+import shutil
 
-n = pypsa.Network(snakemake.input[0])
+n = pypsa.Network(snakemake.input.network)
 
 n.set_snapshots(n.snapshots[:10])
 
-n.export_to_netcdf(snakemake.output[0])
+n.export_to_netcdf(snakemake.output.network)
+
+
+shutil.copy(snakemake.input.regions, snakemake.output.regions)

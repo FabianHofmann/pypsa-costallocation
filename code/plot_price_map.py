@@ -18,15 +18,15 @@ import os
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_price_maps', nname='de10gf',
+        snakemake = mock_snakemake('plot_price_maps', nname='test-de10gf',
                                    method='ptpf', power='net')
+
 
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions)
 
-payments = xr.open_dataset(snakemake.input.payments)
-demand = ntl.power_demand(n, per_carrier=True).rename(bus="sink")\
-            .sel(carrier='Load', drop=True)
+payments = xr.open_dataset(snakemake.input.payments).sum('sink_carrier')
+demand = ntl.power_demand(n).rename(bus="sink")\
 
 prices = (payments/demand).mean('snapshot').to_dataframe()
 prices = prices.assign(lmp = n.buses_t.marginal_price.mean())

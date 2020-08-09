@@ -7,6 +7,7 @@
 \usepackage{eurosym}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{subcaption}
+\usepackage{booktabs} % for table (toprule, bottomrule)
 \usepackage{enumitem} % for alphabetical enumeration 
 \usepackage{accents}
 \usepackage[capitalise]{cleveref}
@@ -20,6 +21,8 @@
 \creflabelformat{relation}{(#2#1#3)}
 \crefname{constraint}{Constr.}{Constrs.}
 \creflabelformat{constraint}{(#2#1#3)}
+\crefname{subequations}{Eqs.}{Eqs.}
+\creflabelformat{subequations}{(#2#1#3)}
 
 \setlength\parindent{8pt}
 
@@ -35,7 +38,12 @@
 \newcommand{\pdv}[2]{\frac{\partial #1}{\partial #2}}
 
 
+
 % general symbols
+\newcommand{\state}{s_{i,t}}
+\newcommand{\costfactor}{c_{i,t}}
+
+%generation
 \newcommand{\generation}{g_{s,t}}
 \newcommand{\generationpotential}{\bar{g}_{s,t}}
 \newcommand{\generationshare}[1][n]{\omega_{#1,s,t}}
@@ -43,47 +51,85 @@
 \newcommand{\capacitygeneration}{G_{s}}
 \newcommand{\capacitygenerationupper}{\bar{G}_{s}}
 \newcommand{\capacitygenerationlower}{\ubar{G}_{s}}
-\newcommand{\capacityflow}{F_{\ell}}
-\newcommand{\capacityflowUpper}{\bar{F}_{\ell}}
-\newcommand{\capacityflowLower}{\ubar{F}_{\ell}}
-\newcommand{\capitalpricegeneration}{c_{s}}
-\newcommand{\capitalpriceflow}{c_{\ell}}
 \newcommand{\operationalpricegeneration}{o_{s}}
-\newcommand{\demand}[1][n]{d_{#1,t}}
-\newcommand{\nodaldemand}[1][n]{d_{#1,t}}
-\newcommand{\demandshare}[1][n]{\omega_{#1,a,t}}
-\newcommand{\utility}{U_{n,a,t}}
-\newcommand{\incidence}[1][n]{K_{#1,\ell}}
-\newcommand{\incidencegenerator}[1][n]{K_{#1,s}}
-\newcommand{\ptdf}[1][n]{H_{\ell,#1}}
-
+\newcommand{\capitalpricegeneration}{c_{s}}
 \newcommand{\mulowergeneration}{\ubar{\mu}_{s,t}}
 \newcommand{\muuppergeneration}{\bar{\mu}_{s,t}}
 \newcommand{\muuppergenerationnom}{\bar{\mu}^\text{nom}_{s}}
 \newcommand{\mulowergenerationnom}{\ubar{\mu}^\text{nom}_{s}}
+
+
+% flow
+\newcommand{\flow}{f_{\ell,t}}
+\newcommand{\capacityflow}{F_{\ell}}
+\newcommand{\capacityflowUpper}{\bar{F}_{\ell}}
+\newcommand{\capacityflowLower}{\ubar{F}_{\ell}}
+\newcommand{\operationalpriceflow}{o_\ell}
+\newcommand{\capitalpriceflow}{c_{\ell}}
 \newcommand{\mulowerflow}{\ubar{\mu}_{\ell,t}}
 \newcommand{\muupperflow}{\bar{\mu}_{\ell,t}}
 \newcommand{\muupperflownom}{\bar{\mu}^\text{nom}_{\ell}}
 \newcommand{\mulowerflownom}{\ubar{\mu}^\text{nom}_{\ell}}
+
+% storage
+\newcommand{\storage}{g_{r,t}}
+\newcommand{\storagedispatch}{\storage^\text{dis}}
+\newcommand{\storagecharge}{\storage^\text{sto}}
+\newcommand{\storagesoc}{\storage^\text{ene}}
+
+\newcommand{\efficiency}{\eta_{r}}
+\newcommand{\efficiencydispatch}{\efficiency^\text{dis}}
+\newcommand{\efficiencycharge}{\efficiency^\text{sto}}
+\newcommand{\efficiencysoc}{\efficiency^\text{ene}}
+
+\newcommand{\operationalpricestorage}{o_r}
+\newcommand{\capitalpricestorage}{c_r}
+\newcommand{\capacitystorage}{G_r}
+\newcommand{\capacitystorageupper}{\bar{G}_r}
+\newcommand{\capacitystoragelower}{\ubar{G}_r}
+\newcommand{\mulowerstorage}{\ubar{\mu}_{r,t}}
+\newcommand{\muupperstorage}{\bar{\mu}_{r,t}}
+\newcommand{\mulowerstoragedispatch}{\ubar{\mu}_{r,t}^\text{dis}}
+\newcommand{\muupperstoragedispatch}{\bar{\mu}_{r,t}^\text{dis}}
+\newcommand{\mulowerstoragecharge}{\ubar{\mu}_{r,t}^\text{sto}}
+\newcommand{\muupperstoragecharge}{\bar{\mu}_{r,t}^\text{sto}}
+\newcommand{\mulowerstoragesoc}{\ubar{\mu}_{r,t}^\text{ene}}
+\newcommand{\muupperstoragesoc}{\bar{\mu}_{r,t}^\text{ene}}
+\newcommand{\muupperstoragenom}{\bar{\mu}^\text{nom}_r}
+\newcommand{\mulowerstoragenom}{\ubar{\mu}^\text{nom}_r}
+\newcommand{\mustateofcharge}{\lambda^\text{ene}_{r,t}}
+
+
+% other
+\newcommand{\lagrangian}{\mathcal{L}}
 \newcommand{\lmp}[1][n]{\lambda_{#1,t}}
-\newcommand{\flow}{f_{\ell,t}}
-\newcommand{\cycle}{C_{\ell,c}}
-\newcommand{\impedance}{x_\ell}
-\newcommand{\cycleprice}{\lambda_{c,t}}
+\newcommand{\demand}[1][n]{d_{#1,t}}
+\newcommand{\nodaldemand}[1][n]{d_{#1,t}}
+\newcommand{\demandshare}[1][n]{\omega_{#1,a,t}}
 \newcommand{\injection}{p_{n,t}}
 \newcommand{\netconsumption}[1][n]{p^{-}_{#1,t}}
 \newcommand{\netproduction}[1][n]{p^{+}_{#1,t}}
 \newcommand{\selfconsumption}[1][n]{p^{\circ}_{#1,t}}
-
 \newcommand{\totalnetconsumption}{p^{-}_{t}}
 \newcommand{\totalnetproduction}{p^{+}_{t}}
 \newcommand{\totalselfconsumption}{p^{\circ}_{t}}
-\newcommand{\lagrangian}{\mathcal{L}}
+
+% network
+\newcommand{\incidence}[1][n]{K_{#1,\ell}}
+\newcommand{\incidencegenerator}[1][n]{K_{#1,s}}
+\newcommand{\incidencestorage}[1][n]{K_{#1,r}}
+\newcommand{\ptdf}[1][n]{H_{\ell,#1}}
+\newcommand{\cycle}{C_{\ell,c}}
+\newcommand{\impedance}{x_\ell}
+\newcommand{\cycleprice}{\lambda_{c,t}}
+
+
 
 % allocation quantities
 \newcommand{\allocatepeer}[1][s \rightarrow n]{A_{#1,t}}
 \newcommand{\allocateflow}[1][n]{A_{\ell,#1,t}}
 \newcommand{\allocatetransaction}[1][s \rightarrow n]{A_{#1,\ell,t}}
+\newcommand{\allocatestate}[1][i, n]{A_{#1,t}}
 \newcommand{\allocatecapexgeneration}[1][n]{\mathcal{C}^{G}_{#1,t}}
 \newcommand{\allocatecapexflow}[1][n]{\mathcal{C}^{F}_{#1,t}}
 \newcommand{\allocateopex}[1][n]{\mathcal{O}_{#1,t}}
@@ -94,10 +140,13 @@
 \newcommand{\megawatthour}{MWh$_\text{el}$}
 \newcommand{\totalcost}{\mathcal{TC}}
 \newcommand{\cost}{\mathcal{C}}
-\newcommand{\opexgeneration}{\mathcal{O}}
+\newcommand{\opex}{\mathcal{O}}
+\newcommand{\opexgeneration}{\mathcal{O}^G}
 \newcommand{\opexflow}{\mathcal{O}^F}
+\newcommand{\opexstorage}{\mathcal{O}^E}
 \newcommand{\capexgeneration}{\mathcal{C}^G}
 \newcommand{\capexflow}{\mathcal{C}^F}
+\newcommand{\capexstorage}{\mathcal{C}^E}
 \newcommand{\emissioncost}{\mathcal{E}}
 \newcommand{\remainingcost}{\mathcal{R}}
 
@@ -107,7 +156,7 @@
 
 
 \title{Flow-Based Cost Allocation in Linear Optimized Power Systems are non-unique but localizable}
-\author{F. Hofmann}
+\author{F. Hofmann, Brown T.}
 
 \maketitle
 
@@ -151,20 +200,20 @@
 In long-term operation and investment planning models, the total costs $\totalcost$ of a power system is the sum of mutliple cost terms. Typically, these include operational expenditures (OPEX) $\opexgeneration$ for generators, expenditures for emissions $\emissioncost$, capital expenditures (CAPEX) for generators $\capexgeneration$, CAPEX for the transmission system $\capexflow$ and possible other terms, \ie
 \begin{align}
 \totalcost &= \opexgeneration + \emissioncost +  \capexgeneration +  \capexflow + ...
-\label{eq:total_cost_terms}
+\label{eq:total_cost}
 \end{align}
 In turn, each single cost term on the right side $\mathcal{C} = \{\opexgeneration, \emissioncost, \capexgeneration, \capexflow, ...\}$ consists of cost associated to the asset $i$ in the system, 
 \begin{align}
-    \cost = \sum_i \cost_i
-    \label{eq:asset_costs}
+    \cost = \sum_{i} \cost_{i}
+    \label{eq:asset_cost}
 \end{align} 
-For example the total OPEX, $\opexgeneration = \sum_s \opexgeneration_s$, is the combined OPEX of all generators $s$.
+For example the total OPEX, $\opexgeneration = \sum_{s} \opexgeneration_{s}$, is the combined OPEX of all generators $s$.
 
 
-Minimizing the total cost $\totalcost$  of a network, which translates to maximizing the total welfare, will determine the single expenditure $\cost_i$ dedicated to asset $i$.  with maximized welfare. Then, the Locational Marginal Price (LMP) describes the price for an incremental increase of electricity demand $\demand$ at node $n$. It is given by the derivative of the total system cost $\totalcost$ with respect to the local demand $\demand$
+In a cost-optimal setup with minimized $\totalcost$, the Locational Marginal Price (LMP) describes the price for an incremental increase of electricity demand $\demand$ at node $n$. It is given by the derivative of the total system cost $\totalcost$ with respect to the local demand $\demand$
 \begin{align}
 \lmp = \pdv{\,\totalcost}{\,\demand}
-\label{eq:total_cost_derivative}
+\label{eq:lmp}
 \end{align}
 % 
 \begin{figure}[h]
@@ -176,155 +225,241 @@ Minimizing the total cost $\totalcost$  of a network, which translates to maximi
 % 
 This leads to a nodal pricing where over the span of optimized timesteps $t$, the system costs are partially or totally payed back by the consumers 
 \begin{align}
-\totalcost - \remainingcost &=  \sum_{n,a,t} \lmp \, \demand
-\label{eq:total_cost_sum}
+\totalcost - \remainingcost &=  \sum_{n,t} \lmp \, \demand
+\label{eq:total_cost_reduced}
 \end{align}
 depending on the costs $\remainingcost$ which are independent of the nodal demand  
 \begin{align}
  \pdv{\remainingcost}{\demand} = 0
 \end{align}
 % 
-Generally speaking, the cost term $\remainingcost$, not covered by the consumers, results from additional demands on the network design, such as capacity expansion limits in certain regions of the network, or minimum share of one technology in the power mix. However, in most cases, where $\remainingcost \ll  \totalcost$, these play a minor role. Feeding \cref{eq:total_cost_terms} into \cref{eq:total_cost_derivative} illustrates that the LMP splits into different cost terms assigned to OPEX and CAPEX for production and transmission (and other possible expenditures), schematically shown in \cref{fig:price_decomposition}. 
-Extensive investigations of the LMP as done in \cite{schweppe_spot_1988} already showed this connection. However the question of how the LMP translates to the single cost terms $\cost_i$ associated to asset $i$ in the network remains unanswered. This work aims at presenting and illustrating a an intuitive scheme how to cost breakdown the cost decomposition to a full peer-to-peer (P2P) cost allocation including all network assets. 
+Generally speaking, the cost term $\remainingcost$, not covered by the consumers, results from additional demands on the network design, such as capacity expansion limits or minimum share of one technology in the power mix. However, in most cases, where $\remainingcost \ll  \totalcost$, these play a minor role. From feeding \cref{eq:total_cost} into \cref{eq:lmp} it follows naturally that the LMP splits into different cost terms assigned to OPEX and CAPEX for production and transmission (and other possible expenditures). This relation, which we schematically show in \cref{fig:price_decomposition}, was already shown in extensive investigations of the LMP \cite{schweppe_spot_1988}. 
+
+However the question of how the LMP can be decomposed into contributions of single cost terms $\cost_{i}$ associated with asset $i$ remains unanswered. This work aims at presenting and illustrating a an intuitive, peer-to-peer cost allocation including all network assets. 
 
 
 
-\section{Nodal Cost Allocation}
+\section{Dispatch-Based Cost Allocation}
 \label{sec:theory}
+\begin{subequations}\label[subequations]{eq:general_scheme}
 
-In following we show how to disaggregate the cost terms $\opexgeneration$, $\emissioncost$, $\capexgeneration$ and $\capexflow$ for asset $i$ into contributions of demand $\demand$ at bus~$n$ and time~$t$. That is what amount consumers at $\left(n, t\right)$ pay for the operation, investment and other cost-intensive, but welfare contributing, actions at asset $i$.  
-We follow the general procedure: For each cost term $\cost$ we break down the contributions of asset $i$, \ie define \cref{eq:asset_costs}. According to \cref{eq:total_cost_derivative,eq:total_cost_sum}, we define its derivative with respect to $\demand$ and multiply the result with $\demand$. This returns $\cost_{n\rightarrow i,t}$, the contribution of $\demand$ to the cost term $\cost_i$. Follows naturally that when summing up all contributions the cost term $\cost_i$ must be covered, \ie
+Let $\cost_{i}$ denote a general cost term associated with asset $i$. Consider a long-term equilibrium in a power system with perfect competition, then, according to the zero-profit condition, each cost term $\cost_{i}$ can be considered as a cost-weighted sum of the operational state $s_{i,t}$ of asset $i$, \ie
+\begin{align}
+    \cost_{i} = \sum_t  \costfactor \, \state
+    \label{eq:cost_decomposition}
+\end{align}
+where $c_{i,t}$ denotes a general cost factor in \euro/MW. 
+For OPEX the cost factor $\costfactor$ is simply given by the marginal operational price $o_i$ for asset $i$. However for CAPEX, $c_{i,t}$ is a composition of shadow prices $\mu_i$, given by the KKT variables of the capacity limit constraints. As we will show later the composition of $\mu_i$ must be determined for each cost term individually.
+
+
+% where $c_{i,t}$ is either a fixed operational price or a composition of shadowprices
+Following the implications of \cref{eq:lmp,eq:total_cost_reduced},  we define the cost $\cost_{n\rightarrow i,t}$ that consumers at bus $n$ have pay to asset $i$ at time $t$ as  
+\begin{align}
+    \cost_{n \rightarrow i,t} = \costfactor \,\pdv{\state}{\demand} \demand
+\end{align}
+Therefore, $\cost_{n\rightarrow i,t}$ indicates the contribution of $\demand$ to the cost term $\cost_{i}$. It heavily relies on the derivative of the operational state with respect to the nodal demand $\partial \state / \partial \demand$. Without further specifying, we define the derivative multiplied with the nodal demand as 
+\begin{align}
+    \allocatestate = \pdv{\state}{\demand} \demand
+    \label{eq:allocate_state}
+\end{align}    
+This quantity may be interpreted as the amount of power that asset $i$ supplies demand $\demand$ with.
+From the natural fact that the sum of all contributions must return the cost term, 
 \begin{align}
     \cost_i = \sum_{n,t} \cost_{n \rightarrow i, t}
 \end{align}
-and the total money spent at $\left(n,t\right)$ for the cost term $\cost$ amounts 
+it follows that $\allocatestate$ must fulfill
+\begin{align}
+    \state = \sum_n \allocatestate
+    \label{eq:allocate_state_constraint}
+\end{align}
+Finally, the total contribution from node $n$ at time $t$ to the cost term $\cost$ amounts 
 \begin{align}
     \cost_{n,t} = \sum_i \cost_{n \rightarrow i, t}
 \end{align}
-Note that for allocating CAPEX, we will make use of the shadowprices associated to $\cost_i$, given by the dual values at cost optimum $\bm{\mu}$. 
+\end{subequations}
 
-
-\subsection{Allocate Operation Expenditures}
-
-The total OPEX is given by the operational price $\operationalpricegeneration$ times the generation $\generation$ of all generators $s$, 
+\begin{table*}[t]
+    \begin{center}
+        \begin{tabular}{l|c|c|c|c|c}
+        & $i$ & $\cost$ & $\cost_i$  & $\costfactor$ & $\state$  \\
+        \toprule 
+        OPEX Production & $s$ & $\opexgeneration$ & $\sum_{t} \operationalpricegeneration \, \generation$   & $\operationalpricegeneration$ & $\generation$ \\  
+        OPEX Transmission  & $\ell$ & $\opexflow$ & $\sum_{t} \operationalpriceflow \, |\flow|  $ & $\operationalpriceflow$ & $|\flow|$ \\  
+        OPEX Storage & $r$  & $\opexstorage$ & $\sum_{t} \operationalpricestorage \, \storagedispatch$ &  $\operationalpricestorage$ & $\storage$ \\
+        \midrule   
+        CAPEX Production & $s$ & $\capexgeneration$ & $ \capitalpricegeneration \capacitygeneration$ & $\muuppergeneration$ & $\generation$ \\
+        CAPEX Transmission & $\ell$ & $\capexflow$ & $ \capitalpriceflow \capacityflow$ & $\left(\muupperflow - \mulowerflow \right)$ & $\flow$ \\
+        CAPEX Storage & $r$ & $\capexstorage$ & $ \capitalpricestorage \capacitystorage$ & $ (\efficiencydispatch )^{-1} \mustateofcharge - \mulowerstoragedispatch$ & $\storage$ \\
+        \midrule
+        Emission Cost & $s$ & $\emissioncost$ & $ \emissionprice \, \emission \, \generation$ & $\emissionprice \,\emission$ & $\generation$ \\
+        % \bottomrule   
+    \end{tabular}
+    \end{center}
+    \caption{Mapping of different cost terms to the cost allocation scheme given in \cref{eq:general_scheme}. These include OPEX \& CAPEX for production, transmission and storage assets in the network, as well as a cost term for the total Green House Gas (GHG) emissions.}
+    \label{tab:cost_allocation_map}
+\end{table*}
+    
+Now, assume a network with generators $s$, transmission lines $\ell$ and storage units $r$. Each asset $i = \{s, \ell, r\}$ adds an term for OPEX and a term for CAPEX to the total system cost $\totalcost$. The operational price for an asset $i$ is given by $o_i$, the capital price for one unit capacity expansion by $c_i$. Then, for example, the OPEX occasioned by generator $s$ is given by 
 \begin{align}
- \opexgeneration& = \sum_{s,t} \operationalpricegeneration\,  \generation 
-\label{eq:opex_generation}
- \end{align}
-
-Hence, the contribution of $\demand$ to the OPEX at generator $s$ is straightforward given by
+    \opexgeneration_s = \sum_t \operationalpricegeneration \, \generation 
+    \label{eq:opexgeneration}
+\end{align}
+where $\generation$ denotes its production at time $t$. It becomes clear that \cref{eq:opexgeneration} matches the form of \cref{eq:cost_decomposition}. This allows us to use the above presented scheme in \cref{eq:general_scheme} and formulate a full cost allocation for the OPEX on production. As a result we obtain the contribution of $\demand$ to the OPEX at generator $s$, given by 
 \begin{align}
     \allocateopex[n \rightarrow s] &= 
-   \operationalpricegeneration \,  \pdv{\generation}{\demand} \, \demand
+   \operationalpricegeneration \,  \allocatepeer
 \label{eq:allocate_opexGeneration_detailed}
 \end{align}
-
-We define the derivative on the right hand side times the nodal demand as 
+The quantity  
 \begin{align}
  \allocatepeer = \pdv{\generation}{\demand} \, \demand
  \label{eq:allocate_peer}
 \end{align}
-% 
-The quantity $\allocatepeer$ can be considered as a power allocation, that is the power produced by generator $s$ and consumed at node $n$ and time $t$.
-By feeding back \cref{eq:allocate_opexGeneration_detailed} into \cref{eq:opex_generation}, we see that the power allocation has to fulfill
-\begin{align}
-\generation = \sum_n \allocatepeer
-\label{eq:allocate_peer_constraint}
-\end{align}
-% 
-% 
-The definition of $\allocateopex[n \rightarrow s]$ in \cref{eq:allocate_opexGeneration_detailed} can be interpreted as the following. Consumers at bus $n$ which retrieve power from a generators $s$, directly  compensate its operational costs. The cost allocation behaves like P2P tradings between producers and consumers for fixed production prices. In this way,  generator $s$ retrieves the exact amount of money from consumers that it spends on its operation at time $t$, thus 
-\begin{align}
-\sum_{n} \allocateopex[n \rightarrow s] = \operationalpricegeneration \, \generation
-\label{eq:no_profit_opex}
-\end{align}
-
-\subsection{Allocate Emission Expenditures}
-
-Given a fix price for emissions in CO$_2$ equivalents $\emissionprice$, the cost term for emission adds up to 
-\begin{align}
- \emissioncost = \emissionprice \, \sum_s  \emission \, \generation
-\end{align}
-where $\emission$ denotes the emission factor in tonne-CO$_2$ per \megawatthour for generator $s$.
-Similar to the allocated OPEX, the emission cost for consumers at bus $n$ at time $t$ for operation at generator $s$ is allocated through
-\begin{align}
- \allocateemissioncost[n \rightarrow s] = \emissionprice \, \emission \, \allocatepeer
-\end{align}
+can be considered as a power allocation which indicates the power that is produced by generator $s$ and consumed at node $n$ at time $t$.
+It follows naturally that, in the same manner, the scheme can be applied to the OPEX on the flow $\flow$ and storage unit dispatch $\storagedispatch$. As we assume a bidirectional flow on line $\ell$, the OPEX is set proportional to the absolute value of the flow. The upper half in \cref{tab:cost_allocation_map} shows the mapping of variables to \cref{eq:general_scheme} in order to define the full OPEX allocation. Note, in all cases, the allocation $\allocatestate$ remains undefined which we will resolve later.
 
 
-\subsection{Allocate Capital Expenditures for Generators}
 
-The optimization of the generation capacity $\capacitygeneration$ adds the cost term 
+For the CAPEX allocation, it becomes crucial to look at the individual relations between operational state $\state$ and the capacity limit. All quantities for the CAPEX allocation, which we discuss in detail in the following, are summarized in the lower half of \cref{tab:cost_allocation_map}.  
+
+\subsubsection*{Allocate CAPEX on Generators}
+
+The nominal capacity $\capacitygeneration$ constrains the generation $\generation$ in the form of 
 \begin{align}
- \capexgeneration& = \sum_{s} \capitalpricegeneration \capacitygeneration 
-\end{align}
-to $\totalcost$. It combines all capacities times their capital cost $\capitalpricegeneration$. The nominal capacity constraints the generation $\generation$ in the form of 
-\begin{align}
-\generation - \generationpotential \capacitygeneration  &\le 0 \resultsin{\muuppergeneration} \Forall{n,s,t} 
+\generation - \generationpotential \capacitygeneration  &\le 0 \resultsin{\muuppergeneration} \Forall{s,t} 
 \label[constraint]{eq:upper_generation_capacity_constraint}\\ 
-- \generation &\le 0 \resultsin{\mulowergeneration} \Forall{n,s,t} 
+- \generation &\le 0 \resultsin{\mulowergeneration} \Forall{s,t} 
 \label[constraint]{eq:lower_generation_capacity_constraint}
 \end{align}
-where $\generationpotential \in \left[ 0,1\right]$ is the capacity factor for renewable generators. As shown in \cite{brown_decreasing_2020} and in detailed in \cref{sec:zero_profit_generation},  the capital cost  for generator $s$ is payed back by the generation times the shadow price for the upper capacity constraint, 
+where $\generationpotential \in \left[ 0,1\right]$ is the capacity factor for renewable generators. At a cost-optimum, these two constraints yield the shadow prices $\muuppergeneration$ and $\mulowergeneration$.  As shown in \cite{brown_decreasing_2020} and in detailed in \cref{sec:zero_profit_generation}, over the whole time span, the CAPEX for generator $s$ is payed back by the production $\generation$ times the shadow price $\muuppergeneration$, 
 \begin{align}
- \capitalpricegeneration \capacitygeneration = \sum_t \muuppergeneration \,  \generation 
+ \capexgeneration_s = \capitalpricegeneration \capacitygeneration = \sum_t \muuppergeneration \,  \generation 
  \label{eq:no_profit_capex_generation}
 \end{align}
-With our definition in \cref{eq:allocate_peer} the allocated CAPEX can then be defined as 
+This representation connects the CAPEX with the operational state of generator $s$ and matches the needed form in \cref{eq:cost_decomposition} for using the allocation scheme. The resulting the CAPEX allocation is given by
 \begin{align}
  \allocatecapexgeneration[n \rightarrow s] = \muuppergeneration \, \allocatepeer
  \label{eq:allocate_capexGeneration_detailed}
 \end{align}
-
-So, how does this allocation behave? According to the polluter pays principle, it differentiates between consumers who are `responsible` for investments and those who are not. If $\muuppergeneration$ (in literature often denoted as the Quality of Supply) is bigger than zero, the upper Capacity \cref{eq:upper_generation_capacity_constraint} is binding. Thus it is these times steps which push investments in $\capacitygeneration$. If $\muuppergeneration = 0$, the generation $\generation$ is not bound and investments are not necessary. 
-When summing over all CAPEX payments to generator $s$ in \cref{eq:allocate_capexGeneration_detailed} and using \cref{eq:allocate_peer_constraint,eq:no_profit_capex_generation}, we see that each generator retrieves exactly the cost that were spent to build the capacity $\capacitygeneration$.
+How does this allocation behave? According to the polluter pays principle, it differentiates between consumers who are `responsible` for investments and those who are not. If $\muuppergeneration$ (in literature often denoted as the Quality of Supply) is bigger than zero, the upper Capacity \cref{eq:upper_generation_capacity_constraint} is binding. Thus it is these times steps which push investments in $\capacitygeneration$. If $\muuppergeneration = 0$, the generation $\generation$ is not bound and investments are not necessary. 
+When summing over all CAPEX payments to generator $s$ in \cref{eq:allocate_capexGeneration_detailed} and using \cref{eq:allocate_state_constraint,eq:no_profit_capex_generation}, we see that each generator retrieves exactly the cost that were spent to build the capacity $\capacitygeneration$.
  
 
-\subsection{Allocate Capital Expenditures for Transmission Lines}
+\subsubsection*{Allocate CAPEX on Transmission Lines}
 
-
-The CAPEX for the transmission system is given by 
-\begin{align}
- \capexflow & = \sum_\ell \capitalpriceflow \capacityflow
- \label{eq:capex_flow}
-\end{align}
-The transmission capacity variable $\capacityflow$ limits the flow $\flow$ in both directions, such that 
+The transmission capacity $\capacityflow$ limits the flow $\flow$ in both directions,
 \begin{align}
 \flow - \capacityflow &\le 0 \resultsin{\muupperflow} \Forall{\ell,t} 
 \label[constraint]{eq:upper_flow_capacity_constraint} \\
 - \flow - \capacityflow &\le 0 \resultsin{\mulowerflow} \Forall{\ell,t} 
 \label[constraint]{eq:lower_flow_capacity_constraint}
 \end{align}
-We use the result of \cite{brown_decreasing_2020} (for details see \cref{sec:zero_profit_flow}) which derives that the investment in line $\ell$ is payed back by the shadowprices times the flow 
+which yield the shadow prices $\muupperflow$ and $\mulowerflow$. Again, we use the result of \cite{brown_decreasing_2020} (for details see \cref{sec:zero_profit_flow}) which derives that over the whole time span, the investment in line $\ell$ is payed back by the shadow prices times the flow 
 \begin{align}
-\capitalpriceflow \capacityflow = \sum_{t} \left( \muupperflow - \mulowerflow \right)  \flow 
+\capexflow_\ell = \capitalpriceflow \capacityflow = \sum_{t} \left( \muupperflow - \mulowerflow \right)  \flow 
 \label{eq:no_profit_capex_flow}
 \end{align}
-We insert this into \cref{eq:capex_flow} and define the individual cost terms  as 
+Again, we follow the scheme in \cref{eq:general_scheme} which  defines the CAPEX allocation as 
 \begin{align}
     \allocatecapexflow[n \rightarrow \ell] &=  
-   \left( \muupperflow - \mulowerflow\right) \,  \pdv{\flow}{\demand}\, \demand
+   \left( \muupperflow - \mulowerflow\right) \, \allocateflow
    \label{eq:allocate_capexFlow_detailed}
 \end{align}
-Again, we define the derivative on the right side times the demand as 
+The quantity 
 \begin{align}
  \allocateflow =  \pdv{\flow}{\demand}\, \demand
 \end{align}
-which from inserting into \cref{eq:no_profit_capex_flow} has to fulfill 
+can be interpreted as the flow that the demand at $\left(n,t\right)$ causes on line $\ell$.
+% According to \cref{eq:allocate_state_constraint} it has to fulfill 
+% \begin{align}
+%  \flow = \sum_{n} \allocateflow
+% \label{eq:allocate_flow_constraint}
+% \end{align}
+The  shadowprices $\muupperflow$ and $\mulowerflow$ again can be seen as a measure for necessity of transmission investments at $\ell$ at time $t$. Hence, the definition of $\allocatecapexflow[n \rightarrow \ell]$ states that consumers, which retrieve power flowing on congested lines, yielding a bound \cref{eq:upper_flow_capacity_constraint} or \eqref{eq:lower_flow_capacity_constraint}, pay compensations for the resulting investments at $\ell$. Again the sum of all CAPEX payments to line $\ell$ equals the total CAPEX spent. This is seen when summing \cref{eq:allocate_capexFlow_detailed} over all buses and time steps and using \cref{eq:allocate_state_constraint,eq:no_profit_capex_flow}
+
+
+\subsubsection*{Allocate CAPEX on Storages}
+
+% The complementary slackness of the above constraints,  
+% \begin{align}
+%     \capexstorage_r = \capitalpricestorage \, \capacitystorage = \sum_t \muupperstoragedispatch \, \storagedispatch + \muupperstoragecharge \, \storagecharge + \muupperstoragesoc \, \storagesoc
+% \end{align}
+
+We us the result of Appendix B.3 in \cite{brown_decreasing_2020} which states that a storage recovers its capital (here we added the operational) costs from aligning dispatch and charging to the LMP, thus 
 \begin{align}
- \flow = \sum_{n} \allocateflow
-\label{eq:allocate_transaction_constraint}
+    \sum_t \operationalpricestorage \, \storagedispatch + \capitalpricestorage \, \capacitystorage = \sum_t \lmp \incidencestorage \left(\storagedispatch - \storagecharge \right) 
 \end{align}
-$\allocateflow$ can be interpreted as the flow that the demand at $\left(n,t\right)$ induces on line $\ell$. The  shadowprices $\muupperflow$ and $\mulowerflow$ again can be seen as a measure for necessity of transmission investments at $\ell$ at time $t$. Hence, the definition of $\allocatecapexflow[n \rightarrow \ell]$ states that consumers, which retrieve power flowing on congested lines, yielding a bound \cref{eq:upper_flow_capacity_constraint} or \eqref{eq:lower_flow_capacity_constraint}, pay compensations for the resulting investments at $\ell$. Again the sum of all CAPEX payments to line $\ell$ equals the total CAPEX spent. This is seen when summing \cref{eq:allocate_capexFlow_detailed} over all buses and time steps and using \cref{eq:allocate_transaction_constraint,eq:no_profit_capex_flow}
+where $\incidencestorage$ is one if storage $s$ is at node $n$ and zero otherwise. Using \cref{eq:lagrangian_storage_dispatch}, we can reformulate to 
+\begin{align}
+    \capitalpricestorage \, \capacitystorage = \sum_t \incidencestorage \left( (\efficiencydispatch )^{-1} \mustateofcharge - \mulowerstoragedispatch \right) \storagedispatch 
+\end{align}
+
+
+
+% \subsection{Allocate Operational Expenditures for Generators}
+
+% Assume the cost-minimal power system includes multiple generators whose dispatch $\generation$ is optimized. The cost term added to $\totalcost$ combines the OPEX for all generators $s$ over the whole time span
+% \begin{align}
+%     \opexgeneration =  \sum_{s,t} \operationalpricegeneration \, \generation
+% \end{align}   
+% where $\operationalpricegeneration$ denotes the fixed operational price for generator $s$ to produce 1~MW of electricity. The full cost allocation for the operation of generator $s$, arises from replacing 
+% \begin{subequations}
+% \label[relation]{eq:opex_allocation}
+% \begin{align}
+%     i &\Rightarrow s \\
+%     \costfactor &\Rightarrow \operationalpricegeneration \\
+%     \state &\Rightarrow \generation 
+% \end{align}
+% \end{subequations}
+% % $i$ by $s$, $\costfactor$ by $\operationalpricegeneration$, $\cost$ by $\opexgeneration$ and $\state$ by $\generation$
+% in \cref{eq:general_scheme}. As a result we obtain the contribution of $\demand$ to the OPEX at generator $s$, given by 
+% \begin{align}
+%     \allocateopex[n \rightarrow s] &= 
+%    \operationalpricegeneration \,  \allocatepeer
+% \label{eq:allocate_opexGeneration_detailed}
+% \end{align}
+% where the quantity  
+% \begin{align}
+%  \allocatepeer = \pdv{\generation}{\demand} \, \demand
+%  \label{eq:allocate_peer}
+% \end{align}
+% obtained through \cref{eq:allocate_state}, can be considered as a power allocation. It indicates the power that is produced by generator $s$ and consumed at node $n$ at time $t$.
+% From \cref{eq:allocate_state_constraint} it follows that all the power allocations must sum up to the power produced by generator $s$, \ie
+% \begin{align}
+% \generation = \sum_n \allocatepeer
+% \label{eq:allocate_peer_constraint}
+% \end{align}
+% % 
+% % 
+% The cost allocation $\allocateopex[n \rightarrow s]$ assumes peer-to-peer tradings between producers and consumers for fixed production prices $\operationalpricegeneration$.
+% Hence, consumers at bus $n$ which retrieve power from a generators $s$, directly  compensate its operational costs. In this way,  generator $s$ retrieves the exact amount of money from consumers that it spends on its operation at time $t$, 
+% \begin{align}
+% \sum_{n} \allocateopex[n \rightarrow s] = \operationalpricegeneration \, \generation
+% \label{eq:no_profit_opex}
+% \end{align}
+
+\subsubsection*{Allocate Emission Expenditures}
+
+Given a fix price for emissions in CO$_2$ equivalents $\emissionprice$, the cost term for emission adds up to 
+\begin{align}
+ \emissioncost = \emissionprice \, \sum_s  \emission \, \generation
+\end{align}
+where $\emission$ denotes the emission factor in tonne-CO$_2$ per \megawatthour for generator $s$.
+We use the same set of equation as given through \cref{eq:general_scheme,eq:opex_allocation} but update the cost factor to $\costfactor \Rightarrow \emissionprice \, \emission$. For consumers at bus $n$ at time $t$ this leads to the emission cost of 
+\begin{align}
+ \allocateemissioncost[n \rightarrow s] = \emissionprice \, \emission \, \allocatepeer
+\end{align}
+associated with generator $s$.
+
 
 \section{Assumptions on Power Allocations}
 % \section{\texorpdfstring{Extended Solution Space of $\boldsymbol{\slackk[m]}$}{Solution Space of the Slack}}
 \label{sec:localizing_allocations}
 
-The presented cost allocation suits for any type of topology and network setup. But so far, the question of how $\allocatepeer$ and $\allocateflow$ are defined was left open. We recap that both rely on derivatives of $\generation$ and $\flow$  with respect to the nodal demand $\demand$ fulfilling \cref{eq:allocate_peer_constraint,eq:allocate_transaction_constraint}. \\
+The presented cost allocation suits for any type of topology and network setup. But so far, the question of how $\allocatepeer$ and $\allocateflow$ are defined was left open. We recap that both rely on derivatives of $\generation$ and $\flow$  with respect to the nodal demand $\demand$ fulfilling \cref{eq:allocate_state_constraint}. \\
 % 
 In fact, it turns out that ones, the peer-to-peer allocations $\allocatepeer$ are defined, the power flow allocations $\allocateflow$ are determined by the linear power flow equations.
-In order to show this, let $\ptdf$ denote Power Transfer Distribition Factors (PTDF) giving the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$.  Further let $\incidencegenerator$ be 1 if generator $s$ is attached to bus $n$ and zero otherwise. The linear power flow equals the 
+In order to show this, let $\ptdf$ denote Power Transfer Distribution Factors (PTDF) giving the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$.  Further let $\incidencegenerator$ be 1 if generator $s$ is attached to bus $n$ and zero otherwise. The linear power flow equation can be written as 
 \begin{align}
  \flow  = \sum_m \ptdf[m] \left( \nodalgeneration[m] - \demand[m] \right)  
 \end{align}
@@ -573,6 +708,29 @@ As shown in ... the constraint can be translated in a dual price which shift the
 
 \subsection{Storage Units}
 
+
+For an simplified storage model, the upper capacity $\capacitystorage$ limits the discharging dispatch $\storagedispatch$, the storing power $\storagecharge$ and state of charge $\storagesoc$ of a storage unit $r$ by 
+\begin{align}
+    \storagedispatch - \capacitystorage &\le 0 \Forall{r,t} \resultsin{\muupperstoragedispatch} \\
+    \storagecharge - \capacitystorage &\le 0 \Forall{r,t} \resultsin{\muupperstoragecharge} \\
+    \storagesoc - h_r \, \capacitystorage &\le 0 \Forall{r,t} \resultsin{\muupperstoragesoc}
+\end{align}
+where we assume a fixed ratio between dispatch and storage capacity of $h_r$. 
+From stationarity we obtain 
+\begin{align}
+    \pdv{\lagrangian}{\capacitystorage} &= 0 \\
+    \capitalpricestorage &= \sum_t \left( \muupperstoragedispatch + \muupperstoragecharge + h_r \muupperstoragesoc  \right)
+\end{align}
+\begin{align}
+    \pdv{\lagrangian}{\storagedispatch} &= 0 \\
+    \operationalpricestorage +& \lmp + \mulowerstoragedispatch - \muupperstoragedispatch - (\efficiencydispatch )^{-1} \mustateofcharge = 0  
+    \label{eq:lagrangian_storage_dispatch}
+\end{align}
+\begin{align}
+    \pdv{\lagrangian}{\storagecharge} &= 0 \\
+    - \lmp +& \mulowerstoragecharge - \muupperstoragecharge + \efficiencycharge \mustateofcharge = 0 
+    \label{eq:lagrangian_storage_charge}
+\end{align}
 
 
 \subsection{Brownfield Optimization and Capacity Restricitions}
