@@ -35,11 +35,10 @@ else:
         n.df(c)[attr + '_min'] = 0
         n.df(c)[attr] = 0
 
+n.mremove('Line', n.lines.query('num_parallel == 0').index)
 
 n.lopf(pyomo=False, solver_name=solver_name, solver_options=solver_opts,
         keep_shadowprices=True)
-
-n.mremove('Line', n.lines.query('num_parallel == 0').index)
 
 n.name = snakemake.output.network.split('/')[-1].replace('.nc', '')
 
