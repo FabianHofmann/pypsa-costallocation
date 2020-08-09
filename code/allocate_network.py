@@ -90,7 +90,7 @@ ca = xr.Dataset({'one_port_operational_cost': A_opex,
                  'co2_cost': A_emission,
                  'one_port_investment_cost': A_capex,
                  'branch_investment_cost': A_capex_branch})
-ca = expand_by_sink_type(ca, n)
+ca = expand_by_sink_type(ca, n, chunksize=5)
 
 payments = ca.sum(['source', 'source_carrier', 'branch'])
 nodal_payments = payments.to_array().sum(['variable', 'sink_carrier'])
