@@ -44,7 +44,7 @@ if not os.path.isdir(snakemake.output.folder):
 for col in by_bus:
     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                             figsize=(5, 4))
-    ax.outline_patch.set_visible(False)
+    ax.spines['geo'].set_visible(False)
     regions.plot(column=by_bus[col], legend=True, ax=ax,
                  transform=ccrs.PlateCarree(), aspect='equal',
                  legend_kwds={'label': f'Total {to_explanation[col]} [€]'})
@@ -61,7 +61,7 @@ for col in by_bus_carrier:
     expend = to_explanation[col[0]]
     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                             figsize=(5, 4))
-    ax.outline_patch.set_visible(False)
+    ax.spines['geo'].set_visible(False)
     regions.plot(column=by_bus_carrier[col], legend=True, ax=ax,
                  transform=ccrs.PlateCarree(), aspect='equal',
                  legend_kwds={'label': f'{carrier} {expend} [€]'})
