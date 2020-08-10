@@ -25,7 +25,7 @@ from config import source_dims, sink_dims
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('allocate_network', nname='acdc',
+        snakemake = mock_snakemake('allocate_network', nname='test-de50gf',
                                    method='ptpf', power='net')
 
 n = pypsa.Network(snakemake.input.network)

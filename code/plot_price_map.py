@@ -43,8 +43,8 @@ for col, name in to_explanation.items():
                            figsize=(5, 4))
     ax.outline_patch.set_visible(False)
     regions.plot(column=col, legend=True, ax=ax,
-                      transform=ccrs.PlateCarree(),
-                      legend_kwds={'label': f'Average LMP for \n {name} [€/MWh]'})
+                 transform=ccrs.PlateCarree(), aspect='equal',
+                 legend_kwds={'label': f'Average LMP for \n {name} [€/MWh]'})
     fig.canvas.draw()
     fig.tight_layout()
     fig.savefig(snakemake.output.folder + f'/{col}_average.png')
@@ -54,8 +54,8 @@ fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                         figsize=(5, 4))
 ax.outline_patch.set_visible(False)
 regions.plot(column='lmp', legend=True, ax=ax,
-                  transform=ccrs.PlateCarree(),
-                  legend_kwds={'label': f'Average LMP [€/MWh]'})
+             transform=ccrs.PlateCarree(), aspect='equal',
+             legend_kwds={'label': f'Average LMP [€/MWh]'})
 fig.canvas.draw()
 fig.tight_layout()
 fig.savefig(snakemake.output.folder + f'/electricity_average.png')
@@ -65,8 +65,8 @@ fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                         figsize=(5, 4))
 ax.outline_patch.set_visible(False)
 regions.plot(column='demand', legend=True, ax=ax,
-                  transform=ccrs.PlateCarree(),
-                  legend_kwds={'label': f'Average Demand [MWh]'})
+             transform=ccrs.PlateCarree(), aspect='equal',
+             legend_kwds={'label': f'Average Demand [MWh]'})
 fig.canvas.draw()
 fig.tight_layout()
 fig.savefig(snakemake.output.folder + f'/demand_average.png')

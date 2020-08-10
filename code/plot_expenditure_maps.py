@@ -46,9 +46,8 @@ for col in by_bus:
                             figsize=(5, 4))
     ax.outline_patch.set_visible(False)
     regions.plot(column=by_bus[col], legend=True, ax=ax,
-                      transform=ccrs.PlateCarree(),
-                      legend_kwds={'label':
-                                   f'Total {to_explanation[col]} [€]'})
+                 transform=ccrs.PlateCarree(), aspect='equal',
+                 legend_kwds={'label': f'Total {to_explanation[col]} [€]'})
     fig.canvas.draw()
     fig.tight_layout()
     fig.savefig(snakemake.output.folder + f'/{col}_total.png')
@@ -64,9 +63,8 @@ for col in by_bus_carrier:
                             figsize=(5, 4))
     ax.outline_patch.set_visible(False)
     regions.plot(column=by_bus_carrier[col], legend=True, ax=ax,
-                      transform=ccrs.PlateCarree(),
-                      legend_kwds={'label':
-                                   f'{carrier} {expend} [€]'})
+                 transform=ccrs.PlateCarree(), aspect='equal',
+                 legend_kwds={'label': f'{carrier} {expend} [€]'})
     fig.canvas.draw()
     fig.tight_layout()
     fig.savefig(snakemake.output.folder + f'/by_carrier/{col[1]}_{col[0]}.png')

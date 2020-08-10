@@ -46,7 +46,7 @@ if is_brownfield:
         title='Existent Capacities',
         boundaries=regions.total_bounds[[0,2,1,3]]
     )
-    regions.plot(ax=axes[0], transform=ccrs.PlateCarree())
+    regions.plot(ax=axes[0], transform=ccrs.PlateCarree(), aspect='equal')
 
     # expanded
     bus_sizes = n.generators.eval('p_nom_ext = p_nom_opt - p_nom_min')\
@@ -61,7 +61,7 @@ if is_brownfield:
         title='Capacity Expansion',
         boundaries=regions.total_bounds[[0,2,1,3]]
     )
-    regions.plot(ax=axes[1], transform=ccrs.PlateCarree())
+    regions.plot(ax=axes[1], transform=ccrs.PlateCarree(), aspect='equal')
 else:
     fig, axes = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                              figsize=(5, 5))
@@ -77,7 +77,7 @@ else:
         title='Optimal Capacities',
         boundaries=regions.total_bounds[[0,2,1,3]]
     )
-    regions.plot(ax=axes[0], transform=ccrs.PlateCarree())
+    regions.plot(ax=axes[0], transform=ccrs.PlateCarree(), aspect='equal')
 
 
 
