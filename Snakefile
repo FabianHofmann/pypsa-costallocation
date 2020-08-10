@@ -95,6 +95,14 @@ rule plot_bars:
     output: 'figures/bars_{nname}_{method}_{power}.png'
     script: 'code/plot_bars.py'
 
+rule plot_allocated_payment:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+        costs = 'resources/costs_{nname}_{method}_{power}.nc'
+    output:
+        'figures/allocated_payment_sink_{sink}.png'
+
 rule all:
     input: 'figures/{nname}.png',
             'figures/bars_{nname}_{method}_{power}.png', 

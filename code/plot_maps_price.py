@@ -14,6 +14,7 @@ import cartopy.crs as ccrs
 from config import to_explanation
 import matplotlib.pyplot as plt
 import os
+import netallocation as ntl
 
 if __name__ == "__main__":
     if 'snakemake' not in globals():
@@ -25,7 +26,12 @@ if __name__ == "__main__":
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions)
 
+w = ntl.cost.snapshot_weightings(n)
+
 payments = xr.open_dataset(snakemake.input.payments).sum('sink_carrier')
+payments['one_port_operational_cost'] /= w
+payments['co2_cost'] /= w
+
 demand = ntl.power_demand(n).rename(bus="sink")\
 
 prices = (payments/demand).mean('snapshot').to_dataframe()
