@@ -126,7 +126,7 @@
 
 
 % allocation quantities
-\newcommand{\allocatepeer}[1][s \rightarrow n]{A_{#1,t}}
+\newcommand{\allocatepeer}[1][s, n]{A_{#1,t}}
 \newcommand{\allocateflow}[1][n]{A_{\ell,#1,t}}
 \newcommand{\allocatetransaction}[1][s \rightarrow n]{A_{#1,\ell,t}}
 \newcommand{\allocatestate}[1][i, n]{A_{#1,t}}
@@ -299,12 +299,12 @@ Finally, the total contribution from node $n$ at time $t$ to the cost term $\cos
     \label{tab:cost_allocation_map}
 \end{table*}
     
-Now, assume a network with generators $s$, transmission lines $\ell$ and storage units $r$. Each asset $i = \{s, \ell, r\}$ adds an term for OPEX and a term for CAPEX to the total system cost $\totalcost$. The operational price for an asset $i$ is given by $o_i$, the capital price for one unit capacity expansion by $c_i$. Then, for example, the OPEX occasioned by generator $s$ is given by 
+Now, assume a network with generators $s$, transmission lines $\ell$ and storage units $r$. Each asset $i = \{s, \ell, r\}$ adds an term for OPEX and a term for CAPEX to the total system cost $\totalcost$. The operational price for an asset $i$ is given by $o_i$, the capital price for one unit capacity expansion by $c_i$. For example the OPEX occasioned by generator $s$ is given by 
 \begin{align}
     \opexgeneration_s = \sum_t \operationalpricegeneration \, \generation 
     \label{eq:opexgeneration}
 \end{align}
-where $\generation$ denotes its production at time $t$. It becomes clear that \cref{eq:opexgeneration} matches the form of \cref{eq:cost_decomposition}. This allows us to use the above presented scheme in \cref{eq:general_scheme} and formulate a full cost allocation for the OPEX on production. As a result we obtain the contribution of $\demand$ to the OPEX at generator $s$, given by 
+where $\generation$ denotes its production at time $t$. It becomes clear that \cref{eq:opexgeneration} matches the form of \cref{eq:cost_decomposition} which allows us to use the above presented scheme in \cref{eq:general_scheme} for a full cost allocation of OPEX on production. As a result we obtain the contribution of $\demand$ to the OPEX at generator $s$, given by 
 \begin{align}
     \allocateopex[n \rightarrow s] &= 
    \operationalpricegeneration \,  \allocatepeer
@@ -316,11 +316,11 @@ The quantity
  \label{eq:allocate_peer}
 \end{align}
 can be considered as a power allocation which indicates the power that is produced by generator $s$ and consumed at node $n$ at time $t$.
-It follows naturally that, in the same manner, the scheme can be applied to the OPEX on the flow $\flow$ and storage unit dispatch $\storagedispatch$. As we assume a bidirectional flow on line $\ell$, the OPEX is set proportional to the absolute value of the flow. The upper half in \cref{tab:cost_allocation_map} shows the mapping of variables to \cref{eq:general_scheme} in order to define the full OPEX allocation. Note, in all cases, the allocation $\allocatestate$ remains undefined which we will resolve later.
+It follows naturally that, in the same manner, the scheme can be applied to the OPEX on the flow $\flow$ and storage unit dispatch $\storagedispatch$. As we assume a bidirectional flow on line $\ell$, the OPEX is set proportional to the absolute value of the flow. The upper section in \cref{tab:cost_allocation_map} shows the mapping of variables to \cref{eq:general_scheme} in order to define the full OPEX allocation. Note, in all cases, the allocation $\allocatestate$ remains undefined which we will resolve later.
 
 
 
-For the CAPEX allocation, it becomes crucial to look at the individual relations between operational state $\state$ and the capacity limit. All quantities for the CAPEX allocation, which we discuss in detail in the following, are summarized in the lower half of \cref{tab:cost_allocation_map}.  
+For the CAPEX allocation, it becomes crucial to look at the individual relations between operational state $\state$ and the capacity limit. All quantities for the CAPEX allocation, which we discuss in detail in the following, are summarized in the middle section of \cref{tab:cost_allocation_map}.  
 
 \subsubsection*{Allocate CAPEX on Generators}
 
@@ -456,7 +456,7 @@ associated with generator $s$.
 % \section{\texorpdfstring{Extended Solution Space of $\boldsymbol{\slackk[m]}$}{Solution Space of the Slack}}
 \label{sec:localizing_allocations}
 
-The presented cost allocation suits for any type of topology and network setup. But so far, the question of how $\allocatepeer$ and $\allocateflow$ are defined was left open. We recap that both rely on derivatives of $\generation$ and $\flow$  with respect to the nodal demand $\demand$ fulfilling \cref{eq:allocate_state_constraint}. \\
+The presented cost allocation suits for any type of topology and network setup. But so far, the question of how $\allocatestate$ for generators $s$, lines $\ell$ and storages $r$ are defined was left open. We recap that all rely on derivatives of $\generation$, $\flow$ and $\storagedispatch$  with respect to the nodal demand $\demand$ (see \cref{eq:allocate_state_constraint}). \\
 % 
 In fact, it turns out that ones, the peer-to-peer allocations $\allocatepeer$ are defined, the power flow allocations $\allocateflow$ are determined by the linear power flow equations.
 In order to show this, let $\ptdf$ denote Power Transfer Distribution Factors (PTDF) giving the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$.  Further let $\incidencegenerator$ be 1 if generator $s$ is attached to bus $n$ and zero otherwise. The linear power flow equation can be written as 
@@ -569,6 +569,8 @@ As the other schemes \ref{ap}\ref{gross} - \ref{fbmc}\ref{net} apart from the EB
 
 
 \section{Application Case}
+
+
 
 \clearpage
 \appendix

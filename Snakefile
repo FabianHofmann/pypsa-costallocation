@@ -68,14 +68,14 @@ rule plot_price_maps:
         folder = directory('figures/price_maps_{nname}_{method}_{power}')
     script: 'code/plot_price_map.py'
 
-rule plot_cost_maps:
+rule plot_payment_maps:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
         payments = 'resources/payments_{nname}_{method}_{power}.nc'
     output:
-        folder = directory('figures/cost_maps_{nname}_{method}_{power}')
-    script: 'code/plot_cost_map.py'
+        folder = directory('figures/payment_maps_{nname}_{method}_{power}')
+    script: 'code/plot_payment_map.py'
 
 
 rule plot_expenditure_maps:
