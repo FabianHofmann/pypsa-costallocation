@@ -65,8 +65,8 @@ rule plot_price_maps:
         regions = 'resources/{nname}_regions.geojson',
         payments = 'resources/payments_{nname}_{method}_{power}.nc'
     output:
-        folder = directory('figures/price_maps_{nname}_{method}_{power}')
-    script: 'code/plot_price_map.py'
+        folder = directory('figures/maps_price_{nname}_{method}_{power}')
+    script: 'code/plot_maps_price.py'
 
 rule plot_payment_maps:
     input:
@@ -74,8 +74,8 @@ rule plot_payment_maps:
         regions = 'resources/{nname}_regions.geojson',
         payments = 'resources/payments_{nname}_{method}_{power}.nc'
     output:
-        folder = directory('figures/payment_maps_{nname}_{method}_{power}')
-    script: 'code/plot_payment_map.py'
+        folder = directory('figures/maps_payment_{nname}_{method}_{power}')
+    script: 'code/plot_maps_payment.py'
 
 
 rule plot_expenditure_maps:
@@ -84,9 +84,8 @@ rule plot_expenditure_maps:
         regions = 'resources/{nname}_regions.geojson',
         costs = 'resources/costs_{nname}_{method}_{power}.nc'
     output:
-        folder = directory('figures/expenditure_maps_{nname}_{method}_{power}')
-    script: 'code/plot_expenditure_map.py'
-
+        folder = directory('figures/maps_expenditure_{nname}_{method}_{power}')
+    script: 'code/plot_maps_expenditure.py'
 
 
 rule plot_bars:
@@ -96,6 +95,14 @@ rule plot_bars:
     output: 'figures/bars_{nname}_{method}_{power}.png'
     script: 'code/plot_bars.py'
 
+rule all:
+    input: 'figures/{nname}.png',
+            'figures/bars_{nname}_{method}_{power}.png', 
+            'figures/maps_expenditure_{nname}_{method}_{power}', 
+            'figures/maps_payment_{nname}_{method}_{power}', 
+            'figures/maps_price_{nname}_{method}_{power}',
+    output: 
+            touch('{nname}_{method}_{power}')
 
 # Local Variables:
 # mode: python
