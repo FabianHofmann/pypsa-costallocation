@@ -23,9 +23,11 @@ solver_name = solver_opts.pop('name')
 
 n = pypsa.Network(snakemake.input.network)
 
-n.generators.p_nom_max.update(n.generators.query('not p_nom_extendable').p_nom)
-n.generators['p_nom_extendable'] = True
+for c in ['Generator', 'StorageUnit']:
+    n.df(c).p_nom_max.update(n.df(c).query('not p_nom_extendable').p_nom)
+    n.df(c)['p_nom_extendable'] = True
 
+n.mremove('Line', n.lines.query('num_parallel == 0').index)
 
 if snakemake.wildcards.field == 'bf':
     for c, attr in pypsa.descriptors.nominal_attrs.items():
@@ -34,8 +36,6 @@ else:
     for c, attr in pypsa.descriptors.nominal_attrs.items():
         n.df(c)[attr + '_min'] = 0
         n.df(c)[attr] = 0
-
-n.mremove('Line', n.lines.query('num_parallel == 0').index)
 
 n.lopf(pyomo=False, solver_name=solver_name, solver_options=solver_opts,
         keep_shadowprices=True)

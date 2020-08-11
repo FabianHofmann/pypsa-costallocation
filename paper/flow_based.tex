@@ -126,7 +126,8 @@
 
 
 % allocation quantities
-\newcommand{\allocatepeer}[1][s, n]{A_{#1,t}}
+\newcommand{\allocategeneration}[1][s, n]{A_{#1,t}}
+\newcommand{\allocatepeer}[1][m \rightarrow n]{A_{#1,t}}
 \newcommand{\allocateflow}[1][n]{A_{\ell,#1,t}}
 \newcommand{\allocatetransaction}[1][s \rightarrow n]{A_{#1,\ell,t}}
 \newcommand{\allocatestate}[1][i, n]{A_{#1,t}}
@@ -307,12 +308,12 @@ Now, assume a network with generators $s$, transmission lines $\ell$ and storage
 where $\generation$ denotes its production at time $t$. It becomes clear that \cref{eq:opexgeneration} matches the form of \cref{eq:cost_decomposition} which allows us to use the above presented scheme in \cref{eq:general_scheme} for a full cost allocation of OPEX on production. As a result we obtain the contribution of $\demand$ to the OPEX at generator $s$, given by 
 \begin{align}
     \allocateopex[n \rightarrow s] &= 
-   \operationalpricegeneration \,  \allocatepeer
+   \operationalpricegeneration \,  \allocategeneration
 \label{eq:allocate_opexGeneration_detailed}
 \end{align}
 The quantity  
 \begin{align}
- \allocatepeer = \pdv{\generation}{\demand} \, \demand
+ \allocategeneration = \pdv{\generation}{\demand} \, \demand
  \label{eq:allocate_peer}
 \end{align}
 can be considered as a power allocation which indicates the power that is produced by generator $s$ and consumed at node $n$ at time $t$.
@@ -338,7 +339,7 @@ where $\generationpotential \in \left[ 0,1\right]$ is the capacity factor for re
 \end{align}
 This representation connects the CAPEX with the operational state of generator $s$ and matches the needed form in \cref{eq:cost_decomposition} for using the allocation scheme. The resulting the CAPEX allocation is given by
 \begin{align}
- \allocatecapexgeneration[n \rightarrow s] = \muuppergeneration \, \allocatepeer
+ \allocatecapexgeneration[n \rightarrow s] = \muuppergeneration \, \allocategeneration
  \label{eq:allocate_capexGeneration_detailed}
 \end{align}
 How does this allocation behave? According to the polluter pays principle, it differentiates between consumers who are `responsible` for investments and those who are not. If $\muuppergeneration$ (in literature often denoted as the Quality of Supply) is bigger than zero, the upper Capacity \cref{eq:upper_generation_capacity_constraint} is binding. Thus it is these times steps which push investments in $\capacitygeneration$. If $\muuppergeneration = 0$, the generation $\generation$ is not bound and investments are not necessary. 
@@ -385,7 +386,7 @@ The  shadowprices $\muupperflow$ and $\mulowerflow$ again can be seen as a measu
 %     \capexstorage_r = \capitalpricestorage \, \capacitystorage = \sum_t \muupperstoragedispatch \, \storagedispatch + \muupperstoragecharge \, \storagecharge + \muupperstoragesoc \, \storagesoc
 % \end{align}
 
-We us the result of Appendix B.3 in \cite{brown_decreasing_2020} which states that a storage recovers its capital (here we added the operational) costs from aligning dispatch and charging to the LMP, thus 
+We use the result of Appendix B.3 in \cite{brown_decreasing_2020} which shows that a storage recovers its capital (and operational) costs from aligning dispatch and charging to the LMP, thus 
 \begin{align}
     \sum_t \operationalpricestorage \, \storagedispatch + \capitalpricestorage \, \capacitystorage = \sum_t \lmp \incidencestorage \left(\storagedispatch - \storagecharge \right) 
 \end{align}
@@ -415,18 +416,18 @@ where $\incidencestorage$ is one if storage $s$ is at node $n$ and zero otherwis
 % in \cref{eq:general_scheme}. As a result we obtain the contribution of $\demand$ to the OPEX at generator $s$, given by 
 % \begin{align}
 %     \allocateopex[n \rightarrow s] &= 
-%    \operationalpricegeneration \,  \allocatepeer
+%    \operationalpricegeneration \,  \allocategeneration
 % \label{eq:allocate_opexGeneration_detailed}
 % \end{align}
 % where the quantity  
 % \begin{align}
-%  \allocatepeer = \pdv{\generation}{\demand} \, \demand
+%  \allocategeneration = \pdv{\generation}{\demand} \, \demand
 %  \label{eq:allocate_peer}
 % \end{align}
 % obtained through \cref{eq:allocate_state}, can be considered as a power allocation. It indicates the power that is produced by generator $s$ and consumed at node $n$ at time $t$.
 % From \cref{eq:allocate_state_constraint} it follows that all the power allocations must sum up to the power produced by generator $s$, \ie
 % \begin{align}
-% \generation = \sum_n \allocatepeer
+% \generation = \sum_n \allocategeneration
 % \label{eq:allocate_peer_constraint}
 % \end{align}
 % % 
@@ -447,7 +448,7 @@ Given a fix price for emissions in CO$_2$ equivalents $\emissionprice$, the cost
 where $\emission$ denotes the emission factor in tonne-CO$_2$ per \megawatthour for generator $s$.
 We use the same set of equation as given through \cref{eq:general_scheme,eq:opex_allocation} but update the cost factor to $\costfactor \Rightarrow \emissionprice \, \emission$. For consumers at bus $n$ at time $t$ this leads to the emission cost of 
 \begin{align}
- \allocateemissioncost[n \rightarrow s] = \emissionprice \, \emission \, \allocatepeer
+ \allocateemissioncost[n \rightarrow s] = \emissionprice \, \emission \, \allocategeneration
 \end{align}
 associated with generator $s$.
 
@@ -465,13 +466,13 @@ In order to show this, let $\ptdf$ denote Power Transfer Distribution Factors (P
 \end{align}
 where the nodal generation $\nodalgeneration[m] = \sum_s \incidencegenerator[m] \, \generation $ combines the production of all generators attached to bus $m$. Taking the derivative with respect to the demand, leads to 
 \begin{align}
- \allocateflow = \pdv{\flow}{\demand} \demand = \sum_m \ptdf[m] \left( \allocatepeer[m \rightarrow n]  - \delta_{n,m} \demand \right) 
+ \allocateflow = \pdv{\flow}{\demand} \demand = \sum_m \ptdf[m] \left( \allocatepeer  - \delta_{n,m} \demand \right) 
  \label{eq:allocate_peer_to_allocate_flow}
 \end{align}
-where $\allocatepeer[m \rightarrow n] = \sum_s \incidencegenerator \, \allocatepeer$ combines all power allocations of the source $m$. \Cref{eq:allocate_peer_to_allocate_flow} shows that the peer-to-peer allocation $\allocatepeer$ directly determines the flow allocation on line $\ell$.
+where $\allocatepeer = \sum_s \incidencegenerator \, \allocategeneration$ combines all power allocations of the source $m$. \Cref{eq:allocate_peer_to_allocate_flow} shows that the peer-to-peer allocation $\allocategeneration$ directly determines the flow allocation on line $\ell$.
 
  
-This leaves us with only solving \cref{eq:allocate_peer_constraint} for $\allocatepeer$. In fact, we have to answer the question of how much power supply does generator $s$ deliver to bus $n$. Unfortunately, the solution is non-unique and requires further assumptions. Established flow allocation schemes approach this problem from different directions. Principally two options exist \textit{what} is allocated 
+This leaves us with only solving \cref{eq:allocate_peer_constraint} for $\allocategeneration$. In fact, we have to answer the question of how much power supply does generator $s$ deliver to bus $n$. Unfortunately, the solution is non-unique and requires further assumptions. Established flow allocation schemes approach this problem from different directions. Principally two options exist \textit{what} is allocated 
 % 
 \begin{enumerate}
 \item gross power injections \label{gross}
@@ -490,7 +491,7 @@ that every producer supplies every consumer proportional to its share in the tot
 We show the mathematical formulation for all combinations \ref{ebe}\ref{gross} - \ref{fbmc}\ref{net} in \cref{sec:gross_ebe,sec:net_ebe,sec:gross_ap,sec:net_ap}.
 % 
 Principally, type \ref{net} leads to less P2P trades then type \ref{gross} as power from a bus $n$ with $\nodalgeneration \le \nodaldemand$ is not assigned to other buses, only to $n$. 
-Further, as literature has often pointed out, the EBE principal \ref{ebe} does not suit for large networks where remote buses would interconnect in the same way as buses in close vicinity \cite{gil_multiarea_2005}. The AP based type \ref{ap} tackles this problem by restricting P2P trades to those which are traceable when applying the proportional sharing principal. Therefore $\allocatepeer$ denotes that part of power produced by bus $m$ which, when only following in the direction of $\flow$, ends up at bus $n$. Type \ref{fbmc} further allows to control the regions or market zones which are netted out in a first calculation. If in a region $R$ the generation undercuts the demand, $\sum_{n \in R} \generation \le \sum_{n \in R} \demand$, none of the inner-regional generation is assigned to other regions. 
+Further, as literature has often pointed out, the EBE principal \ref{ebe} does not suit for large networks where remote buses would interconnect in the same way as buses in close vicinity \cite{gil_multiarea_2005}. The AP based type \ref{ap} tackles this problem by restricting P2P trades to those which are traceable when applying the proportional sharing principal. Therefore $\allocategeneration$ denotes that part of power produced by bus $m$ which, when only following in the direction of $\flow$, ends up at bus $n$. Type \ref{fbmc} further allows to control the regions or market zones which are netted out in a first calculation. If in a region $R$ the generation undercuts the demand, $\sum_{n \in R} \generation \le \sum_{n \in R} \demand$, none of the inner-regional generation is assigned to other regions. 
 
 
 
@@ -820,7 +821,7 @@ where $\remainingcost_\ell$ is given by
 The allocation of gross generation to demands $\demand$ is straigthforwardly obained by a proportional distribution of the generation, \ie
 
 \begin{align}
-    \allocatepeer[s \rightarrow n] = \dfrac{\generation}{\sum_s \generation} \demand 
+    \allocategeneration = \dfrac{\generation}{\sum_s \generation} \demand 
 \end{align}
 
 
@@ -829,7 +830,7 @@ The allocation of gross generation to demands $\demand$ is straigthforwardly oba
 
 Allocating net power injections using the EBE methods leads to the same result as the Marginal Participation (MP) \cite{rudnick_marginal_1995}  algorithm when allocating to consumers only, see \cite{hofmann_flow_2020-1} for further insight. We calculate it by setting 
 \begin{align}
-\allocatepeer[m \rightarrow n] &=  \delta_{m,n}\,\selfconsumption[m] + \gamma_t \, \netconsumption  \, \netproduction[m]
+\allocatepeer &=  \delta_{m,n}\,\selfconsumption[m] + \gamma_t \, \netconsumption  \, \netproduction[m]
 \label{eq:mp_slack}
 \end{align}
 where 
@@ -841,7 +842,7 @@ where
 \item $\gamma_t = \left( \sum_n \netproduction\right) ^{-1} = \left( \sum_n \netconsumption\right) ^{-1}$ is the inverse of the total injected/extracted power at time $t$.
 \end{itemize}
 
-The allocation $\allocatepeer$ from generator $s$ to $n$, is given by multiplying $\allocatepeer[m \rightarrow n]$ with the nodal share $\generation / \nodalgeneration$.
+The allocation $\allocategeneration$ from generator $s$ to $n$, is given by multiplying $\allocatepeer$ with the nodal share $\generation / \nodalgeneration$.
 
 
 \subsection{Allocating Net Power using AP}
@@ -864,7 +865,7 @@ Allocating net injections using the AP method is derived from \cite{achayuthakan
 \end{align}
 where $\DirectedIncidence^-$ is the negative part of the directed Incidence matrix $\DirectedIncidence_{n,\ell} = \text{sign}\left( \flow \right)  \incidence$. Then the distributed slack for time step $t$ is given by
 \begin{align}
-\allocatepeer[m \rightarrow n] = \InverseAPInjection_{m,n,t} \, \netproduction[m] \, \netconsumption
+\allocatepeer = \InverseAPInjection_{m,n,t} \, \netproduction[m] \, \netconsumption
 \end{align}
 
 \subsection{Allocating Gross Power using AP}
@@ -876,7 +877,7 @@ We use the same allocation as in \cref{sec:net_ap} but replace the net nodal pro
 \end{align}
 The distributed slack is for time step $t$ is then given by
 \begin{align}
-\allocatepeer[s \rightarrow m] = \InverseAPInjection_{m,n} \, \generation \, \demand
+\allocategeneration[s \rightarrow m] = \InverseAPInjection_{m,n} \, \generation \, \demand
 \end{align}
 
 

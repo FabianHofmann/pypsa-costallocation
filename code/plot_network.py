@@ -37,7 +37,6 @@ if is_brownfield:
                              figsize=(10, 5))
     # existent
     bus_sizes = n.generators.groupby(["bus", "carrier"]).p_nom_min.sum()
-    bus_sizes = bus_sizes.reindex(n.buses.index, level=0, fill_value=0)
     plot = n.plot(
         bus_sizes=bus_sizes * bus_scale,
         line_widths=n.lines.s_nom_min * branch_scale,

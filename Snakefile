@@ -55,8 +55,11 @@ rule allocate_network:
 
 rule plot_total_costs:
     input:
-        costs = 'resources/costs_{nname}_ptpf_net.nc'
-    output: 'figures/total_costs_{nname}.png'
+        costs_gf = 'resources/costs_{nname_wo_field}gf_ptpf_net.nc',
+        costs_bf = 'resources/costs_{nname_wo_field}bf_ptpf_net.nc',
+        network_gf = 'resources/{nname_wo_field}gf.nc',
+        network_bf = 'resources/{nname_wo_field}bf.nc'
+    output: 'figures/total_costs_{nname_wo_field}.png'
     script: 'code/plot_total_costs.py'
 
 rule plot_price_maps:
