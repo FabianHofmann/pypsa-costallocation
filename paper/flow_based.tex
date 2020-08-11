@@ -459,6 +459,11 @@ associated with generator $s$.
 
 The presented cost allocation suits for any type of topology and network setup. But so far, the question of how $\allocatestate$ for generators $s$, lines $\ell$ and storages $r$ are defined was left open. We recap that all rely on derivatives of $\generation$, $\flow$ and $\storagedispatch$  with respect to the nodal demand $\demand$ (see \cref{eq:allocate_state_constraint}). \\
 % 
+Let the nodal power production $\nodalgeneration$, given by 
+\begin{align}
+    \nodalgeneration[m] = \sum_s \incidencegenerator[m] \, \generation + \sum_r \incidencestorage[m] \storagedispatch \Forall{n}
+\end{align}
+combine all production at node $n$ and time $t$.
 In fact, it turns out that ones, the peer-to-peer allocations $\allocatepeer$ are defined, the power flow allocations $\allocateflow$ are determined by the linear power flow equations.
 In order to show this, let $\ptdf$ denote Power Transfer Distribution Factors (PTDF) giving the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$.  Further let $\incidencegenerator$ be 1 if generator $s$ is attached to bus $n$ and zero otherwise. The linear power flow equation can be written as 
 \begin{align}
