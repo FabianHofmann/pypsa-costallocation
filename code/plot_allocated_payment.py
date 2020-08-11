@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import matplotlib as mpl
 import pypsa
-from config import color, to_symbol, sink_dims
+from config import color, to_symbol, sink_dims, to_explanation
 import netallocation as ntl
 from matplotlib.pyplot import Line2D
 from pypsa.plot import projected_area_factor
@@ -53,10 +53,10 @@ opex = (payment.one_port_operational_cost.to_series()
 bus_sizes = pd.concat([emission_cost, capex, opex]).sort_index()
 
 capex_colors = n.carriers.color
-opex_alpha = 0.3
+opex_alpha = 1
 opex_colors = (capex_colors
                .apply(lambda c: mpl.colors.to_rgba(c, opex_alpha))
-               # .apply(lambda c: mpl.colors.to_hex(c, True))
+                .apply(lambda c: mpl.colors.to_hex(c, True))
                .rename(lambda s: s + ' opex'))
 emission_color = color.loc[['co2_cost']]
 bus_colors = pd.concat([capex_colors, opex_colors, emission_color])
@@ -73,6 +73,7 @@ n.plot(line_widths=branch_widths['Line'] * branch_scale,
        line_colors=branch_colors['Line'],
        link_colors=branch_colors['Link'],
        ax=ax,
+       bus_alpha=None,
        # geomap='10m',
        boundaries=regions.total_bounds[[0,2,1,3]],
        bus_sizes=bus_sizes * bus_scale,
@@ -81,8 +82,10 @@ n.plot(line_widths=branch_widths['Line'] * branch_scale,
 regions.loc[[sink]].plot(ax=ax, transform=ccrs.PlateCarree(), aspect='equal')
 
 
+legend_colors = (n.carriers.set_index('nice_name').color
+                 .append(emission_color.rename(to_explanation)))
 fig.legend(
-    *ntl.plot.handles_labels_for(n.carriers.set_index('nice_name').color),
+    *ntl.plot.handles_labels_for(legend_colors),
     loc="upper left",
     bbox_to_anchor=(1, 1),
     title='Carrier',
@@ -92,31 +95,30 @@ fig.legend(
 
 
 # legend generator capacities
-reference_caps = [10e3, 5e3, 1e3]
+reference_caps = [100e3, 10e3]
 scale = 1 / bus_scale / projected_area_factor(ax)**2
 handles = make_legend_circles_for(reference_caps, scale=scale,
                                   facecolor="w", edgecolor='grey',
                                   alpha=.5)
-labels = ["%i k "%(s / 1e3) for s in reference_caps]
+labels = ["%ik €"%(s / 1e3) for s in reference_caps]
 handler_map = make_handler_map_to_scale_circles_as_in(ax)
 legend = fig.legend(handles, labels,
-                loc="upper left", bbox_to_anchor=(1., 0.35),
-                frameon=False,  # edgecolor='w',
-                title='Generation Capacity',
+                loc="upper left", bbox_to_anchor=(1., 0.4),
+                frameon=False,
                 handler_map=handler_map)
 fig.add_artist(legend)
 
 # legend transmission capacitues
 handles, labels = [], []
-reference_caps = [10,5]
-handles = [Line2D([0], [0], color='grey', alpha=0.5, linewidth=s*1e3*branch_scale)
-           for s in reference_caps]
-labels = ['%i GW'%s for s in reference_caps]
+reference_caps = [10,-5]
+handles = [Line2D([0], [0], color=c, linewidth=abs(s)*1e3*branch_scale)
+           for s, c in zip(reference_caps, ['cadetblue', 'indianred'])]
+labels = ['%ik €'%s for s in reference_caps]
 
 legend = fig.legend(handles, labels,
-                    loc="lower left", bbox_to_anchor=(1, .0),
+                    loc="lower left", bbox_to_anchor=(1, .1),
                     frameon=False,
-                    title='Transmission Capacity')
+                    )
 fig.artists.append(legend)
 
 
