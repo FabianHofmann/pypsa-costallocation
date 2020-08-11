@@ -118,6 +118,7 @@
 \newcommand{\incidence}[1][n]{K_{#1,\ell}}
 \newcommand{\incidencegenerator}[1][n]{K_{#1,s}}
 \newcommand{\incidencestorage}[1][n]{K_{#1,r}}
+\newcommand{\incidenceasset}[1][n]{K_{#1,i}}
 \newcommand{\ptdf}[1][n]{H_{\ell,#1}}
 \newcommand{\cycle}{C_{\ell,c}}
 \newcommand{\impedance}{x_\ell}
@@ -127,14 +128,16 @@
 
 % allocation quantities
 \newcommand{\allocategeneration}[1][s, n]{A_{#1,t}}
+\newcommand{\allocatestoragedispatch}[1][r, n]{A_{#1,t}}
 \newcommand{\allocatepeer}[1][m \rightarrow n]{A_{#1,t}}
 \newcommand{\allocateflow}[1][n]{A_{\ell,#1,t}}
 \newcommand{\allocatetransaction}[1][s \rightarrow n]{A_{#1,\ell,t}}
 \newcommand{\allocatestate}[1][i, n]{A_{#1,t}}
-\newcommand{\allocatecapexgeneration}[1][n]{\mathcal{C}^{G}_{#1,t}}
-\newcommand{\allocatecapexflow}[1][n]{\mathcal{C}^{F}_{#1,t}}
-\newcommand{\allocateopex}[1][n]{\mathcal{O}_{#1,t}}
-\newcommand{\allocateemissioncost}[1][n]{\mathcal{E}_{#1,t}}
+\newcommand{\allocatecost}[1][n \rightarrow i]{\mathcal{C}_{#1, t}}
+\newcommand{\allocatecapexgeneration}[1][n \rightarrow s]{\mathcal{C}^{G}_{#1,t}}
+\newcommand{\allocatecapexflow}[1][n \rightarrow \ell]{\mathcal{C}^{F}_{#1,t}}
+\newcommand{\allocateopex}[1][n \rightarrow s]{\mathcal{O}_{#1,t}}
+\newcommand{\allocateemissioncost}[1][n \rightarrow s]{\mathcal{E}_{#1,t}}
 
 \newcommand{\emission}{e_{s}}
 \newcommand{\emissionprice}{\mu_{\text{CO2}}}
@@ -254,11 +257,11 @@ For OPEX the cost factor $\costfactor$ is simply given by the marginal operation
 
 
 % where $c_{i,t}$ is either a fixed operational price or a composition of shadowprices
-Following the implications of \cref{eq:lmp,eq:total_cost_reduced},  we define the cost $\cost_{n\rightarrow i,t}$ that consumers at bus $n$ have pay to asset $i$ at time $t$ as  
+Following the implications of \cref{eq:lmp,eq:total_cost_reduced},  we define the cost $\allocatecost$ that consumers at bus $n$ have pay to asset $i$ at time $t$ as  
 \begin{align}
-    \cost_{n \rightarrow i,t} = \costfactor \,\pdv{\state}{\demand} \demand
+    \allocatecost = \costfactor \,\pdv{\state}{\demand} \demand
 \end{align}
-Therefore, $\cost_{n\rightarrow i,t}$ indicates the contribution of $\demand$ to the cost term $\cost_{i}$. It heavily relies on the derivative of the operational state with respect to the nodal demand $\partial \state / \partial \demand$. Without further specifying, we define the derivative multiplied with the nodal demand as 
+Therefore, $\allocatecost$ indicates the contribution of $\demand$ to the cost term $\cost_{i}$. It heavily relies on the derivative of the operational state with respect to the nodal demand $\partial \state / \partial \demand$. Without further specifying, we define the derivative multiplied with the nodal demand as 
 \begin{align}
     \allocatestate = \pdv{\state}{\demand} \demand
     \label{eq:allocate_state}
@@ -266,7 +269,7 @@ Therefore, $\cost_{n\rightarrow i,t}$ indicates the contribution of $\demand$ to
 This quantity may be interpreted as the amount of power that asset $i$ supplies demand $\demand$ with.
 From the natural fact that the sum of all contributions must return the cost term, 
 \begin{align}
-    \cost_i = \sum_{n,t} \cost_{n \rightarrow i, t}
+    \cost_i = \sum_{n,t} \allocatecost
 \end{align}
 it follows that $\allocatestate$ must fulfill
 \begin{align}
@@ -275,7 +278,7 @@ it follows that $\allocatestate$ must fulfill
 \end{align}
 Finally, the total contribution from node $n$ at time $t$ to the cost term $\cost$ amounts 
 \begin{align}
-    \cost_{n,t} = \sum_i \cost_{n \rightarrow i, t}
+    \cost_{n,t} = \sum_i \allocatecost
 \end{align}
 \end{subequations}
 
@@ -339,7 +342,7 @@ where $\generationpotential \in \left[ 0,1\right]$ is the capacity factor for re
 \end{align}
 This representation connects the CAPEX with the operational state of generator $s$ and matches the needed form in \cref{eq:cost_decomposition} for using the allocation scheme. The resulting the CAPEX allocation is given by
 \begin{align}
- \allocatecapexgeneration[n \rightarrow s] = \muuppergeneration \, \allocategeneration
+ \allocatecapexgeneration = \muuppergeneration \, \allocategeneration
  \label{eq:allocate_capexGeneration_detailed}
 \end{align}
 How does this allocation behave? According to the polluter pays principle, it differentiates between consumers who are `responsible` for investments and those who are not. If $\muuppergeneration$ (in literature often denoted as the Quality of Supply) is bigger than zero, the upper Capacity \cref{eq:upper_generation_capacity_constraint} is binding. Thus it is these times steps which push investments in $\capacitygeneration$. If $\muuppergeneration = 0$, the generation $\generation$ is not bound and investments are not necessary. 
@@ -362,7 +365,7 @@ which yield the shadow prices $\muupperflow$ and $\mulowerflow$. Again, we use t
 \end{align}
 Again, we follow the scheme in \cref{eq:general_scheme} which  defines the CAPEX allocation as 
 \begin{align}
-    \allocatecapexflow[n \rightarrow \ell] &=  
+    \allocatecapexflow &=  
    \left( \muupperflow - \mulowerflow\right) \, \allocateflow
    \label{eq:allocate_capexFlow_detailed}
 \end{align}
@@ -376,7 +379,7 @@ can be interpreted as the flow that the demand at $\left(n,t\right)$ causes on l
 %  \flow = \sum_{n} \allocateflow
 % \label{eq:allocate_flow_constraint}
 % \end{align}
-The  shadowprices $\muupperflow$ and $\mulowerflow$ again can be seen as a measure for necessity of transmission investments at $\ell$ at time $t$. Hence, the definition of $\allocatecapexflow[n \rightarrow \ell]$ states that consumers, which retrieve power flowing on congested lines, yielding a bound \cref{eq:upper_flow_capacity_constraint} or \eqref{eq:lower_flow_capacity_constraint}, pay compensations for the resulting investments at $\ell$. Again the sum of all CAPEX payments to line $\ell$ equals the total CAPEX spent. This is seen when summing \cref{eq:allocate_capexFlow_detailed} over all buses and time steps and using \cref{eq:allocate_state_constraint,eq:no_profit_capex_flow}
+The  shadowprices $\muupperflow$ and $\mulowerflow$ again can be seen as a measure for necessity of transmission investments at $\ell$ at time $t$. Hence, the definition of $\allocatecapexflow$ states that consumers, which retrieve power flowing on congested lines, yielding a bound \cref{eq:upper_flow_capacity_constraint} or \eqref{eq:lower_flow_capacity_constraint}, pay compensations for the resulting investments at $\ell$. Again the sum of all CAPEX payments to line $\ell$ equals the total CAPEX spent. This is seen when summing \cref{eq:allocate_capexFlow_detailed} over all buses and time steps and using \cref{eq:allocate_state_constraint,eq:no_profit_capex_flow}
 
 
 \subsubsection*{Allocate CAPEX on Storages}
@@ -448,7 +451,7 @@ Given a fix price for emissions in CO$_2$ equivalents $\emissionprice$, the cost
 where $\emission$ denotes the emission factor in tonne-CO$_2$ per \megawatthour for generator $s$.
 We use the same set of equation as given through \cref{eq:general_scheme,eq:opex_allocation} but update the cost factor to $\costfactor \Rightarrow \emissionprice \, \emission$. For consumers at bus $n$ at time $t$ this leads to the emission cost of 
 \begin{align}
- \allocateemissioncost[n \rightarrow s] = \emissionprice \, \emission \, \allocategeneration
+ \allocateemissioncost = \emissionprice \, \emission \, \allocategeneration
 \end{align}
 associated with generator $s$.
 
@@ -458,26 +461,27 @@ associated with generator $s$.
 \label{sec:localizing_allocations}
 
 The presented cost allocation suits for any type of topology and network setup. But so far, the question of how $\allocatestate$ for generators $s$, lines $\ell$ and storages $r$ are defined was left open. We recap that all rely on derivatives of $\generation$, $\flow$ and $\storagedispatch$  with respect to the nodal demand $\demand$ (see \cref{eq:allocate_state_constraint}). \\
-% 
-Let the nodal power production $\nodalgeneration$, given by 
+
+Let $\nodalgeneration[m]$ denote the nodal power generation which combines the power production of all producing assets, in this case generators $S$ and storages $R$, at node $n$ and time $t$. It is given by 
 \begin{align}
-    \nodalgeneration[m] = \sum_s \incidencegenerator[m] \, \generation + \sum_r \incidencestorage[m] \storagedispatch \Forall{n}
+    \nodalgeneration[m] = \sum_{i \in \{S, R\}} \incidenceasset[m] \, \state
 \end{align}
-combine all production at node $n$ and time $t$.
-In fact, it turns out that ones, the peer-to-peer allocations $\allocatepeer$ are defined, the power flow allocations $\allocateflow$ are determined by the linear power flow equations.
-In order to show this, let $\ptdf$ denote Power Transfer Distribution Factors (PTDF) giving the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$.  Further let $\incidencegenerator$ be 1 if generator $s$ is attached to bus $n$ and zero otherwise. The linear power flow equation can be written as 
+with $\incidenceasset[m]$ being 1 if asset $i$ is attached to bus $m$ and zero otherwise. Further, let $\allocatepeer$ collect the power produced by assets at node $m$ and consumed at $n$, given by 
+\begin{align}
+    \allocatepeer = \sum_{i \in \{S,R\}} \incidenceasset[m] \, \allocatestate  
+    % \nodalgeneration[m] = \sum_s \incidencegenerator[m] \, \generation + \sum_r \incidencestorage[m] \storagedispatch \Forall{n}
+\end{align}
+Now, let $\ptdf$ denote Power Transfer Distribution Factors (PTDF) giving the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$. The linear power flow equation can be written as 
 \begin{align}
  \flow  = \sum_m \ptdf[m] \left( \nodalgeneration[m] - \demand[m] \right)  
 \end{align}
-where the nodal generation $\nodalgeneration[m] = \sum_s \incidencegenerator[m] \, \generation $ combines the production of all generators attached to bus $m$. Taking the derivative with respect to the demand, leads to 
+Note that for transport models or mixed AC-DC networks, $\ptdf$ can be artificially calculated using the formulation presented in \cite{hofmann_flow_2020-1}.
+Taking the derivative with respect to the demand, 
 \begin{align}
  \allocateflow = \pdv{\flow}{\demand} \demand = \sum_m \ptdf[m] \left( \allocatepeer  - \delta_{n,m} \demand \right) 
- \label{eq:allocate_peer_to_allocate_flow}
+ \label{eq:allocate_peer_to_allocate_flow},
 \end{align}
-where $\allocatepeer = \sum_s \incidencegenerator \, \allocategeneration$ combines all power allocations of the source $m$. \Cref{eq:allocate_peer_to_allocate_flow} shows that the peer-to-peer allocation $\allocategeneration$ directly determines the flow allocation on line $\ell$.
-
- 
-This leaves us with only solving \cref{eq:allocate_peer_constraint} for $\allocategeneration$. In fact, we have to answer the question of how much power supply does generator $s$ deliver to bus $n$. Unfortunately, the solution is non-unique and requires further assumptions. Established flow allocation schemes approach this problem from different directions. Principally two options exist \textit{what} is allocated 
+shows that $\allocateflow$ is fully determined through the peer-to-peer allocation $\allocatepeer$. In other words, we only need to know how much power produced at node $m$ is consumed at node $n$ in order to derive the allocated flow $\allocateflow$. Further we can breakdown $\allocatepeer$ to $\allocategeneration$ for generators and $\allocatestoragedispatch$ for storages proportionally to their contribution to the nodal generation $\nodalgeneration[m]$. Unfortunately, the solution for $\allocatepeer$ is non-unique and requires further assumptions. Established flow allocation schemes approach this problem from different directions. Principally two options exist \textit{what} is allocated 
 % 
 \begin{enumerate}
 \item gross power injections \label{gross}
@@ -495,8 +499,8 @@ that every producer supplies every consumer proportional to its share in the tot
 % 
 We show the mathematical formulation for all combinations \ref{ebe}\ref{gross} - \ref{fbmc}\ref{net} in \cref{sec:gross_ebe,sec:net_ebe,sec:gross_ap,sec:net_ap}.
 % 
-Principally, type \ref{net} leads to less P2P trades then type \ref{gross} as power from a bus $n$ with $\nodalgeneration \le \nodaldemand$ is not assigned to other buses, only to $n$. 
-Further, as literature has often pointed out, the EBE principal \ref{ebe} does not suit for large networks where remote buses would interconnect in the same way as buses in close vicinity \cite{gil_multiarea_2005}. The AP based type \ref{ap} tackles this problem by restricting P2P trades to those which are traceable when applying the proportional sharing principal. Therefore $\allocategeneration$ denotes that part of power produced by bus $m$ which, when only following in the direction of $\flow$, ends up at bus $n$. Type \ref{fbmc} further allows to control the regions or market zones which are netted out in a first calculation. If in a region $R$ the generation undercuts the demand, $\sum_{n \in R} \generation \le \sum_{n \in R} \demand$, none of the inner-regional generation is assigned to other regions. 
+Principally, type \ref{net} leads to less P2P trades then type \ref{gross} as power from a bus $m$ with $\nodalgeneration[m] \le \nodaldemand[m]$ is not assigned to other buses, only to $m$. 
+Further, as literature has often pointed out, the EBE principal \ref{ebe} does not suit for large networks where remote buses would interconnect in the same way as buses in close vicinity \cite{gil_multiarea_2005}. The AP based type \ref{ap} tackles this problem by restricting P2P trades to those which are traceable when applying the proportional sharing principal. Therefore $\allocategeneration$ denotes that part of power produced by bus $m$ which, when only following in the direction of $\flow$, ends up at bus $n$. Type \ref{fbmc} further allows to control the regions or market zones which are netted out in a first step. If in a region $R$ the generation undercuts the demand, $\sum_{n \in R} \nodalgeneration \le \sum_{n \in R} \demand$, none of the inner-regional generation is assigned to other regions. 
 
 
 
@@ -504,7 +508,7 @@ Further, as literature has often pointed out, the EBE principal \ref{ebe} does n
 \label{sec:numerical_example}
 
 
-In the following we showcase a two bus system with one optimized time step and its resulting allocated payments, illustrated in \cref{fig:example_network}. \\
+In the following, we illustrate the cost allocation and explain its functionality by taking the example of a two bus system with one optimized time step, shown in \cref{fig:example_network}. \\
 % 
 % 
 \begin{figure*}[t]
@@ -531,7 +535,7 @@ The two buses are connected via one transmission line, each has one generator. W
     \label{fig:example_allocation_bus2}
     \end{subfigure}
     \caption{Power allocations for bus~1 (a) and bus~2 (b) of the example network in \cref{fig:example_network}. Bus~1 retrieves 40~MW from itself and 20~MW from bus~2. The latter in turn retrieves 60~MW from bus~1 and self supplies 30~MW.
-    The sum of both net flows equals the resulting flow of $f=40$~MW. \vspace{-20pt}}
+    The sum of both net flows equals the resulting flow of $f_1=40$~MW. \vspace{-20pt}}
     \label{fig:example_allocation}
 \end{figure}
 % 
@@ -540,7 +544,7 @@ The two buses are connected via one transmission line, each has one generator. W
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{example_payoff.png}
-\caption{Full P2P cost allocation for the example setup shown in \cref{fig:example_network}. The payments are derived on the basis of \cref{eq:allocate_opexGeneration_detailed,eq:allocate_capexGeneration_detailed,eq:allocate_capexFlow_detailed}. Consumers at bus $n$ have to pay each generator proportional to their consumption. As we only consider one time step the proportionality applies for OPEX $\mathcal{O}_n$ and CAPEX $\mathcal{C}_n$. As bus~1 induces a relieving flow an line~1 and therefore ``prevents`` further tranmission expansion, it is rewarded proportional to the relief.}
+\caption{Full P2P cost allocation for the example setup shown in \cref{fig:example_network}. The payments are derived on the basis of \cref{eq:allocate_opexGeneration_detailed,eq:allocate_capexGeneration_detailed,eq:allocate_capexFlow_detailed}. Consumers at bus $n$ have to pay each generator proportional to their consumption. As we only consider one time step the proportionality applies for OPEX $\allocateopex$ and CAPEX $\mathcal{C}_n$. As bus~1 induces a relieving flow an line~1 and therefore ``prevents`` further tranmission expansion, it is rewarded proportional to the relief.}
 \label{fig:example_payoff}
 \end{figure}
 % 
@@ -548,7 +552,7 @@ The two buses are connected via one transmission line, each has one generator. W
 \subsubsection*{Allocating Gross Power using EBE (\ref{gross}\ref{ebe}) }
 
 \Cref{fig:example_allocation} shows the allocated transactions on basis of equvalently traded gross power (type \ref{gross}\ref{ebe}) for both buses 1~\&~2 separately. The resulting P2P payments are given in \cref{fig:example_payoff}.
-The upper graph \cref{fig:example_allocation_bus1} shows that $A_{1,1}=40$~MW at bus~1 are self-sustained. Consumers at bus~1 consequently pay 2k~\euro~OPEX and 22k~\euro~CAPEX to the generator at bus~1. The remaining 20~MW come from bus~2 and induce a subflow on line 1 of $A_{2 \rightarrow 1, 1} = -20$. As this flow is in contrary direction to the total flow, it is relieving the transmission system. This translates to a congestion reward for consumers at bus~1 of $c_{\ell=1} A_{2 \rightarrow 1, 1}$~=~2k~\euro\, which is exactly the cost that had to be spent on the transmission system if bus~1 didn't induce a relieving flow, see again \cref{fig:example_payoff}. 
+The upper graph \cref{fig:example_allocation_bus1} shows that $A_{1,1}=40$~MW at bus~1 are self-sustained. Consumers at bus~1 consequently pay 2k~\euro~OPEX and 22k~\euro~CAPEX to the generator at bus~1. The remaining 20~MW come from bus~2 and induce a subflow on line 1 of $A_{\ell = 1, 1} = -20$. As this flow is in contrary direction to the total flow, it is relieving the transmission system. This translates to a congestion reward for consumers at bus~1 of $c_{\ell=1} A_{\ell = 1, 1}$~=~2k~\euro\, which is exactly the cost that had to be spent on the transmission system if bus~1 didn't induce a relieving flow, see again \cref{fig:example_payoff}. 
 
 
 
@@ -783,7 +787,7 @@ Multiplying \cref{eq:opex_duality}, which is still valid, with $\generation$ and
 We see that the revenue of generator $s$ will not fully pay back its full CAPEX and OPEX. The exogenous constraint shifts the zero-profit equations such that some of the expenditures for $s \in S$ cannot directly be allocated to consumers. The collected payments of all consumers will not cover the costs induced by \cref{eq:capacityexpansionminimum,eq:capacityexpansionmaximum},
 
 \begin{align}
-    \capitalpricegeneration \capacitygeneration - \remainingcost_s = \sum_{n,t} \allocatecapexgeneration[n \rightarrow s] \Forall{s \in S}
+    \capitalpricegeneration \capacitygeneration - \remainingcost_s = \sum_{n,t} \allocatecapexgeneration \Forall{s \in S}
 \end{align}
 
 
@@ -795,7 +799,7 @@ Doing likewise with a subset $L$ of transmission lines,
 \end{align}
 results in a shifted zero-profit rule for transmission line in the form 
 \begin{align}
-    \capitalpriceflow \, \capacityflow - \remainingcost_\ell = \sum_{n,t}\allocatecapexflow[n \rightarrow \ell] \Forall{\ell \in L}
+    \capitalpriceflow \, \capacityflow - \remainingcost_\ell = \sum_{n,t}\allocatecapexflow \Forall{\ell \in L}
 \end{align}
 where $\remainingcost_\ell$ is given by 
 \begin{align}

@@ -14,13 +14,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from netallocation.plot import injection_plot_kwargs
-from config import to_static_symbol, color
+from config import to_static_symbol, color, to_total_symbol
 # plt.rc('tex', preamble=r'\Large')
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
-net = False
-altype = 'net' if net else 'gross'
+path = '../figures/example'
+
+net = True
+power = 'net' if net else 'gross'
 method = 'ptpf'
 
 
@@ -106,7 +108,7 @@ ax.legend(*handles_labels_for(color[ca_df.columns].rename(to_static_symbol)),
           ncol=3, loc='lower right', frameon=True, fontsize='large')
 ntl.plot.annotate_bus_names(n, ax, shift=0, bbox='fancy')
 fig.tight_layout()
-fig.savefig(f'../figures/example_network_{altype}_{method}.png', bbox_inches='tight')
+fig.savefig(f'{path}/example_network_{power}_{method}.png', bbox_inches='tight')
 
 
 # %% payoff matrix
@@ -128,9 +130,9 @@ for i, v in enumerate(payoff):
                 annot_kws={'horizontalalignment': 'left'})
     if i:
         ax.set_ylabel('')
-    ax.set_title(to_static_symbol[v])
+    ax.set_title(to_total_symbol[v])
 fig.tight_layout(w_pad=0)
-fig.savefig(f'../figures/example_payoff_{altype}_{method}.png', bbox_inches='tight')
+fig.savefig(f'{path}/example_payoff_{power}_{method}.png', bbox_inches='tight')
 
 # %% sub flows
 
@@ -151,24 +153,24 @@ for bus in n.buses.index:
 
     for b in n.buses.index:
         bbox.update({'facecolor': bcolor, 'edgecolor': 'None', 'pad':.5, 'alpha':1})
-        A = r'$A_{%s, %s} = %i$'%(b, bus, p2p[b])
+        A = r'$A_{%s \rightarrow %s} = %i$'%(b, bus, p2p[b])
         ax.text(*n.buses.loc[b, ['x', 'y']] + [0, 0.2], A, zorder=8, color='white',
-                ha='center', va='center', bbox=bbox)
+                ha='center', va='bottom', bbox=bbox)
 
     source = p2p.drop(bus).index.item()
 
     bbox.update({'facecolor': fcolor})
-    A = r'$A_{%s \rightarrow %s,1} = %+i$'%(source, bus, round(subflow.item()))
+    A = r'$A_{1,%s} = %+i$'%(bus, round(subflow.item()))
     ax.text(*n.buses[['x', 'y']].mean() + [0, 0.2], A, zorder=8,
             ha='center', va='center', color='white',
             bbox=bbox)
 
     fig.tight_layout(h_pad=0, w_pad=0)
-    fig.savefig(f'../figures/example_allocation_bus{bus}_{altype}_{method}.png',
+    fig.savefig(f'{path}/example_allocation_bus{bus}_{power}_{method}.png',
                 bbox_inches='tight')
 
 # fig.tight_layout(h_pad=-2)
-# fig.savefig(f'../figures/example_allocation{tag}.png', bbox_inches='tight')
+# fig.savefig(f'{path}/example_allocation{tag}.png', bbox_inches='tight')
 
 
 
