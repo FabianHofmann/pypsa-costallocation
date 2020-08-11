@@ -13,4 +13,5 @@ code/__pycache__
 pypsa-eur
 .snakemake
 resources/*
+figures/*
 figures/*test*

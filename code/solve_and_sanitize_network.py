@@ -23,6 +23,7 @@ solver_name = solver_opts.pop('name')
 
 n = pypsa.Network(snakemake.input.network)
 
+n.mremove('StorageUnit', n.storage_units.query('carrier=="hydro"').index)
 for c in ['Generator', 'StorageUnit']:
     n.df(c).p_nom_max.update(n.df(c).query('not p_nom_extendable').p_nom)
     n.df(c)['p_nom_extendable'] = True
