@@ -51,8 +51,7 @@ if is_brownfield:
 
     # expanded
     bus_sizes = n.generators.eval('p_nom_ext = p_nom_opt - p_nom_min')\
-                 .groupby(["bus", "carrier"]).p_nom_ext.sum()\
-                     [lambda ds: ds>0.001]
+                 .groupby(["bus", "carrier"]).p_nom_ext.sum()
     plot = n.plot(
         bus_sizes=bus_sizes * bus_scale,
         line_widths=n.lines.eval('s_nom_opt - s_nom_min') * branch_scale,
