@@ -514,49 +514,62 @@ In the following, we illustrate the cost allocation and explain its functionalit
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\linewidth]{example_network.png}
-\caption{Illustrative example of a 2-bus network with one optimized time step. Fixed prices and constraining values are given in the left box for each bus and the transmission line. Optimized values are given in the right boxes. Bus~1 has a cheaper operational price $o$, capital prices are the same for both. As both generator capacities are constraint to 100~MW, the optimization also deploys the generator at bus~2. The resulting electricity prices $\lambda$ are then a composition of all prices for operation and capital investments. \vspace{-10pt}}
+\caption{Illustrative example of a 2-bus network with one optimized time step. Fixed prices and constraining values are given in the left box for each bus and the transmission line. Optimized values are given in the right boxes. Bus~1 has a cheaper operational price $o$, capital prices are the same for both. As both generator capacities are constraint to 100~MW, the optimization also deploys the generator at bus~2. The resulting electricity prices $\lambda$ are then a composition of all prices for operation and capital investments.}
 \label{fig:example_network}
 \end{figure*}
 % 
 % 
-The two buses are connected via one transmission line, each has one generator. Whereas the generator at bus~1 has an operational price of 50 \euro/\megawatthour, the generator at bus~2 has a higher operational price of 200~\euro/\megawatthour. For both the CAPEX rate is set to 500~\euro/MW and the maxmimal capacity is limited to $\capacitygenerationupper$~=~100~MW. The transmission line has a CAPEX rate of 100~\euro/MW and no upper capacity limit. With a demand of 60~MW at bus~1 and 90~MW at bus~2, the optimization expands the cheaper generator at bus~1 to its full limit of 100~MW. The 40~MW excess power not consumed at bus~1, flow to bus~2 where the generator is built with only 50~MW.  
+The two buses are connected via one transmission line, each has one generator. Whereas generator~1 (at bus~1) has an operational price of 50 \euro/\megawatthour, generator~2 (at bus~2) has a higher operational price of 200~\euro/\megawatthour. For both the CAPEX rate is set to 500~\euro/MW and the maxmimal capacity is limited to $\capacitygenerationupper$~=~100~MW. The transmission line has a CAPEX rate of 100~\euro/MW and no upper capacity limit. With a demand of 60~MW at bus~1 and 90~MW at bus~2, the optimization expands the cheaper generator at bus~1 to its full limit of 100~MW. The 40~MW excess power, not consumed at bus~1, flows to bus~2 where the generator is built with only 50~MW.  
 % 
-\begin{figure}[h!]
-    \begin{subfigure}[c]{\linewidth}
-    \includegraphics[width=\linewidth]{example_allocation_bus1.png}
+% 
+% \begin{figure}[h]
+%     \includegraphics[width=\linewidth]{example_allocation_bus1_gross_ebe.png}
+%     \label{fig:example_allocation_bus1}
+%     \caption{Power allocations of equivalently allocated gross power, type \ref{gross}\ref{ebe}, for bus~1 (a) and bus~2 (b) of the example network in \cref{fig:example_network}. Bus~1 retrieves 40~MW from itself and 20~MW from bus~2.}
+% \end{figure}
+% % 
+% \begin{figure}[b]
+%     \includegraphics[width=\linewidth]{example_allocation_bus2_gross_ebe.png}
+%     \label{fig:example_allocation_bus2_gross_ebe}
+%     \caption{Type \ref{gross}\ref{ebe} power allocation for bus~2 of the example network in \cref{fig:example_network}. Bus~2 retrieves 60~MW from bus~1 and self supplies 30~MW. The sum of both net flows equals the resulting flow of $f_1=40$~MW.}
+% \end{figure}
+% 
+\begin{figure*}[h!]
+    \begin{subfigure}[c]{.495\linewidth}
+    \includegraphics[width=\linewidth]{example_allocation_bus1_gross_ebe.png}
     \vspace{-40pt}
     \subcaption{}
     \label{fig:example_allocation_bus1}
     \end{subfigure}
-    \begin{subfigure}[c]{\linewidth}
-    \includegraphics[width=\linewidth]{example_allocation_bus2.png}
+    \begin{subfigure}[c]{.495\linewidth}
+    \includegraphics[width=\linewidth]{example_allocation_bus2_gross_ebe.png}
     \vspace{-40pt}
     \subcaption{}
-    \label{fig:example_allocation_bus2}
+    \label{fig:example_allocation_bus2_gross_ebe}
     \end{subfigure}
-    \caption{Power allocations for bus~1 (a) and bus~2 (b) of the example network in \cref{fig:example_network}. Bus~1 retrieves 40~MW from itself and 20~MW from bus~2. The latter in turn retrieves 60~MW from bus~1 and self supplies 30~MW.
-    The sum of both net flows equals the resulting flow of $f_1=40$~MW. \vspace{-20pt}}
+    \caption{Power allocations of equivalently allocated gross power, type \ref{gross}\ref{ebe}, for bus~1 (a) and bus~2 (b) of the example network in \cref{fig:example_network}. Bus~1 retrieves 40~MW from itself and 20~MW from bus~2. The latter in turn retrieves 60~MW from bus~1 and self supplies 30~MW.
+    The sum of both net flows equals the resulting flow of $f_1=40$~MW. \vspace{-0pt}}
     \label{fig:example_allocation}
-\end{figure}
-% 
+\end{figure*}
 % 
 % 
 \begin{figure}[h]
-\centering
-\includegraphics[width=\linewidth]{example_payoff.png}
-\caption{Full P2P cost allocation for the example setup shown in \cref{fig:example_network}. The payments are derived on the basis of \cref{eq:allocate_opexGeneration_detailed,eq:allocate_capexGeneration_detailed,eq:allocate_capexFlow_detailed}. Consumers at bus $n$ have to pay each generator proportional to their consumption. As we only consider one time step the proportionality applies for OPEX $\allocateopex$ and CAPEX $\mathcal{C}_n$. As bus~1 induces a relieving flow an line~1 and therefore ``prevents`` further tranmission expansion, it is rewarded proportional to the relief.}
-\label{fig:example_payoff}
-\end{figure}
+    \centering
+    \includegraphics[width=\linewidth]{example_payoff_gross_ebe.png}
+    \caption{Full P2P cost allocation for the example setup shown in \cref{fig:example_network}. The payments are derived on the basis of \cref{eq:allocate_opexGeneration_detailed,eq:allocate_capexGeneration_detailed,eq:allocate_capexFlow_detailed}. Consumers at bus $n$ have to pay each generator proportional to their consumption. As we only consider one time step the proportionality applies for OPEX $\allocateopex$ and CAPEX $\mathcal{C}_{n \rightarrow i}$. As bus~1 induces a relieving flow an line~1 and therefore ``prevents`` further tranmission expansion, it is rewarded proportional to the relief.}
+    \label{fig:example_payoff}
+\end{figure}    
+% 
 % 
 % 
 \subsubsection*{Allocating Gross Power using EBE (\ref{gross}\ref{ebe}) }
 
 \Cref{fig:example_allocation} shows the allocated transactions on basis of equvalently traded gross power (type \ref{gross}\ref{ebe}) for both buses 1~\&~2 separately. The resulting P2P payments are given in \cref{fig:example_payoff}.
-The upper graph \cref{fig:example_allocation_bus1} shows that $A_{1,1}=40$~MW at bus~1 are self-sustained. Consumers at bus~1 consequently pay 2k~\euro~OPEX and 22k~\euro~CAPEX to the generator at bus~1. The remaining 20~MW come from bus~2 and induce a subflow on line 1 of $A_{\ell = 1, 1} = -20$. As this flow is in contrary direction to the total flow, it is relieving the transmission system. This translates to a congestion reward for consumers at bus~1 of $c_{\ell=1} A_{\ell = 1, 1}$~=~2k~\euro\, which is exactly the cost that had to be spent on the transmission system if bus~1 didn't induce a relieving flow, see again \cref{fig:example_payoff}. 
+The upper graph \cref{fig:example_allocation_bus1} shows that $A_{1 \rightarrow 1}=40$~MW at bus~1 are self-sustained. With only one generator at bus 1, consumers at bus~1 consequently pay 2k~\euro~OPEX and 22k~\euro~CAPEX to the generator~1. The remaining 20~MW come from bus~2 and induce a subflow on line 1 of $A_{\ell = 1, 1} = -20$. As this flow is in contrary direction to the total flow, it is relieving the transmission system. This translates to a congestion reward for consumers at bus~1 of $c_{\ell=1} A_{\ell = 1, 1}$~=~2k~\euro\, which is exactly the cost that had to be spent on the transmission system if bus~1 didn't induce a relieving flow, see again \cref{fig:example_payoff}. 
 
 
 
-The lower graph \cref{fig:example_allocation_bus2} illustrates the impact of consumption at bus~2. As $d_2$ is higher than $d_1$ the retrievements from both generators are proportionately increased as well as the OPEX and CAPEX allocations to the generators. But instead of a relieving flow, consumers at bus~2 drive the burdening flow in direction of congestion. Hence the payoff to the transmission system is positive and much higher than for bus~1.
+The lower graph \cref{fig:example_allocation_bus2_gross_ebe} illustrates the impact of consumption at bus~2. As $d_2$ is higher than $d_1$ the retrievements from both generators are proportionately increased as well as the OPEX and CAPEX allocations to the generators. But instead of a relieving flow, consumers at bus~2 drive the burdening flow in direction of congestion. Hence the payoff to the transmission system is positive and much higher than for bus~1.
 
 The sum of all rows in the payoff matrix in \cref{fig:example_payoff} yields the revenues of the assets $m, \ell$. These values match their overall spendings, \textit{e.g.} the total revenue of the transmission line is 4k~\euro\, which equals the cost for investments $c_{1}\,F_{1}$. The sum of all columns yields the total payment of consumers at bus $n$. For example the sum of payments of consumers at bus~1 is 36k~\euro. This is exactly the electricity price of 600~\euro/MW times the consumption of 60~MW, $\lambda_1 d_1$. \\
 
@@ -565,14 +578,15 @@ The fact that OPEX and CAPEX allocations are proportional to the total consumpti
 
 \subsubsection*{Allocating Net Power using EBE (\ref{net}\ref{ebe}) }
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\linewidth]{example_payoff_net_ebe.png}
+    \caption{Full P2P cost allocation for the example setup shown in \cref{fig:example_network} when equivalently allocation net power injection (scheme \ref{ebe}\ref{net}).}
+    \label{fig:example_payoff_net_ebe}
+    \end{figure}    
+% 
 In contrast the to equivalent allocation of gross power production, netting out injections for each bus leads to less P2P payments. The resulting payment given in \cref{fig:example_payoff_net_ebe} builds on the allocated power flow shown \cref{fig:example_allocation_net_ebe} in \cref{sec:example_plots}. As bus~2 does not produce excess power, none of its power production is assigned to bus~1 and thus no payment of bus~1 to bus~2 allocated. Neither has bus~1 to pay fee to the transmission system as it only exports power. So all its consumers pay to its local generators. Bus~2 in constrast bear all CAPEX for the transmission system as well as CAPEX and OPEX for generators at bus~1.
-\begin{figure}[h]
-\centering
-\includegraphics[width=\linewidth]{example_payoff_net_ebe.png}
-\caption{Full P2P cost allocation for the example setup shown in \cref{fig:example_network} when equivalently allocation net power injection (scheme \ref{ebe}\ref{net}).}
-\label{fig:example_payoff_net_ebe}
-\end{figure}
-
+% 
 Again the cummulative payments per bus meet the nodal spendings $\lmp \, \demand$. The cummulative revenues per generator and transmission line meet the all CAPEX and OPEX.  
 
 As the other schemes \ref{ap}\ref{gross} - \ref{fbmc}\ref{net} apart from the EBE scheme don't distinguishably modify allocations within the presented example, we move on to a more realistic setup where systemic and local effects show up.

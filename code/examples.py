@@ -23,7 +23,7 @@ path = '../figures/example'
 
 net = True
 power = 'net' if net else 'gross'
-method = 'ptpf'
+method = 'ebe'
 
 
 n = pypsa.Network()
@@ -108,12 +108,12 @@ ax.legend(*handles_labels_for(color[ca_df.columns].rename(to_static_symbol)),
           ncol=3, loc='lower right', frameon=True, fontsize='large')
 ntl.plot.annotate_bus_names(n, ax, shift=0, bbox='fancy')
 fig.tight_layout()
-fig.savefig(f'{path}/example_network_{power}_{method}.png', bbox_inches='tight')
+fig.savefig(f'{path}/example_network.png', bbox_inches='tight')
 
 
 # %% payoff matrix
 
-to_indices = pd.Series(dict(payer='n', receiver_nodal_cost='m',
+to_indices = pd.Series(dict(payer='n', receiver_nodal_cost='s',
                             receiver_transmission_cost='$\ell$'))
 fig, axes = plt.subplots(1, 3, figsize=(5,2.5), sharey=True,
                           gridspec_kw={'width_ratios':[0.4,.4,.2]})
