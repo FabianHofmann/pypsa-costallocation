@@ -21,8 +21,6 @@ if __name__ == "__main__":
         snakemake = mock_snakemake('plot_expenditure_maps', nname='test-de10gf',
                                    method='ptpf', power='net')
 
-nice_names = snakemake.config['plotting']['nice_names']
-
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions)
 
@@ -57,7 +55,7 @@ if not os.path.isdir(snakemake.output.folder + '/by_carrier'):
     os.mkdir(snakemake.output.folder + '/by_carrier')
 
 for col in by_bus_carrier:
-    carrier = nice_names[col[1]]
+    carrier = n.carrers.nice_names[col[1]]
     expend = to_explanation[col[0]]
     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                             figsize=(5, 4))
