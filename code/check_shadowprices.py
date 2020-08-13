@@ -9,7 +9,7 @@ Created on Wed Aug 12 11:06:12 2020
 import pypsa
 
 
-n = pypsa.Network('/home/fabian/papers/costallocation/resources/de10gf.nc')
+n = pypsa.Network(snakemake.input[0])
 
 close = lambda df1, df2: ((df1/df2).fillna(1).round(2) == 1).all()
 

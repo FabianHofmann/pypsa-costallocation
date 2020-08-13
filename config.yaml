@@ -1,5 +1,21 @@
 
-scenario:
-    nname: de50gf
-    method: ptdf
-    power: net
+analysis:
+    nname: ['de10gf', 'de10bf', 'eur37bf']
+    method: ['ptpf']
+    power: ['net']
+
+
+
+
+# copied from pypsa-eur
+solving:
+  solver:
+    name: gurobi
+    threads: 4
+    method: 2 # barrier
+    crossover: 0
+    BarConvTol: 1.e-6
+    FeasibilityTol: 1.e-7
+    AggFill: 0
+    PreDual: 0
+    GURO_PAR_BARDENSETHRESH: 200

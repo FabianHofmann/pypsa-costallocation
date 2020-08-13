@@ -11,6 +11,7 @@ code/__pycache__
 *.out
 *.nc
 pypsa-eur
+pypsa-de
 .snakemake
 resources/*
 figures/*

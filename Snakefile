@@ -1,15 +1,38 @@
-configfile: "config_germany.yaml"
+configfile: "config.yaml"
 
 
 wildcard_constraints:
     clusters="[0-9][0-9]",
     field="(bf|gf)"
 
+rule all:
+    input:
+        expand('figures/{nname}.png', **config['analysis']),
+        expand('figures/bars_{nname}_{method}_{power}.png', **config['analysis']),
+        expand('figures/maps_expenditure_{nname}_{method}_{power}', **config['analysis']),
+        expand('figures/maps_payment_{nname}_{method}_{power}', **config['analysis']),
+        expand('figures/maps_price_{nname}_{method}_{power}', **config['analysis'])
+
 
 subworkflow pypsade:
+    workdir: "pypsa-de"
+    snakefile: "pypsa-de/Snakefile"
+    configfile: "config_germany.yaml"
+
+subworkflow pypsaeur:
     workdir: "pypsa-eur"
     snakefile: "pypsa-eur/Snakefile"
     configfile: "config_germany.yaml"
+
+
+rule solve_and_sanitize_european_network:
+    input:
+        network = pypsaeur('networks/elec_s_{clusters}_ec_lvopt_Ep.nc'),
+        regions = pypsaeur('resources/regions_onshore_elec_s_{clusters}.geojson')
+    output: 
+        network = 'resources/eur{clusters}{field}.nc',
+        regions = 'resources/eur{clusters}{field}_regions.geojson'
+    script: 'code/solve_and_sanitize_network.py'
 
 
 rule solve_and_sanitize_german_network:
@@ -43,10 +66,18 @@ rule plot_network:
     output: 'figures/{nname}.png'
     script: 'code/plot_network.py'
 
+rule check_shadowprices:
+    input:
+        network = 'resources/{nname}.nc'
+    output: 
+        touch('{nname}_shadowprices_checked')
+    script: 'code/check_shadowprices.py'
+
 
 rule allocate_network:
     input:
-        network = 'resources/{nname}.nc'
+        network = 'resources/{nname}.nc',
+        check = '{nname}_shadowprices_checked'
     output:
         costs = 'resources/costs_{nname}_{method}_{power}.nc',
         payments = 'resources/payments_{nname}_{method}_{power}.nc'
@@ -106,14 +137,7 @@ rule plot_allocated_payment:
     output:
         'figures/allocated_payment_sink_{sink}.png'
 
-rule all:
-    input: 'figures/{nname}.png',
-            'figures/bars_{nname}_{method}_{power}.png', 
-            'figures/maps_expenditure_{nname}_{method}_{power}', 
-            'figures/maps_payment_{nname}_{method}_{power}', 
-            'figures/maps_price_{nname}_{method}_{power}',
-    output: 
-            touch('{nname}_{method}_{power}')
+
 
 # Local Variables:
 # mode: python
