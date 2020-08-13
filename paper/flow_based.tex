@@ -491,16 +491,16 @@ Further, as literature has often pointed out, the EBE principal \ref{ebe} does n
 \subsection{Numerical Example}
 \label{sec:numerical_example}
 
-
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\linewidth]{example_network.png}
+    \caption{Illustrative example of a 2-bus network with one optimized time step. Fixed prices and constraining values are given in the left box for each bus and the transmission line. Optimized values are given in the right boxes. Bus~1 has a cheaper operational price $o$, capital prices are the same for both. As both generator capacities are constraint to 100~MW, the optimization also deploys the generator at bus~2. The resulting electricity prices $\lambda$ are then a composition of all prices for operation and capital investments.}
+    \label{fig:example_network}
+    \end{figure*}
+    % 
 In the following, we illustrate the cost allocation and explain its functionality by taking the example of a two bus system with one optimized time step, shown in \cref{fig:example_network}. \\
 % 
 % 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\linewidth]{example_network.png}
-\caption{Illustrative example of a 2-bus network with one optimized time step. Fixed prices and constraining values are given in the left box for each bus and the transmission line. Optimized values are given in the right boxes. Bus~1 has a cheaper operational price $o$, capital prices are the same for both. As both generator capacities are constraint to 100~MW, the optimization also deploys the generator at bus~2. The resulting electricity prices $\lambda$ are then a composition of all prices for operation and capital investments.}
-\label{fig:example_network}
-\end{figure*}
 % 
 % 
 The two buses are connected via one transmission line, each has one generator. Whereas generator~1 (at bus~1) has an operational price of 50 \euro/\megawatthour, generator~2 (at bus~2) has a higher operational price of 200~\euro/\megawatthour. For both the CAPEX rate is set to 500~\euro/MW and the maxmimal capacity is limited to $\capacitygenerationupper$~=~100~MW. The transmission line has a CAPEX rate of 100~\euro/MW and no upper capacity limit. With a demand of 60~MW at bus~1 and 90~MW at bus~2, the optimization expands the cheaper generator at bus~1 to its full limit of 100~MW. The 40~MW excess power, not consumed at bus~1, flows to bus~2 where the generator is built with only 50~MW.  

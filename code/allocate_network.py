@@ -73,7 +73,7 @@ mu_gen = by_bus_carrier(n.pnl(c).mu_upper, c, n)
 c = 'StorageUnit'
 if not n.df(c).empty:
     mu_sus = (n.pnl(c).mu_state_of_charge / n.df(c).efficiency_dispatch
-              - n.pnl(c).mu_upper_p_dispatch)
+              + n.pnl(c).mu_upper_p_dispatch + n.pnl(c).mu_lower_p_dispatch)
     # mu_sus_ch = (n.pnl(c).mu_state_of_charge * n.df(c).efficiency_store
     #              - n.pnl(c).mu_lower_p_store)
     mu_sus = by_bus_carrier(mu_sus, c, n)

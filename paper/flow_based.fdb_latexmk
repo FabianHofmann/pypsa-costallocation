@@ -1,11 +1,11 @@
 # Fdb version 3
-["biber flow_based"] 1597307870 "flow_based.bcf" "flow_based.bbl" "flow_based" 1597308825
-  "flow_based.bcf" 1597308825 89129 443fd194f7c760e37e56c6e22a23b5b1 ""
+["biber flow_based"] 1597307870 "flow_based.bcf" "flow_based.bbl" "flow_based" 1597323101
+  "flow_based.bcf" 1597323100 89129 443fd194f7c760e37e56c6e22a23b5b1 ""
   "main.bib" 1593679181 18842 9b54c6a1058c4e2403f56ce89757d3db ""
   (generated)
-  "flow_based.blg"
   "flow_based.bbl"
-["pdflatex"] 1597308824 "/home/fabian/papers/costallocation/paper/flow_based.tex" "/home/fabian/papers/costallocation/paper/flow_based.pdf" "flow_based" 1597308825
+  "flow_based.blg"
+["pdflatex"] 1597323099 "/home/fabian/papers/costallocation/paper/flow_based.tex" "/home/fabian/papers/costallocation/paper/flow_based.pdf" "flow_based" 1597323101
   "../figures/example/example_allocation_bus1_gross_ebe.png" 1597176173 19989 37e6b5bfd1d950f8aa757de5fa830959 ""
   "../figures/example/example_allocation_bus1_net_ebe.png" 1597176992 15418 a91ee64ade573d5fa466914262f1c1ad ""
   "../figures/example/example_allocation_bus2_gross_ebe.png" 1597176174 22416 d79d927f9bb40176bbea4ec2d60e59ba ""
@@ -15,8 +15,8 @@
   "../figures/example/example_payoff_net_ebe.png" 1597176892 21713 bd9744f282d4cb3b639ce7f282fcdfd9 ""
   "../figures/price_decomposition.png" 1590346467 36995 a6eebbff99e2274b1970b29f832279f5 ""
   "/etc/texmf/web2c/texmf.cnf" 1538646361 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/fabian/papers/costallocation/paper/flow_based.aux" 1597308825 24934 c68aee61c9586bf27351ecf846ddc627 ""
-  "/home/fabian/papers/costallocation/paper/flow_based.tex" 1597308824 60097 1b36b56f9f783adc6c7a1bd05fe1a65d ""
+  "/home/fabian/papers/costallocation/paper/flow_based.aux" 1597323100 24934 7abc3debfcc617681d8d824e1eb64460 ""
+  "/home/fabian/papers/costallocation/paper/flow_based.tex" 1597323098 60126 8efd6a0b6940d5f22f5c04c7d0ae6671 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1480098698 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy8.tfm" 1480098698 1120 200be8b775682cdf80acad4be5ef57e4 ""
@@ -129,17 +129,17 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1520210507 32485 c64754543d8ac501bea6e75e209ea521 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1549633310 2362390 03c3374ab30d769141e026d5b29b6398 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1549633383 3208446 b73ea17ff4a0ca842bdbe10d8368ff92 ""
-  "flow_based.aux" 1597308825 24934 c68aee61c9586bf27351ecf846ddc627 ""
+  "flow_based.aux" 1597323100 24934 7abc3debfcc617681d8d824e1eb64460 ""
   "flow_based.bbl" 1597307871 22779 64ddf21b864fffa76e2fda7957308277 "biber flow_based"
-  "flow_based.out" 1597308825 1314 b4fe5f9f38a02b30534c20e84cfbfc08 ""
-  "flow_based.run.xml" 1597308825 2341 fff48326eca90ac4b24b73ee63c8ad39 ""
-  "flow_based.tex" 1597308824 60097 1b36b56f9f783adc6c7a1bd05fe1a65d ""
+  "flow_based.out" 1597323100 1314 b4fe5f9f38a02b30534c20e84cfbfc08 ""
+  "flow_based.run.xml" 1597323100 2341 fff48326eca90ac4b24b73ee63c8ad39 ""
+  "flow_based.tex" 1597323098 60126 8efd6a0b6940d5f22f5c04c7d0ae6671 ""
   (generated)
-  "flow_based.aux"
-  "flow_based.out"
-  "flow_based.pdf"
-  "/home/fabian/papers/costallocation/paper/flow_based.pdf"
-  "flow_based.log"
   "flow_based.bcf"
+  "/home/fabian/papers/costallocation/paper/flow_based.pdf"
+  "flow_based.pdf"
+  "flow_based.aux"
+  "flow_based.log"
+  "flow_based.out"
   "/home/fabian/papers/costallocation/paper/flow_based.log"
   "flow_based.run.xml"
