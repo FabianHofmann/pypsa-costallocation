@@ -1,0 +1,61 @@
+# SPDX-FileCopyrightText: : 2017-2020 The PyPSA-Eur Authors
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: costallocation
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+  - http://conda.anaconda.org/gurobi
+dependencies:
+  - python
+  - pip
+
+  - pypsa>=0.17.1
+  - atlite=0.0.3
+
+  # Dependencies of the workflow itself
+  - xlrd
+  - scikit-learn
+  - pycountry
+  - seaborn
+  - snakemake-minimal
+  - memory_profiler
+  - yaml
+  - pytables
+  - lxml
+  - powerplantmatching>=0.4.3
+
+  # Second order dependencies which should really be deps of atlite
+  - xarray
+  - netcdf4
+  - bottleneck
+  - toolz
+  - dask
+  - progressbar2
+  - pyyaml>=5.1.0
+
+  # Include ipython so that one does not inadvertently drop out of the conda
+  # environment by calling ipython
+  - ipython
+
+  # GIS dependencies:
+  - cartopy
+  - fiona
+  - proj
+  - pyshp
+  - geopandas
+  - rasterio
+  - shapely
+  - libgdal
+
+  # Solvers
+  - gurobi:gurobi # until https://github.com/conda-forge/pypsa-feedstock/issues/4 closed
+
+  - pip:
+    - vresutils==0.3.1
+    - git+https://github.com/PyPSA/glaes.git#egg=glaes
+    - git+https://github.com/PyPSA/geokit.git#egg=geokit
+    - git+https://github.com/FRESNA/netallocation.git#egg=netallocation
+    - cdsapi

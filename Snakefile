@@ -25,16 +25,6 @@ subworkflow pypsaeur:
     configfile: "config_germany.yaml"
 
 
-rule solve_and_sanitize_european_network:
-    input:
-        network = pypsaeur('networks/elec_s_{clusters}_ec_lvopt_Ep.nc'),
-        regions = pypsaeur('resources/regions_onshore_elec_s_{clusters}.geojson')
-    output: 
-        network = 'resources/eur{clusters}{field}.nc',
-        regions = 'resources/eur{clusters}{field}_regions.geojson'
-    script: 'code/solve_and_sanitize_network.py'
-
-
 rule solve_and_sanitize_german_network:
     input:
         network = pypsade('networks/elec_s_{clusters}_ec_lvopt_Ep.nc'),
@@ -42,6 +32,16 @@ rule solve_and_sanitize_german_network:
     output: 
         network = 'resources/de{clusters}{field}.nc',
         regions = 'resources/de{clusters}{field}_regions.geojson'
+    script: 'code/solve_and_sanitize_network.py'
+
+
+rule solve_and_sanitize_european_network:
+    input:
+        network = pypsaeur('networks/elec_s_{clusters}_ec_lvopt_Ep.nc'),
+        regions = pypsaeur('resources/regions_onshore_elec_s_{clusters}.geojson')
+    output: 
+        network = 'resources/eur{clusters}{field}.nc',
+        regions = 'resources/eur{clusters}{field}_regions.geojson'
     script: 'code/solve_and_sanitize_network.py'
 
 
