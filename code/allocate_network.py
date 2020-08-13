@@ -58,6 +58,14 @@ o = o * snapshot_weightings(n) - ep.reindex_like(o, fill_value=0)
 A_opex = A * o
 
 
+"""
+WATCH OUT! In the paper the constraints always have a '<=' sign which lead
+to positive shadowprices.
+This is not the case for the pypsa.linopf implementation -> we have
+to adjust the mu's in some cases in order to take into account that they're
+not positive.
+"""
+
 # capex one port
 c = 'Generator'
 mu_gen = by_bus_carrier(n.pnl(c).mu_upper, c, n)
