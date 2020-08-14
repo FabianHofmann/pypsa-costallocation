@@ -12,12 +12,15 @@ import pypsa
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('check_shadowprices', nname='acdc')
+        snakemake = mock_snakemake('check_shadowprices', nname='de10gf')
 
 
 n = pypsa.Network(snakemake.input[0])
 
-close = lambda df1, df2: ((df1/df2).fillna(1).round(2) == 1).all()
+tol = (n.objective + n.objective_constant)*1e-8
+
+
+close = lambda df1, df2: ((df1 - df2).abs() < tol ).all()
 
 # Generators
 
@@ -30,7 +33,7 @@ assert close(g.capital_cost, (gt.mu_upper.mul(gt.p_max_pu, fill_value=1)).sum()
 investment = g.eval('p_nom_opt * capital_cost')
 revenue = (gt.mu_upper * gt.p).sum()
 
-correction_factor_upper = g.capital_cost / (g.capital_cost + g.mu_upper_p_nom)
+correction_factor_upper = g.capital_cost / (g.capital_cost - g.mu_upper_p_nom)
 correction_term_lower = g.mu_lower_p_nom * g.p_nom_opt / gt.p.sum()
 
 revenue_corrected = ((gt.mu_upper * correction_factor_upper
