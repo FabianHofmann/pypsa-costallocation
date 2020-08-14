@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
 n = pypsa.Network(snakemake.input[0])
 
-tol = (n.objective + n.objective_constant)*1e-8
+tol = (n.objective + n.objective_constant)*1e-6
 
 
 close = lambda df1, df2: ((df1 - df2).abs() < tol ).all()
