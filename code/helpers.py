@@ -20,6 +20,15 @@ from pypsa.linopt import get_var, get_con, Dict
 from pandas import concat
 
 
+def adjust_shadowprice(gamma, n, c):
+    upper = (n.df(c).capital_cost /  (n.df(c).capital_cost - n.df(c).mu_upper_p_nom))
+    p = 'p_dispatch' if c == 'StorageUnit' else 'p'
+    lower = (n.df(c).mu_lower_p_nom * n.df(c).p_nom_opt / n.pnl(c)[p].sum())
+    lower = lower.replace(np.inf, 0)
+
+    return gamma * upper + lower
+
+
 
 def add_noise(n, noise_order=1e-4, only_static=True):
     for c, attr in pypsa.descriptors.nominal_attrs.items():

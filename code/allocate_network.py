@@ -19,12 +19,14 @@ from netallocation.breakdown import (expand_by_sink_type,
 from netallocation.convert import peer_to_peer, virtual_patterns
 from netallocation.cost import (nodal_co2_price, snapshot_weightings)
 from config import source_dims
+from helpers import adjust_shadowprice
 
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
         snakemake = mock_snakemake('allocate_network', nname='acdc',
                                    method='ptpf', power='net')
+
 
 n = pypsa.Network(snakemake.input.network)
 
@@ -68,17 +70,15 @@ A_opex = A * o
 # capex one port
 c = 'Generator'
 # calculate corrections for capacity restrictions
-correction_upper = n.df(c).capital_cost / (n.df(c).capital_cost + n.df(c).mu_upper_p_nom)
-correction_lower = n.df(c).mu_lower_p_nom * n.df(c).p_nom_opt / n.pnl(c).p.sum()
-correction_lower = correction_lower.replace(np.inf, 0)
-mu_gen = by_bus_carrier(n.pnl(c).mu_upper * correction_upper + correction_lower, c, n)
+mu_gen = by_bus_carrier(adjust_shadowprice(n.pnl(c).mu_upper, n, c), c, n)
 
 
 c = 'StorageUnit'
 if not n.df(c).empty:
+    # calculate corrections for capacity restrictions
     mu_sus = (n.pnl(c).mu_state_of_charge / n.df(c).efficiency_dispatch
               + n.pnl(c).mu_upper_p_dispatch + n.pnl(c).mu_lower_p_dispatch)
-    mu_sus = by_bus_carrier(mu_sus, c, n)
+    mu_sus = by_bus_carrier(adjust_shadowprice(mu_sus, n, c), c, n)
     mu = xr.concat([mu_gen, mu_sus], dim='carrier').rename(source_dims).fillna(0)
 else:
     mu = mu_gen.rename(source_dims).fillna(0)
