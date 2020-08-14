@@ -43,6 +43,10 @@
 \newcommand{\state}{s_{i,t}}
 \newcommand{\capacity}{S_{i}}
 \newcommand{\costfactor}{\gamma_{i,t}}
+\newcommand{\capacityupper}{\bar{S}}
+\newcommand{\capacitylower}{\ubar{S}}
+\newcommand{\muuppernom}{\bar{\mu}^\text{nom}_{i}}
+\newcommand{\mulowernom}{\ubar{\mu}^\text{nom}_{i}}
 
 %generation
 \newcommand{\generation}{g_{s,t}}
@@ -310,7 +314,11 @@ Finally, the total contribution from node $n$ at time $t$ to the cost term $\cos
     \label{tab:cost_allocation_map}
 \end{table*}
     
-Now, assume a network with generators $s$, transmission lines $\ell$ and storage units $r$. Each asset $i = \{s, \ell, r\}$ adds an term for OPEX and a term for CAPEX to the total system cost $\totalcost$. The operational price for an asset $i$ is given by $o_i$, the capital price for one unit capacity expansion by $c_i$. For example the OPEX occasioned by generator $s$ is given by 
+Now, assume a network with generators $s$, transmission lines $\ell$ and storage units $r$. Each asset $i = \{s, \ell, r\}$ adds an term for OPEX and a term for CAPEX to the total system cost $\totalcost$.
+
+\subsection{Allocating OPEX}
+
+Let the operational price for an asset $i$ be given by $o_i$. Then, for example the OPEX occasioned by generator $s$ is given by 
 \begin{align}
     \opexgeneration_s = \sum_t \operationalpricegeneration \, \generation 
     \label{eq:opexgeneration}
@@ -330,10 +338,10 @@ The quantity
 can be considered as the power that is produced by generator $s$ and consumed at node $n$ at time $t$. \\
 In the same manner, we can follow the scheme allocate OPEX for flow $\flow$ and storage unit dispatch $\storagedispatch$. As we assume a bidirectional flow on line $\ell$, the OPEX is set proportional to the absolute value of the flow. The upper section in \cref{tab:cost_allocation_map} shows the mapping of variables to \cref{eq:general_scheme} in order to define the full OPEX allocation. 
 
+\subsection{CAPEX Allocation}
+For the CAPEX allocation, it becomes crucial to look at the individual relations between operational state $\state$ and the capacity limit. For all assets, let the capital price for one unit capacity expansion be denoted by $c_i$.  All quantities for the CAPEX allocation, which we now discuss in detail, are summarized in the middle section of \cref{tab:cost_allocation_map}.  
 
-For the CAPEX allocation, it becomes crucial to look at the individual relations between operational state $\state$ and the capacity limit. All quantities for the CAPEX allocation, which we now discuss in detail in the following, are summarized in the middle section of \cref{tab:cost_allocation_map}.  
-
-\subsubsection*{Allocate CAPEX on Generators}
+\subsubsection{Generators}
 
 The nominal capacity $\capacitygeneration$ constrains the generation $\generation$ in the form of 
 \begin{align}
@@ -356,7 +364,7 @@ How does this allocation behave? According to the polluter pays principle, it di
 When summing over all CAPEX payments to generator $s$ in \cref{eq:allocate_capexGeneration_detailed} , we can use \cref{eq:state_allocation_constraint,eq:no_profit_capex_generation} to see that each generator retrieves exactly the cost that were spent to build the capacity $\capacitygeneration$.
  
 
-\subsubsection*{Allocate CAPEX on Transmission Lines}
+\subsubsection{Transmission Lines}
 
 The transmission capacity $\capacityflow$ limits the flow $\flow$ in both directions,
 \begin{align}
@@ -389,7 +397,7 @@ can be interpreted as the flow that the demand at node $n$ and time $t$ causes o
 The  shadowprices $\muupperflow$ and $\mulowerflow$ again can be seen as a measure for necessity of transmission investments at $\ell$ at time $t$. Hence, the definition of $\allocatecapexflow$ states that consumers, which retrieve power flowing on congested lines, yielding a bound \cref{eq:upper_flow_capacity_constraint} or \eqref{eq:lower_flow_capacity_constraint}, pay compensations for the resulting investments at $\ell$. Again the sum of all CAPEX payments to line $\ell$ equals the total CAPEX spent. This is seen when summing \cref{eq:allocate_capexFlow_detailed} over all buses and time steps and using \cref{eq:state_allocation_constraint,eq:no_profit_capex_flow}
 
 
-\subsubsection*{Allocate CAPEX on Storages}
+\subsubsection{Storages}
 
 % The complementary slackness of the above constraints,  
 % \begin{align}
@@ -405,13 +413,7 @@ In a simplified storage model, $\capacitystorage$ limits the storage dispatch $\
     &- \sum_t \lmp \incidencestorage  \storagecharge \Forall{r} 
     \label{eq:no_profit_capex_storage}
 \end{align}
-where $\muupperstoragedispatch$ and $\mulowerstoragedispatch$ are the shadow prices of the upper and lower capacity bound of the power dispatch of $r$ and $\mustateofcharge$ is the shadow price of the energy balance constraint.   
-\Cref{eq:no_profit_capex_storage} matches the form of \cref{eq:cost_decomposition}. However when applying \cref{eq:cost_allocation} it follows naturally that to assume $\partial \storagecharge / \partial \demand = 0$, 
-% that 
-% \begin{align}
-%     \pdv{\storagecharge}{\demand} \demand = 0 
-% \end{align}
-implying that the when a storage charges power, it does not supply any demand. Rather it stands with the demand on the consumer side, retrieving power from producing assets. 
+where $\muupperstoragedispatch$ and $\mulowerstoragedispatch$ are the shadow prices of the upper and lower dispatch capacity bound and $\mustateofcharge$ is the shadow price of the energy balance constraint. When applying the cost allocation scheme \cref{eq:general_scheme}, it stands to reason to assume that $\partial \storagecharge / \partial \demand \cdot \demand = 0$, implying that the when a storage charges power, it does not supply any demand. Rather it stands with the demand on the consumer side, retrieving power from producing assets. 
 This leaves us with 
 \begin{align}
      \allocatecapexstorage = \left(\muupperstoragedispatch - \mulowerstoragedispatch  + (\efficiencydispatch )^{-1} \mustateofcharge \right) \allocatestoragedispatch
@@ -424,9 +426,15 @@ The latter only allocates dispatched power of storage $r$. Note that this will b
 % \begin{align}
 %     \capexstorage_r + \remainingcost^E_r = \sum_n \allocatecapexstorage
 % \end{align} 
-However the fact that storages themselves ``buy`` power from other the assets, when charging, the cost allocation in \cref{eq:general_scheme} may be applied to the consumption of storages themselves, by replacing the demand $\demand$ with the power charge $\storagecharge$ in \cref{eq:general_scheme}. This derives payments that a storage unit $r$ has to pay to asset $i$, namely $\cost_{r \rightarrow i}$. The sum of those payments due to $r$ will the add up to $\remainingcost^E_r$.
+It is crucial to note that like this, storage units perform a redistribution of money, and therefore distort the cost allocation. So, certain share of what is allocated to the CAPEX of a storage is in another time step spent by the storage in order to buy power from other assets. This effect scales with the amount of installed capacity.
 
-\subsubsection*{Allocate Emission Expenditures}
+It is possible to incorporate this redistribution effect into the cost allocation, by replacing the demand $\demand$ with the power charge $\storagecharge$ in \cref{eq:general_scheme}. Then, the derived payments that a storage unit $r$ has to pay to asset $i$ is given by $\cost_{r \rightarrow i}$. The sum of those payments due to $r$ will the sum up to $\remainingcost^E_r$. 
+
+% In a final step we can still allocate all cost to the demand $\demand$. However, this would require knowledge about when the power $\storagedispatch$ was initially charged: Given the amount of power $A_{r, t_{in} \rightarrow t_{out}}$ that is charged by storage $r$ at time step $t_{in}$ and discharged at $t_{out}$ ... 
+
+
+
+\subsection{Allocate Emission Expenditures}
 
 Given a fix price for emissions in CO$_2$ equivalents $\emissionprice$, the cost term for emission adds up to 
 \begin{align}
@@ -438,6 +446,52 @@ We use the same set of equation as given through \cref{eq:general_scheme,eq:opex
  \allocateemissioncost = \emissionprice \, \emission \, \allocategeneration
 \end{align}
 associated with generator $s$.
+
+\subsection{Capacity Expansion Limit}
+
+In more realistic setups, generators, lines or other assets can only be built up to a certain limit. This might caused by land use restrictions or social acceptance problems. %In the following give a general solution how the cost allocation may handle this.  
+However, when constraining the capacity $\capacity$  for a subset $I$ of assets to an upper limit,
+\begin{align}
+    \capacity - \capacityupper \le 0 \resultsin{\muuppernom} \hpad \Forall{i \in I}
+\label{eq:capacityexpansionmaximum}
+\end{align}
+the zero profit condition for asset $i$ alters and the revenues don't match the expenditures anymore. More precisely, the revenue from the shadow prices given in \cref{tab:cost_allocation_map} exceed the CAPEX $\cost_i$ by $\remainingcost_i$, thus  
+\begin{align}
+ \cost_i - \remainingcost_i =  \sum_t \costfactor \, \state \Forall{i}
+ \label{eq:capex_generation_duality_bf2}
+\end{align}
+where the difference is given by 
+\begin{align}
+    \remainingcost_i = - \muuppernom \capacity
+    \Forall{i}
+\end{align}
+In order to take this effect into account for the cost allocation, we update the cost factors in \cref{tab:cost_allocation_map} to  
+
+\begin{align}
+    \costfactor \rightarrow \dfrac{c_i}{c_i + \muuppergenerationnom}\, \costfactor
+\end{align}
+This ensures that the allocated CAPEX sum up to the actual CAPEX at asset $i$ (and \cref{eq:cost_payback} holds).
+
+\subsection{Brownfield Constraints}
+
+In order to take already built infrastructure into account, the capacity $\capacity$ can be constrained to a minimum required capacity $\capacitylower$. Mathematically this translates to 
+\begin{align}
+    \capacitylower - \capacity  \le 0 \resultsin{\mulowernom} \hpad \forall{i \in I}
+\label{eq:capacityexpansionminimum}
+\end{align}
+Again, such a setup alters the zero profit condition of asset $i$ as soon as the constraint becomes binding. 
+In that case, asset $i$ does not collect enough revenue in order to match the CAPEX by a difference is given by 
+\begin{align}
+    \remainingcost_i = \mulowernom \capacity
+    \Forall{i}
+\end{align}
+% In order to take this effect into account for the cost allocation, we update the cost factors in \cref{tab:cost_allocation_map} to  
+
+% \begin{align}
+%     \costfactor \rightarrow \dfrac{c_i}{c_i + \muuppergenerationnom}\, \costfactor
+% \end{align}
+% This ensures that the allocated CAPEX sum up to the actual CAPEX at asset $i$ (and \cref{eq:cost_payback} holds).
+
 
 
 \section{Assumptions on Power Allocations}
