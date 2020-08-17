@@ -55,7 +55,7 @@ if not os.path.isdir(snakemake.output.folder + '/by_carrier'):
     os.mkdir(snakemake.output.folder + '/by_carrier')
 
 for col in by_bus_carrier:
-    carrier = n.carriers.nice_names[col[1]]
+    carrier = n.carriers.nice_name[col[1]]
     expend = to_explanation[col[0]]
     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                             figsize=(5, 4))
