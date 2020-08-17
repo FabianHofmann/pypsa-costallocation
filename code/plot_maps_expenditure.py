@@ -43,7 +43,8 @@ for col in by_bus:
     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                             figsize=(5, 4))
     ax.spines['geo'].set_visible(False)
-    regions.plot(column=by_bus[col], legend=True, ax=ax,
+    regions.plot(column=by_bus[col].reindex(regions.index, fill_value=0),
+                 legend=True, ax=ax,
                  transform=ccrs.PlateCarree(), aspect='equal',
                  legend_kwds={'label': f'Total {to_explanation[col]} [€]'})
     fig.canvas.draw()
@@ -60,7 +61,8 @@ for col in by_bus_carrier:
     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                             figsize=(5, 4))
     ax.spines['geo'].set_visible(False)
-    regions.plot(column=by_bus_carrier[col], legend=True, ax=ax,
+    regions.plot(column=by_bus[col].reindex(regions.index, fill_value=0),
+                 legend=True, ax=ax,
                  transform=ccrs.PlateCarree(), aspect='equal',
                  legend_kwds={'label': f'{carrier} {expend} [€]'})
     fig.canvas.draw()
