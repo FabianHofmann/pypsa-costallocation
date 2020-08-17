@@ -34,6 +34,9 @@ def adjust_shadowprice(gamma, c, n, s=None):
 
     return (gamma + lower) * upper
 
+    # denom = (n.df(c).capital_cost - n.df(c)['mu_upper_'+nom] - n.df(c)['mu_lower_'+nom])
+    # return gamma * (n.df(c).capital_cost /  denom)
+
 
 
 def add_noise(n, noise_order=1e-4, only_static=True):

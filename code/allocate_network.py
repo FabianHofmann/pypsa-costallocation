@@ -30,7 +30,8 @@ if __name__ == "__main__":
 
 n = pypsa.Network(snakemake.input.network)
 
-method = snakemake.wildcards.method
+method = snakemake.wildcards.method.split('-')[0]
+adjust_mu = '-adj' in snakemake.wildcards.method
 aggregated = snakemake.wildcards.power == 'net'
 if 'co2_limit' in n.global_constraints.index:
     co2_price = 0
@@ -76,7 +77,9 @@ A_opex = A * o
 # capex one port
 c = 'Generator'
 # calculate corrections for capacity restrictions
-mu_gen = by_bus_carrier(adjust_shadowprice(n.pnl(c).mu_upper, c, n), c, n)
+mu_gen = n.pnl(c).mu_upper
+mu_gen = adjust_shadowprice(mu_gen, c, n) if adjust_mu else mu_gen
+mu_gen = by_bus_carrier(mu_gen, c, n)
 
 
 c = 'StorageUnit'
@@ -84,7 +87,8 @@ if not n.df(c).empty:
     # calculate corrections for capacity restrictions
     mu_sus = (n.pnl(c).mu_state_of_charge / n.df(c).efficiency_dispatch
               + n.pnl(c).mu_upper_p_dispatch + n.pnl(c).mu_lower_p_dispatch)
-    mu_sus = by_bus_carrier(adjust_shadowprice(mu_sus, c, n), c, n)
+    mu_sus = adjust_shadowprice(mu_sus, c, n) if adjust_mu else mu_sus
+    mu_sus = by_bus_carrier(mu_sus, c, n)
     mu = xr.concat([mu_gen, mu_sus], dim='carrier').rename(source_dims).fillna(0)
 else:
     mu = mu_gen.rename(source_dims).fillna(0)
@@ -94,8 +98,11 @@ A_capex = mu * A
 # capex branch
 names = ['component', 'branch_i']
 comps = set(A_f.component.data)
-mu = pd.concat({c: n.pnl(c).mu_upper + n.pnl(c).mu_lower for c in comps},
-               axis=1, names=names)
+mu = []
+for c in comps:
+    mu_b = n.pnl(c).mu_upper + n.pnl(c).mu_lower
+    mu.append(adjust_shadowprice(mu_b, c, n) if adjust_mu else mu_b)
+mu = pd.concat(mu, axis=1, names=names, keys=comps)
 mu = xr.DataArray(mu, dims=['snapshot', 'branch'])
 A_capex_branch = (A_f * mu).rename(bus='sink')
 

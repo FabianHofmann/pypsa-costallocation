@@ -455,22 +455,22 @@ However, when constraining the capacity $\capacity$  for a subset $I$ of assets 
     \capacity - \capacityupper \le 0 \resultsin{\muuppernom} \hpad \Forall{i \in I}
 \label{eq:capacityexpansionmaximum}
 \end{align}
-the zero profit condition for asset $i$ alters and the revenues don't match the expenditures anymore. More precisely, the revenue from the shadow prices given in \cref{tab:cost_allocation_map} exceed the CAPEX $\cost_i$ by $\remainingcost_i$, thus  
-\begin{align}
- \cost_i - \remainingcost_i =  \sum_t \costfactor \, \state \Forall{i}
- \label{eq:capex_generation_duality_bf2}
-\end{align}
-where the difference is given by 
+the zero profit condition for asset $i$ alters. Then the revenues don't match the expenditures as soon as the constraint becomes binding. More precisely, the revenue from the shadow prices given in \cref{tab:cost_allocation_map} exceed the CAPEX $\cost_i$ by $\remainingcost_i$,  where  $\remainingcost_i$ is given by
 \begin{align}
     \remainingcost_i = - \muuppernom \capacity
     \Forall{i}
 \end{align}
-In order to take this effect into account for the cost allocation, we update the cost factors in \cref{tab:cost_allocation_map} to  
-
+% \begin{align}
+%  \cost_i - \remainingcost_i =  \sum_t \costfactor \, \state \Forall{i}
+%  \label{eq:capex_generation_duality_bf2}
+% \end{align}
+For the cost allocation, these means the prices in \cref{tab:cost_allocation_map} have to be adjusted, as otherwise consumers would pay too much. As we show in ... updating the prices by a fix ratio 
 \begin{align}
-    \costfactor \rightarrow \dfrac{c_i}{c_i + \muuppergenerationnom}\, \costfactor
+    \costfactor \rightarrow \dfrac{c_i}{c_i + \muuppernom}\, \costfactor
+    \label{eq:adjustment_lowernom}
 \end{align}
-This ensures that the allocated CAPEX sum up to the actual CAPEX at asset $i$ (and \cref{eq:cost_payback} holds).
+will ensure that the allocated CAPEX sum up to the actual CAPEX at asset $i$, meaning that \cref{eq:cost_payback} holds. Note that $\muuppernom$ is a positive number, so the adjustment cannot increase the paid price. 
+
 
 \subsection{Brownfield Constraints}
 
@@ -479,16 +479,18 @@ In order to take already built infrastructure into account, the capacity $\capac
     \capacitylower - \capacity  \le 0 \resultsin{\mulowernom} \hpad \forall{i \in I}
 \label{eq:capacityexpansionminimum}
 \end{align}
-Again, such a setup alters the zero profit condition of asset $i$ as soon as the constraint becomes binding. 
+Again, such a setup alters the zero profit condition of asset $i$, as soon as the constraint becomes binding. 
 In that case, asset $i$ does not collect enough revenue in order to match the CAPEX. The difference is given by 
 \begin{align}
     \remainingcost_i = \mulowernom \capacity
     \Forall{i}
 \end{align}
+In constrast to 
 Again, we can balance this effect out by updating the cost factor to 
 \begin{align}
-    \costfactor \rightarrow \costfactor + 
+    \costfactor \rightarrow \costfactor +  \dfrac{\mulowernom \capacity}{\sum_t \state}
 \end{align}
+As $\mulowernom$ is a positive number, this will increase the price and therefore the revenue for asset $i$. 
 
 % In order to take this effect into account for the cost allocation, we update the cost factors in \cref{tab:cost_allocation_map} to  
 

@@ -1,11 +1,12 @@
 
 analysis:
-    nname: ['de10gf', 'de10bf', 'eur50bf', 'de50bf', 'de50bf']
-    method: ['ptpf']
+    nname: ['de10gf', 'de10bf', 'eur50bf', 'de50gf', 'de50bf']
+    method: ['ptpf', 'ptdf-adj']
     power: ['net']
 
 
 line_volume_limit: 1.2
+adjust_shadowprices: false
 
 
 # =============================================================================
