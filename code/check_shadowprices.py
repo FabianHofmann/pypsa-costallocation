@@ -19,7 +19,12 @@ n = pypsa.Network(snakemake.input[0])
 
 tol = (n.objective + n.objective_constant)*1e-6
 
-
+if 'lv_limit' in n.global_constraints.index:
+    for c in n.branch_components:
+        if n.df(c).empty: continue
+        mu_upper = (n.global_constraints.at['lv_limit', 'mu'] * n.df(c).length)
+        nom = pypsa.descriptors.nominal_attrs[c]
+        n.df(c)['mu_upper_'+nom] += mu_upper
 
 close = lambda df1, df2: ((df1 - df2).abs() < tol ).all()
 
@@ -51,8 +56,6 @@ revenue = ((lt.mu_upper + lt.mu_lower) * lt.p0).sum()
 
 gamma = lt.mu_upper + lt.mu_lower
 gamma_adj = adjust_shadowprice(gamma, 'Line', n)
-if 'lv_limit' in n.global_constraints.index:
-    gamma_adj += - n.global_constraints.at['lv_limit', 'mu'] * l.length
 revenue = (gamma_adj * lt.p0).sum()
 assert close(investment, revenue)
 
@@ -66,8 +69,6 @@ revenue = ((lt.mu_upper + lt.mu_lower) * lt.p0).sum()
 lv_mu = - n.global_constraints.at['lv_limit', 'mu']
 gamma = lt.mu_upper + lt.mu_lower
 gamma_adj = adjust_shadowprice(gamma, 'Link', n)
-if 'lv_limit' in n.global_constraints.index:
-    gamma_adj += - n.global_constraints.at['lv_limit', 'mu'] * l.length
 revenue = (gamma_adj * lt.p0).sum()
 assert close(investment, revenue)
 

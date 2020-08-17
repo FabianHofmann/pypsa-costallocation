@@ -32,7 +32,7 @@ def adjust_shadowprice(gamma, c, n, s=None):
     lower = (n.df(c)['mu_lower_'+nom] * n.df(c)[nom +'_opt'] / n.pnl(c)[p].sum())
     lower = lower.replace(np.inf, 0)
 
-    return gamma * upper + lower
+    return (gamma + lower) * upper
 
 
 

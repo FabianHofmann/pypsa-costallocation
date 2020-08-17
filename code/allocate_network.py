@@ -36,6 +36,12 @@ if 'co2_limit' in n.global_constraints.index:
     co2_price = 0
 else:
     co2_price = snakemake.config['costs']['emission_prices']['co2']
+if 'lv_limit' in n.global_constraints.index:
+    for c in n.branch_components:
+        if n.df(c).empty: continue
+        mu_upper = (n.global_constraints.at['lv_limit', 'mu'] * n.df(c).length)
+        nom = pypsa.descriptors.nominal_attrs[c]
+        n.df(c)['mu_upper_'+nom] += mu_upper
 
 
 ds = ntl.allocate_flow(n, method=method, aggregated=aggregated)  # q=0
