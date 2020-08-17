@@ -5,6 +5,7 @@ analysis:
     power: ['net']
 
 
+line_volume_limit: 1.2
 
 
 # =============================================================================
@@ -13,7 +14,7 @@ analysis:
 
 costs:
   emission_prices: # only used with the option Ep
-    co2: 100. # This must be the same as in the other config files!
+    co2: 130. # This must be the same as in the other config files!
 
 solving:
   solver:

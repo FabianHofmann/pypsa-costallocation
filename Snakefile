@@ -70,14 +70,14 @@ rule check_shadowprices:
     input:
         network = 'resources/{nname}.nc'
     output: 
-        touch('{nname}_shadowprices_checked')
+        touch('resources/{nname}_shadowprices_checked')
     script: 'code/check_shadowprices.py'
 
 
 rule allocate_network:
     input:
         network = 'resources/{nname}.nc',
-        check = '{nname}_shadowprices_checked'
+        check = 'resources/{nname}_shadowprices_checked'
     output:
         costs = 'resources/costs_{nname}_{method}_{power}.nc',
         payments = 'resources/payments_{nname}_{method}_{power}.nc'

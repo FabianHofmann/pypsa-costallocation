@@ -70,7 +70,7 @@ A_opex = A * o
 # capex one port
 c = 'Generator'
 # calculate corrections for capacity restrictions
-mu_gen = by_bus_carrier(adjust_shadowprice(n.pnl(c).mu_upper, n, c), c, n)
+mu_gen = by_bus_carrier(adjust_shadowprice(n.pnl(c).mu_upper, c, n), c, n)
 
 
 c = 'StorageUnit'
@@ -78,7 +78,7 @@ if not n.df(c).empty:
     # calculate corrections for capacity restrictions
     mu_sus = (n.pnl(c).mu_state_of_charge / n.df(c).efficiency_dispatch
               + n.pnl(c).mu_upper_p_dispatch + n.pnl(c).mu_lower_p_dispatch)
-    mu_sus = by_bus_carrier(adjust_shadowprice(mu_sus, n, c), c, n)
+    mu_sus = by_bus_carrier(adjust_shadowprice(mu_sus, c, n), c, n)
     mu = xr.concat([mu_gen, mu_sus], dim='carrier').rename(source_dims).fillna(0)
 else:
     mu = mu_gen.rename(source_dims).fillna(0)

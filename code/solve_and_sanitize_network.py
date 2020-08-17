@@ -7,6 +7,7 @@ Created on Fri Jul 10 22:16:58 2020
 """
 
 import pypsa
+import pandas as pd
 import numpy as np
 import shutil
 
@@ -24,11 +25,28 @@ solver_name = solver_opts.pop('name')
 n = pypsa.Network(snakemake.input.network)
 
 n.mremove('StorageUnit', n.storage_units.query('carrier=="hydro"').index)
+n.remove('Carrier', 'hydro')
 for c in ['Generator', 'StorageUnit']:
     n.df(c).p_nom_max.update(n.df(c).query('not p_nom_extendable').p_nom)
     n.df(c)['p_nom_extendable'] = True
 
 n.mremove('Line', n.lines.query('num_parallel == 0').index)
+
+
+# set lv limit here, as long as #175 is not solved
+if 'line_volume_limit' in snakemake.config:
+    links_dc_b = n.links.carrier == 'DC' if not n.links.empty else pd.Series()
+    lines_s_nom = n.lines.s_nom.where(n.lines.type == '',
+                                      np.sqrt(3) * n.lines.num_parallel *
+                                      n.lines.type.map(n.line_types.i_nom) *
+                                      n.lines.bus0.map(n.buses.v_nom))
+    total_line_volume = ((lines_s_nom * n.lines['length']).sum() +
+                         n.links.loc[links_dc_b].eval('p_nom * length').sum())
+    line_volume = snakemake.config['line_volume_limit'] * total_line_volume
+    n.add('GlobalConstraint', 'lv_limit',
+          type='transmission_volume_expansion_limit',
+          sense='<=', constant=line_volume, carrier_attribute='AC, DC')
+
 
 if snakemake.wildcards.field == 'bf':
     for c, attr in pypsa.descriptors.nominal_attrs.items():

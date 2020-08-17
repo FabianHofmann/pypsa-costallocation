@@ -169,7 +169,7 @@ costs:
     H2: 0.
     battery: 0.
   emission_prices: # only used with the option Ep
-    co2: 100.
+    co2: 130.
 
 solving:
   options:

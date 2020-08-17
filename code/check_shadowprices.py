@@ -34,7 +34,7 @@ assert close(g.capital_cost, (gt.mu_upper.mul(gt.p_max_pu, fill_value=1)).sum()
 investment = g.eval('p_nom_opt * capital_cost')
 revenue = (gt.mu_upper * gt.p).sum()
 
-gamma = adjust_shadowprice(gt.mu_upper, n, 'Generator')
+gamma = adjust_shadowprice(gt.mu_upper, 'Generator', n)
 revenue = (gamma * gt.p).sum()
 assert close(investment.where(gt.p.sum()>0, 0), revenue)
 
@@ -42,7 +42,34 @@ assert close(investment.where(gt.p.sum()>0, 0), revenue)
 
 # Lines/Links
 
+l = n.lines
+lt = n.lines_t
 
+investment = l.eval('s_nom_opt * capital_cost')
+revenue = ((lt.mu_upper + lt.mu_lower) * lt.p0).sum()
+
+
+gamma = lt.mu_upper + lt.mu_lower
+gamma_adj = adjust_shadowprice(gamma, 'Line', n)
+if 'lv_limit' in n.global_constraints.index:
+    gamma_adj += - n.global_constraints.at['lv_limit', 'mu'] * l.length
+revenue = (gamma_adj * lt.p0).sum()
+assert close(investment, revenue)
+
+
+l = n.links
+lt = n.links_t
+
+investment = l.eval('p_nom_opt * capital_cost')
+revenue = ((lt.mu_upper + lt.mu_lower) * lt.p0).sum()
+
+lv_mu = - n.global_constraints.at['lv_limit', 'mu']
+gamma = lt.mu_upper + lt.mu_lower
+gamma_adj = adjust_shadowprice(gamma, 'Link', n)
+if 'lv_limit' in n.global_constraints.index:
+    gamma_adj += - n.global_constraints.at['lv_limit', 'mu'] * l.length
+revenue = (gamma_adj * lt.p0).sum()
+assert close(investment, revenue)
 
 
 # Storage Units
@@ -65,7 +92,7 @@ investment = s.eval('p_nom_opt * capital_cost')
 
 gamma = (st.mu_lower_p_dispatch + st.mu_upper_p_dispatch +
          st.mu_state_of_charge / s.efficiency_dispatch)
-gamma_adj = adjust_shadowprice(gamma, n, 'StorageUnit')
+gamma_adj = adjust_shadowprice(gamma, 'StorageUnit', n)
 revenue = (gamma_adj * st.p_dispatch - gamma * st.p_store).sum()
 assert close(investment.where(st.p_dispatch.sum()>0, 0), revenue)
 

@@ -7,7 +7,7 @@ Created on Mon Jun 29 13:26:32 2020
 """
 
 import pypsa
-from pypsa.linopt import set_int_index
+from pypsa.linopt import set_int_index, get_var, get_con, Dict
 import pandas as pd
 from scipy.sparse.linalg import inv as spinv
 from scipy.sparse import diags
@@ -16,14 +16,20 @@ from numpy.random import rand
 from numpy.testing import assert_allclose
 from pandas import DataFrame, Series
 from numpy import array
-from pypsa.linopt import get_var, get_con, Dict
+from pypsa.descriptors import nominal_attrs
 from pandas import concat
 
 
-def adjust_shadowprice(gamma, n, c):
-    upper = (n.df(c).capital_cost /  (n.df(c).capital_cost - n.df(c).mu_upper_p_nom))
-    p = 'p_dispatch' if c == 'StorageUnit' else 'p'
-    lower = (n.df(c).mu_lower_p_nom * n.df(c).p_nom_opt / n.pnl(c)[p].sum())
+def adjust_shadowprice(gamma, c, n, s=None):
+    nom = nominal_attrs[c]
+    upper = (n.df(c).capital_cost /  (n.df(c).capital_cost - n.df(c)['mu_upper_'+nom]))
+    if c == 'StorageUnit':
+        p = 'p_dispatch'
+    elif c in n.branch_components:
+        p = 'p0'
+    else:
+        p = 'p'
+    lower = (n.df(c)['mu_lower_'+nom] * n.df(c)[nom +'_opt'] / n.pnl(c)[p].sum())
     lower = lower.replace(np.inf, 0)
 
     return gamma * upper + lower
