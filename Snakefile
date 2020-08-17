@@ -22,7 +22,7 @@ subworkflow pypsade:
 subworkflow pypsaeur:
     workdir: "pypsa-eur"
     snakefile: "pypsa-eur/Snakefile"
-    configfile: "config_germany.yaml"
+    configfile: "config_europe.yaml"
 
 
 rule solve_and_sanitize_german_network:
