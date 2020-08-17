@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from netallocation.plot import injection_plot_kwargs
+from helpers import adjust_shadowprice
 from config import to_static_symbol, color, to_total_symbol
 # plt.rc('tex', preamble=r'\Large')
 plt.rc('text', usetex=True)
@@ -21,7 +22,7 @@ plt.rc('font', family='serif')
 
 path = '../figures/example'
 
-net = True
+net = False
 power = 'net' if net else 'gross'
 method = 'ebe'
 
@@ -44,6 +45,7 @@ n.madd('Generator', [0, 1], bus=[n0, n1], p_nom_extendable=True,
 n.madd('Line', ['1'], s_nom_extendable=True, x=0.01, bus0=[n0], bus1=[n1],
        capital_cost=c_l)
 n.lopf(pyomo=False, keep_shadowprices=True, solver_name='gurobi')
+n.generators_t.mu_upper = adjust_shadowprice(n.generators_t.mu_upper, n, 'Generator')
 
 sn = 'now'
 
