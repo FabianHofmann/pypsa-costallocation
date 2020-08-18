@@ -18,11 +18,11 @@ import os
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_expenditure_maps', nname='test-de10gf',
+        snakemake = mock_snakemake('plot_expenditure_maps', nname='test-de10bf',
                                    method='ptpf', power='net')
 
 n = pypsa.Network(snakemake.input.network)
-regions = gpd.read_file(snakemake.input.regions)
+regions = gpd.read_file(snakemake.input.regions).set_index('name')
 
 expenditures = xr.open_dataset(snakemake.input.costs).sum(['sink', 'snapshot'])\
                  .sel(sink_carrier='Load', drop=True) \
@@ -32,6 +32,7 @@ expenditures = xr.open_dataset(snakemake.input.costs).sum(['sink', 'snapshot'])\
 by_bus_carrier = (expenditures.drop('branch_investment_cost')
                   .drop_dims('branch').to_dataframe().unstack('carrier'))
 by_bus = by_bus_carrier.sum(level=0, axis=1)
+by_bus_carrier = by_bus_carrier.loc[:, by_bus_carrier.sum()>0.0001]
 by_branch = expenditures.branch_investment_cost.to_series()
 
 # regions = regions.assign(production = production.mean())
@@ -57,11 +58,11 @@ if not os.path.isdir(snakemake.output.folder + '/by_carrier'):
 
 for col in by_bus_carrier:
     carrier = n.carriers.nice_name[col[1]]
-    expend = to_explanation[col[0]]
+    expend = to_explanation[col[0]].replace('Production ', '')
     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                             figsize=(5, 4))
     ax.spines['geo'].set_visible(False)
-    regions.plot(column=by_bus[col].reindex(regions.index, fill_value=0),
+    regions.plot(column=by_bus_carrier[col].reindex(regions.index, fill_value=0),
                  legend=True, ax=ax,
                  transform=ccrs.PlateCarree(), aspect='equal',
                  legend_kwds={'label': f'{carrier} {expend} [€]'})
