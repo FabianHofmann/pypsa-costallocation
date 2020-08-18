@@ -12,23 +12,6 @@
   isbn = {978-88-941051-2-4}
 }
 
-@article{achayuthakan_electricity_2010-1,
-  title = {Electricity {{Tracing}} in {{Systems With}} and {{Without Circulating Flows}}: {{Physical Insights}} and {{Mathematical Proofs}}},
-  shorttitle = {Electricity {{Tracing}} in {{Systems With}} and {{Without Circulating Flows}}},
-  author = {Achayuthakan, Chira and Dent, Chris J. and Bialek, Janusz W. and Ongsakul, Weerakorn},
-  year = {2010},
-  month = may,
-  volume = {25},
-  pages = {1078--1087},
-  issn = {0885-8950, 1558-0679},
-  doi = {10.1109/TPWRS.2009.2037506},
-  abstract = {This paper provides new insights into the electricity tracing methodology, by representing the inverted tracing upstream and downstream distribution matrices in the form of matrix power series and by applying linear algebra analysis. The th matrix power represents the contribution of each node to power flows in the other nodes through paths of length exactly in the digraph of flows. Such a representation proves the link between graph-based and linear equation-based approaches for electricity tracing. It also makes it possible to explain an earlier observation that circulating flows, which result in a cyclic directed graph of flows, can be detected by appearance of elements greater than one on the leading diagonal of the inverted tracing distribution matrices. Most importantly, for the first time a rigorous mathematical proof of the invertibility of the tracing distribution matrices is given, along with a proof of convergence for the matrix power series used in the paper; these proofs also allow an analysis of the conditioning of the tracing distribution matrices. Theoretical results are illustrated throughout using simple network examples.},
-  file = {/home/fabian/Zotero/storage/VRWGUBD8/Achayuthakan et al. - 2010 - Electricity Tracing in Systems With and Without Ci.pdf},
-  journal = {IEEE Transactions on Power Systems},
-  language = {en},
-  number = {2}
-}
-
 @article{bialek_tracing_1996,
   title = {Tracing the Flow of Electricity},
   author = {Bialek, J.},
@@ -86,6 +69,22 @@
   pmid = {31792173}
 }
 
+@article{corine2012,
+  title = {Corine {{Land Cover}} ({{CLC}}) 2012, Version 18.5.1},
+  author = {{EEA}},
+  year = {2012},
+  publisher = {{European Environment Agency}}
+}
+
+@misc{entso-e_entso-e_nodate,
+  title = {{{ENTSO}}-{{E Transmission System Map}}},
+  author = {{ENTSO-E}},
+  file = {/home/fabian/Zotero/storage/K2JLACRL/map.html},
+  howpublished = {https://www.entsoe.eu/data/map/},
+  journal = {Grid Map},
+  language = {en-us}
+}
+
 @article{galiana_transmission_2003,
   title = {Transmission Network Cost Allocation Based on Equivalent Bilateral Exchanges},
   author = {Galiana, F.D. and Conejo, A.J. and Gil, H.A.},
@@ -134,21 +133,46 @@
   number = {2}
 }
 
-@article{hofmann_flow_2020-1,
-  title = {Flow {{Allocation}} in {{Meshed AC}}-{{DC Electricity Grids}}},
-  author = {Hofmann, Fabian and Schlott, Markus and Kies, Alexander and St{\"o}cker, Horst},
-  year = {2020},
+@article{horsch_flow_2018-1,
+  title = {Flow Tracing as a Tool Set for the Analysis of Networked Large-Scale Renewable Electricity Systems},
+  author = {H{\"o}rsch, Jonas and Sch{\"a}fer, Mirko and Becker, Sarah and Schramm, Stefan and Greiner, Martin},
+  year = {2018},
   month = mar,
-  volume = {13},
-  pages = {1233},
-  issn = {1996-1073},
-  doi = {10.3390/en13051233},
-  abstract = {In power systems, flow allocation (FA) methods enable to allocate the usage and costs of the transmission grid to each single market participant. Based on predefined assumptions, the power flow is split into isolated generator-specific or producer-specific sub-flows. Two prominent FA methods, Marginal Participation (MP) and Equivalent Bilateral Exchanges (EBEs), build upon the linearized power flow and thus on the Power Transfer Distribution Factors (PTDFs). Despite their intuitive and computationally efficient concepts, they are restricted to networks with passive transmission elements only. As soon as a significant number of controllable transmission elements, such as high-voltage direct current (HVDC) lines, operate in the system, they lose their applicability. This work reformulates the two methods in terms of Virtual Injection Patterns (VIPs), which allows one to efficiently introduce a shift parameter q to tune contributions of net sources and net sinks in the network. In this work, major properties and differences in the methods are pointed out, and it is shown how the MP and EBE algorithms can be applied to generic meshed AC-DC electricity grids: by introducing a pseudo-impedance     {$\omega$} \textasciimacron{}    , which reflects the operational state of controllable elements and allows one to extend the PTDF matrix under the assumption of knowing the current flow in the system. Basic properties from graph theory are used to solve for the pseudo-impedance in dependence of the position within the network. This directly enables, e.g., HVDC lines to be considered in the MP and EBE algorithms. The extended methods are applied to a low-carbon European network model (PyPSA-EUR) with a spatial resolution of 181 nodes and an 18\% transmission expansion compared to today's total transmission capacity volume. The allocations of MP and EBE show that countries with high wind potentials profit most from the transmission grid expansion. Based on the average usage of transmission system expansion, a method of distributing operational and capital expenditures is proposed. In addition, it is shown how injections from renewable resources strongly drive country-to-country allocations and thus cross-border electricity flows.},
+  volume = {96},
+  pages = {390--397},
+  issn = {01420615},
+  doi = {10.1016/j.ijepes.2017.10.024},
+  file = {/home/fabian/Zotero/storage/TR5PXZU7/Hörsch et al. - 2018 - Flow tracing as a tool set for the analysis of net.pdf},
+  journal = {International Journal of Electrical Power \& Energy Systems},
+  language = {en}
+}
+
+@misc{horsch_jonas_pypsa-eur_2020,
+  title = {{{PyPSA}}-{{Eur}}: {{An Open Optimisation Model}} of the {{European Transmission System}} ({{Code}})},
+  shorttitle = {{{PyPSA}}-{{Eur}}},
+  author = {H{\"o}rsch, Jonas and Neumann, Fabian and Hofmann, Fabian and Schlachtberger, David and Brown, Tom},
+  year = {2020},
+  month = jun,
+  doi = {10.5281/ZENODO.3520874},
+  abstract = {{$<$}strong{$>$}PyPSA-Eur{$<$}/strong{$>$} is an open model dataset of the European power system at the transmission network level that covers the full ENTSO-E area. The software pipeline to assemble the model is developed at https://github.com/PyPSA/PyPSA-eur and documentation is available at pypsa-eur.readthedocs.io. The optimization is now performed using the {$<$}code{$>$}pyomo=False{$<$}/code{$>$} setting in the {$<$}code{$>$}pypsa.lopf.network\_lopf{$<$}/code{$>$}. This speeds up the solving process significantly and consumes much less memory. The inclusion of additional constraints were adjusted to the new implementation. They are all passed to the {$<$}code{$>$}network\_lopf{$<$}/code{$>$} function via the {$<$}code{$>$}extra\_functionality{$<$}/code{$>$} argument. The rule {$<$}code{$>$}trace\_solve\_network{$<$}/code{$>$} was integrated into the rule {$<$}code{$>$}solve\_network{$<$}/code{$>$} and can be activated via configuration with {$<$}code{$>$}solving: options: track\_iterations: true{$<$}/code{$>$}. The charging and discharging capacities of batteries modelled as store-link combination are now coupled (\#116). An updated extract of the ENTSO-E Transmission System Map (including Malta) was added to the repository using the GridKit tool. This tool has been updated to retrieve up-to-date map extracts using a single script. The update extract features 5322 buses, 6574 lines, 46 links. (\#118). Added FSFE REUSE compliant license information. Documentation now licensed under CC-BY-4.0 (\#160). Added a 30 minute video introduction and a 20 minute video tutorial Networks now store a color and a nicely formatted name for each carrier, accessible via {$<$}code{$>$}n.carrier['color']{$<$}/code{$>$} and {$<$}code{$>$}n.carrier['nice\_name']{$<$}/code{$>$}(networks after {$<$}code{$>$}elec.nc{$<$}/code{$>$}). Added an option to skip iterative solving usually performed to update the line impedances of expanded lines at {$<$}code{$>$}solving: options: skip\_iterations:{$<$}/code{$>$}. {$<$}code{$>$}snakemake{$<$}/code{$>$} rules for retrieving cutouts and the natura raster can now be disabled independently from their respective rules to build them; via {$<$}code{$>$}config.*yaml{$<$}/code{$>$} (\#136). Removed the {$<$}code{$>$}id{$<$}/code{$>$} column for custom power plants in {$<$}code{$>$}data/custom\_powerplants.csv{$<$}/code{$>$} to avoid custom power plants with conflicting ids getting attached to the wrong bus (\#131). Add option {$<$}code{$>$}renewables: \{carrier\}: keep\_all\_available\_areas:{$<$}/code{$>$} to use all availabe weather cells for renewable profile and potential generation. The default ignores weather cells where only less than 1 MW can be installed (\#150). Added a function {$<$}code{$>\_$}helpers.load\_network(){$<$}/code{$>$} which loads a network with overridden components specified in {$<$}code{$>$}snakemake.config['override\_components']{$<$}/code{$>$} (\#128). Bugfix in {$<$}code{$>$}base\_network{$<$}/code{$>$} which now finds all closest links, not only the first entry (\#143). Bugfix in {$<$}code{$>$}cluster\_network{$<$}/code{$>$} which now skips recalculation of link parameters if there are no links (\#149). Added information on pull requests to contribution guidelines (\#151). Improved documentation on open-source solver setup and added usage warnings. Updated {$<$}code{$>$}conda{$<$}/code{$>$} environment regarding {$<$}code{$>$}pypsa{$<$}/code{$>$}, {$<$}code{$>$}pyproj{$<$}/code{$>$}, {$<$}code{$>$}gurobi{$<$}/code{$>$}, {$<$}code{$>$}lxml{$<$}/code{$>$}. This release requires PyPSA v0.17.0.},
+  copyright = {Open Access},
+  howpublished = {Zenodo}
+}
+
+@article{horsch_pypsa-eur_2018,
+  title = {{{PyPSA}}-{{Eur}}: {{An}} Open Optimisation Model of the {{European}} Transmission System},
+  shorttitle = {{{PyPSA}}-{{Eur}}},
+  author = {H{\"o}rsch, Jonas and Hofmann, Fabian and Schlachtberger, David and Brown, Tom},
+  year = {2018},
+  month = nov,
+  volume = {22},
+  pages = {207--215},
+  issn = {2211467X},
+  doi = {10.1016/j.esr.2018.08.012},
   copyright = {All rights reserved},
-  file = {/home/fabian/Zotero/storage/8QRH3XN3/Hofmann et al. - 2020 - Flow Allocation in Meshed AC-DC Electricity Grids.pdf},
-  journal = {Energies},
-  language = {en},
-  number = {5}
+  file = {/home/fabian/Zotero/storage/R33TMIQV/Hörsch et al. - 2018 - PyPSA-Eur An open optimisation model of the Europ.pdf},
+  journal = {Energy Strategy Reviews},
+  language = {English}
 }
 
 @inproceedings{mekonnen_power_2013,
@@ -180,6 +204,13 @@
   isbn = {978-1-4244-1296-9 978-1-4244-1298-3}
 }
 
+@article{natura2000,
+  title = {Natura 2000 Data - the {{European}} Network of Protected Sites},
+  author = {{EEA}},
+  year = {2016},
+  publisher = {{European Environment Agency}}
+}
+
 @article{rudnick_marginal_1995,
   title = {Marginal Pricing and Supplement Cost Allocation in Transmission Open Access},
   author = {Rudnick, H. and Palma, R. and Fernandez, J.E.},
@@ -202,6 +233,20 @@
   doi = {10.1007/978-1-4613-1683-1},
   file = {/home/fabian/Zotero/storage/4E3DKYTI/Schweppe et al. - 1988 - Spot Pricing of Electricity.pdf},
   isbn = {978-1-4612-8950-0 978-1-4613-1683-1},
+  language = {en}
+}
+
+@article{tranberg_flow-based_2018-1,
+  title = {Flow-Based Nodal Cost Allocation in a Heterogeneous Highly Renewable {{European}} Electricity Network},
+  author = {Tranberg, Bo and {Schwenk-Nebbe}, Leon J. and Sch{\"a}fer, Mirko and H{\"o}rsch, Jonas and Greiner, Martin},
+  year = {2018},
+  month = may,
+  volume = {150},
+  pages = {122--133},
+  issn = {03605442},
+  doi = {10.1016/j.energy.2018.02.129},
+  file = {/home/fabian/Zotero/storage/79BNGMDP/Tranberg et al. - 2018 - Flow-based nodal cost allocation in a heterogeneou.pdf},
+  journal = {Energy},
   language = {en}
 }
 

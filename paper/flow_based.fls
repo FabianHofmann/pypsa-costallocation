@@ -195,6 +195,9 @@ INPUT ../figures/example/example_payoff_gross_ebe.png
 INPUT /home/fabian/papers/costallocation/paper/../figures/example/example_payoff_net_ebe.png
 INPUT ../figures/example/example_payoff_net_ebe.png
 INPUT ../figures/example/example_payoff_net_ebe.png
+INPUT /home/fabian/papers/costallocation/paper/../figures/de50bf.png
+INPUT ../figures/de50bf.png
+INPUT ../figures/de50bf.png
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti8.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti7.tfm
 INPUT /home/fabian/papers/costallocation/paper/../figures/example/example_allocation_bus1_net_ebe.png

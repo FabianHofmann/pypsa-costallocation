@@ -12,6 +12,8 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 
+from pypsa.descriptors import nominal_attrs
+
 from netallocation.utils import (reindex_by_bus_carrier as by_bus_carrier,
                                  get_as_dense_by_bus_carrier)
 from netallocation.breakdown import (expand_by_sink_type,
@@ -19,7 +21,7 @@ from netallocation.breakdown import (expand_by_sink_type,
 from netallocation.convert import peer_to_peer, virtual_patterns
 from netallocation.cost import (nodal_co2_price, snapshot_weightings)
 from config import source_dims
-from helpers import adjust_shadowprice
+# from helpers import adjust_shadowprice
 
 if __name__ == "__main__":
     if 'snakemake' not in globals():
@@ -41,7 +43,7 @@ if 'lv_limit' in n.global_constraints.index:
     for c in n.branch_components:
         if n.df(c).empty: continue
         mu_upper = (n.global_constraints.at['lv_limit', 'mu'] * n.df(c).length)
-        nom = pypsa.descriptors.nominal_attrs[c]
+        nom = nominal_attrs[c]
         n.df(c)['mu_upper_'+nom] += mu_upper
 
 
@@ -73,13 +75,17 @@ A_opex = A * o
 # not positive.
 # =============================================================================
 
+def sparcity_share(c):
+    mu_upper = 'mu_upper_' + nominal_attrs[c]
+    return (- n.df(c)[mu_upper] /
+            (n.df(c).capital_cost - n.df(c)[mu_upper]))
+
 
 # capex one port
 c = 'Generator'
 # calculate corrections for capacity restrictions
-mu_gen = n.pnl(c).mu_upper
-mu_gen = adjust_shadowprice(mu_gen, c, n) if adjust_mu else mu_gen
-mu_gen = by_bus_carrier(mu_gen, c, n)
+# mu_gen = adjust_shadowprice(mu_gen, c, n) if adjust_mu else mu_gen
+mu_gen = by_bus_carrier(n.pnl(c).mu_upper, c, n)
 
 
 c = 'StorageUnit'
@@ -87,25 +93,31 @@ if not n.df(c).empty:
     # calculate corrections for capacity restrictions
     mu_sus = (n.pnl(c).mu_state_of_charge / n.df(c).efficiency_dispatch
               + n.pnl(c).mu_upper_p_dispatch + n.pnl(c).mu_lower_p_dispatch)
-    mu_sus = adjust_shadowprice(mu_sus, c, n) if adjust_mu else mu_sus
+    # mu_sus = adjust_shadowprice(mu_sus, c, n) if adjust_mu else mu_sus
     mu_sus = by_bus_carrier(mu_sus, c, n)
     mu = xr.concat([mu_gen, mu_sus], dim='carrier').rename(source_dims).fillna(0)
 else:
     mu = mu_gen.rename(source_dims).fillna(0)
 A_capex = mu * A
 
+share_sparcity = xr.concat([by_bus_carrier(sparcity_share(c), c, n)
+                            for c in  ['Generator', 'StorageUnit']],
+                            dim='carrier').rename(source_dims).fillna(0)
+A_sparcity = A_capex * share_sparcity
+
 
 # capex branch
 names = ['component', 'branch_i']
 comps = set(A_f.component.data)
-mu = []
-for c in comps:
-    mu_b = n.pnl(c).mu_upper + n.pnl(c).mu_lower
-    mu.append(adjust_shadowprice(mu_b, c, n) if adjust_mu else mu_b)
-mu = pd.concat(mu, axis=1, names=names, keys=comps)
+mu = pd.concat([n.pnl(c).mu_upper + n.pnl(c).mu_lower for c in comps],
+               axis=1, names=names, keys=comps)
 mu = xr.DataArray(mu, dims=['snapshot', 'branch'])
 A_capex_branch = (A_f * mu).rename(bus='sink')
 
+share_sparcity = pd.concat([sparcity_share(c) for c in comps], keys=comps,
+                           names=names)
+share_sparcity = xr.DataArray(share_sparcity, dims='branch')
+A_sparcity_branch = A_capex_branch * share_sparcity
 
 # collect cost allocations
 ca = xr.Dataset({'one_port_operational_cost': A_opex,
@@ -114,11 +126,15 @@ ca = xr.Dataset({'one_port_operational_cost': A_opex,
                  'branch_investment_cost': A_capex_branch})
 ca = expand_by_sink_type(ca, n, chunksize=5)
 
+sa = xr.Dataset({'one_port_sparcity_cost': A_sparcity,
+                 'branch_sparcity_cost': A_sparcity_branch})
+sa = expand_by_sink_type(sa, n, chunksize=5)
+
 payments = ca.sum(['source', 'source_carrier', 'branch'])
 nodal_payments = payments.to_array().sum(['variable', 'sink_carrier'])
 
-
 ca.reset_index('branch').to_netcdf(snakemake.output.costs)
+sa.reset_index('branch').to_netcdf(snakemake.output.sparcity)
 payments.to_netcdf(snakemake.output.payments)
 
 # the total revenue for generators and branches is obtained by

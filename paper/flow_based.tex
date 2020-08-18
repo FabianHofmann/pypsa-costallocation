@@ -3,7 +3,7 @@
 \usepackage[left=1.80cm, right=1.80cm, top=2.00cm, bottom=2.00cm]{geometry}
 \usepackage{amsmath,bm}
 \usepackage[colorlinks]{hyperref}
-\usepackage[backend=biber]{biblatex}
+\usepackage[backend=biber, bibencoding=utf8]{biblatex}
 \usepackage{eurosym}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{subcaption}
@@ -133,20 +133,7 @@
 
 
 
-% allocation quantities
-\newcommand{\allocategeneration}[1][s, n]{A_{#1,t}}
-\newcommand{\allocatestoragedispatch}[1][r, n]{A_{#1,t}}
-\newcommand{\allocatepeer}[1][m \rightarrow n]{A_{#1,t}}
-\newcommand{\allocateflow}[1][n]{A_{\ell,#1,t}}
-\newcommand{\allocatetransaction}[1][s \rightarrow n]{A_{#1,\ell,t}}
-\newcommand{\allocatestate}[1][i, n]{A_{#1,t}}
-\newcommand{\allocatecost}[1][n \rightarrow i]{\mathcal{C}_{#1, t}}
-\newcommand{\allocatecapexgeneration}[1][n \rightarrow s]{\mathcal{C}^{G}_{#1,t}}
-\newcommand{\allocatecapexflow}[1][n \rightarrow \ell]{\mathcal{C}^{F}_{#1,t}}
-\newcommand{\allocatecapexstorage}[1][n \rightarrow r]{\mathcal{C}^{E}_{#1,t}}
-\newcommand{\allocateopex}[1][n \rightarrow s]{\mathcal{O}_{#1,t}}
-\newcommand{\allocateemissioncost}[1][n \rightarrow s]{\mathcal{E}_{#1,t}}
-
+% Cost Terms
 \newcommand{\emission}{e_{s}}
 \newcommand{\emissionprice}{\mu_{\text{CO2}}}
 \newcommand{\megawatthour}{MWh$_\text{el}$}
@@ -161,6 +148,26 @@
 \newcommand{\capexstorage}{\mathcal{C}^E}
 \newcommand{\emissioncost}{\mathcal{E}}
 \newcommand{\remainingcost}{\mathcal{R}}
+\newcommand{\scarcitycost}{\remainingcost^\text{scarcity}}
+\newcommand{\subsidycost}{\remainingcost^\text{subsidy}}
+
+
+% allocation quantities
+\newcommand{\allocategeneration}[1][s, n]{A_{#1,t}}
+\newcommand{\allocatestoragedispatch}[1][r, n]{A_{#1,t}}
+\newcommand{\allocatepeer}[1][m \rightarrow n]{A_{#1,t}}
+\newcommand{\allocateflow}[1][n]{A_{\ell,#1,t}}
+\newcommand{\allocatetransaction}[1][s \rightarrow n]{A_{#1,\ell,t}}
+\newcommand{\allocatestate}[1][i, n]{A_{#1,t}}
+
+\newcommand{\allocatecost}[1][n \rightarrow i]{\cost_{#1, t}}
+\newcommand{\allocatecapexgeneration}[1][n \rightarrow s]{\capexgeneration_{#1,t}}
+\newcommand{\allocatecapexflow}[1][n \rightarrow \ell]{\capexflow_{#1,t}}
+\newcommand{\allocatecapexstorage}[1][n \rightarrow r]{\capexstorage_{#1,t}}
+\newcommand{\allocateopex}[1][n \rightarrow s]{\opex_{#1,t}}
+\newcommand{\allocateemissioncost}[1][n \rightarrow s]{\emissioncost_{#1,t}}
+\newcommand{\allocatescarcitycost}[1][n \rightarrow i]{\scarcitycost_{#1,t}}
+\newcommand{\allocatesubsidycost}[1][n \rightarrow i]{\subsidycost_{#1,t}}
 
 
 
@@ -238,7 +245,7 @@ In a cost-optimal setup with minimized $\totalcost$, the Locational Marginal Pri
 This leads to a nodal pricing where over the span of optimized timesteps $t$, the system costs are partially or totally payed back by the consumers 
 \begin{align}
 \totalcost - \remainingcost &=  \sum_{n,t} \lmp \, \demand
-\label{eq:total_cost_reduced}
+\label{eq:total_revenue}
 \end{align}
 depending on the costs $\remainingcost$ which are independent of the nodal demand  
 \begin{align}
@@ -265,7 +272,7 @@ If $\cost_i$ describes the OPEX occasioned by asset $i$, the cost factor $\costf
 
 
 % where $\costfactor$ is either a fixed operational price or a composition of shadowprices
-Following the implications of \cref{eq:lmp,eq:total_cost_reduced},  we define the cost $\allocatecost$ that consumers at bus $n$ have pay to asset $i$ at time $t$, in order to compensate for $\cost_i$, as  
+Following the implications of \cref{eq:lmp,eq:total_revenue},  we define the cost $\allocatecost$ that consumers at bus $n$ have pay to asset $i$ at time $t$, in order to compensate for $\cost_i$, as  
 \begin{align}
     \allocatecost = \costfactor \,\pdv{\state}{\demand} \demand
     \label{eq:cost_allocation}
@@ -336,7 +343,18 @@ The quantity
  \label{eq:allocate_peer}
 \end{align}
 can be considered as the power that is produced by generator $s$ and consumed at node $n$ at time $t$. \\
-In the same manner, we can follow the scheme allocate OPEX for flow $\flow$ and storage unit dispatch $\storagedispatch$. As we assume a bidirectional flow on line $\ell$, the OPEX is set proportional to the absolute value of the flow. The upper section in \cref{tab:cost_allocation_map} shows the mapping of variables to \cref{eq:general_scheme} in order to define the full OPEX allocation. 
+In the same manner, we can follow the scheme allocate OPEX for flow $\flow$ and storage unit dispatch $\storagedispatch$. As we assume a bidirectional flow on line $\ell$, the OPEX is set proportional to the absolute value of the flow. The upper section in \cref{tab:cost_allocation_map} shows the mapping of variables to \cref{eq:general_scheme} in order to define the full OPEX allocation. \\
+
+The scheme works for all other cost attached to the operational state of an asset $i$. Given for example a fix price for emissions $\emissionprice$ in \euro\, per tonne-CO$_2$ equivalents, the cost term for emission adds up to 
+\begin{align}
+ \emissioncost = \emissionprice \, \sum_s  \emission \, \generation
+\end{align}
+where $\emission$ denotes the emission factor in tonne-CO$_2$ per \megawatthour\, of generator $s$.
+The allocated payment for consumers at bus $n$ at time $t$ assigned to generator $s$ is then given by 
+\begin{align}
+ \allocateemissioncost = \emissionprice \, \emission \, \allocategeneration
+\end{align}
+
 
 \subsection{CAPEX Allocation}
 For the CAPEX allocation, it becomes crucial to look at the individual relations between operational state $\state$ and the capacity limit. For all assets, let the capital price for one unit capacity expansion be denoted by $c_i$.  All quantities for the CAPEX allocation, which we now discuss in detail, are summarized in the middle section of \cref{tab:cost_allocation_map}.  
@@ -434,45 +452,60 @@ It is possible to incorporate this redistribution effect into the cost allocatio
 
 
 
-\subsection{Allocate Emission Expenditures}
+\subsection{Design Constraints}
 
-Given a fix price for emissions in CO$_2$ equivalents $\emissionprice$, the cost term for emission adds up to 
+Power system modelling does rarely follow a pure Greenfield approach with unlimited capacity expansion. Rather, today's models are setting various constraints defining socio-political or  technical requirements. As mentioned before this will alter the equality of total cost and total revenue, \ie leads to $\remainingcost \ne 0$ in \cref{eq:total_revenue}. More precisely, each constraint $h_j$ (other then the nodal balance constraint) of the form 
 \begin{align}
- \emissioncost = \emissionprice \, \sum_s  \emission \, \generation
+    h_j \left(\state, \capacity \right) - K < 0
 \end{align}
-where $\emission$ denotes the emission factor in tonne-CO$_2$ per \megawatthour for generator $s$.
-We use the same set of equation as given through \cref{eq:general_scheme,eq:opex_allocation} but update the cost factor to $\costfactor \Rightarrow \emissionprice \, \emission$. For consumers at bus $n$ at time $t$ this leads to the emission cost of 
+where $K$ is any non-zero constant, will result in a cost term contributing to $\remainingcost$ and in some cases alter \cref{eq:cost_decomposition} to 
 \begin{align}
- \allocateemissioncost = \emissionprice \, \emission \, \allocategeneration
+    \cost_i - \remainingcost_i = \sum_t \costfactor \, \state
 \end{align}
-associated with generator $s$.
+In the following we highlight two often used classes of constraints and show how to incorporate them into the cost allocation.  
 
-\subsection{Capacity Expansion Limit}
+\subsubsection{Capacity Expansion Limit}
 
-In more realistic setups, generators, lines or other assets can only be built up to a certain limit. This might caused by land use restrictions or social acceptance problems. %In the following give a general solution how the cost allocation may handle this.  
-However, when constraining the capacity $\capacity$  for a subset $I$ of assets to an upper limit,
+In more realistic setups, generators, lines or other assets can only be built up to a certain limit. This might be due to land use restrictions or social acceptance problems. %In the following give a general solution how the cost allocation may handle this.  
+However, when constraining the capacity $\capacity$  for a subset $I$ of assets to an upper limit $\capacityupper$, in the form of 
 \begin{align}
-    \capacity - \capacityupper \le 0 \resultsin{\muuppernom} \hpad \Forall{i \in I}
-\label{eq:capacityexpansionmaximum}
+    \capacity - \capacityupper \le 0 \resultsin{\muuppernom} \Forall{i \in I}
+\label{eq:capacityexpansionmaximum},
 \end{align}
-the zero profit condition for asset $i$ alters. Then the revenues don't match the expenditures as soon as the constraint becomes binding. More precisely, the revenue from the shadow prices given in \cref{tab:cost_allocation_map} exceed the CAPEX $\cost_i$ by $\remainingcost_i$,  where  $\remainingcost_i$ is given by
+the zero profit condition alters as soon as the constraint becomes binding. Then, the revenue of asset $i$ exceeds its total expenditures (OPEX + CAPEX). More precisely, the allocated CAPEX in \cref{tab:cost_allocation_map} will surpass the actual CAPEX of asset $i$ by the cost it has to pay for the scarcity, given by the absolute value of 
 \begin{align}
-    \remainingcost_i = - \muuppernom \capacity
-    \Forall{i}
+    \scarcitycost_i = - \muuppernom \capacity \Forall{i \in I}
 \end{align}
 % \begin{align}
 %  \cost_i - \remainingcost_i =  \sum_t \costfactor \, \state \Forall{i}
 %  \label{eq:capex_generation_duality_bf2}
 % \end{align}
-For the cost allocation, these means the prices in \cref{tab:cost_allocation_map} have to be adjusted, as otherwise consumers would pay too much. As we show in ... updating the prices by a fix ratio 
+
+% In order to ensure that the allocated CAPEX sum up to the actual CAPEX at asset $i$, meaning that \cref{eq:cost_payback} holds, we adjust the CAPEX allocations to 
+% \begin{align}
+%     \allocatecost = \left(\dfrac{c_i}{c_i + \muuppernom}\right) \, \costfactor \, \allocatestate \Forall{i \in I}
+% \end{align}
+% with the cost factors $\costfactor$ for CAPEX given in \cref{tab:cost_allocation_map}. 
+% The costs which consumers at $n$ have to pay for the scarcity impacting asset $i$ are given   
+% \begin{align}
+%     \allocatescarcitycost = \left(\dfrac{\muuppernom}{c_i + \muuppernom}\right) \, \costfactor \, \allocatestate \Forall{i \in I}
+% \end{align}
+
+The costs which consumers at $n$ have to pay for the scarcity impacting asset $i$ are given by 
 \begin{align}
-    \costfactor \rightarrow \dfrac{c_i}{c_i + \muuppernom}\, \costfactor
-    \label{eq:adjustment_lowernom}
+    \allocatescarcitycost = \dfrac{\muuppernom}{c_i + \muuppernom} \, \allocatecost^I \Forall{i \in I}
 \end{align}
-will ensure that the allocated CAPEX sum up to the actual CAPEX at asset $i$, meaning that \cref{eq:cost_payback} holds. Note that $\muuppernom$ is a positive number, so the adjustment cannot increase the paid price. 
+where $\allocatecost^I$ denotes the CAPEX allocation presented above. 
+
+% have to be adjusted, as otherwise consumers would pay too much. As we show in ... updating the prices by a fix ratio 
+% \begin{align}
+%     \costfactor \rightarrow \dfrac{c_i}{c_i + \muuppernom}\, \costfactor
+%     \label{eq:adjustment_lowernom}
+% \end{align}
+% will . Note that $\muuppernom$ is a positive number, so the adjustment cannot increase the paid price. 
 
 
-\subsection{Brownfield Constraints}
+\subsubsection{Brownfield Constraints}
 
 In order to take already built infrastructure into account, the capacity $\capacity$ can be constrained to a minimum required capacity $\capacitylower$. Mathematically this translates to 
 \begin{align}
@@ -480,17 +513,20 @@ In order to take already built infrastructure into account, the capacity $\capac
 \label{eq:capacityexpansionminimum}
 \end{align}
 Again, such a setup alters the zero profit condition of asset $i$, as soon as the constraint becomes binding. 
-In that case, asset $i$ does not collect enough revenue in order to match the CAPEX. The difference is given by 
+In that case, asset $i$ does not collect enough revenue in order to match the CAPEX. The difference, given by 
 \begin{align}
-    \remainingcost_i = \mulowernom \capacity
+    \subsidycost_i = \mulowernom \capacity
     \Forall{i}
 \end{align}
-In constrast to 
-Again, we can balance this effect out by updating the cost factor to 
-\begin{align}
-    \costfactor \rightarrow \costfactor +  \dfrac{\mulowernom \capacity}{\sum_t \state}
-\end{align}
-As $\mulowernom$ is a positive number, this will increase the price and therefore the revenue for asset $i$. 
+has to be subsidized by governments or communities. It is rather futile wanting to allocate these cost to consumers as assets may not gain any revenue for their operational state, \ie where $\cost^I = \subsidycost_i $. 
+
+
+% Again, we can balance this effect out by updating the cost factor to 
+% \begin{align}
+%     \costfactor \rightarrow \costfactor +  \dfrac{\mulowernom \capacity}{\sum_t \state}
+% \end{align}
+% In constrast to \cref{eq:adjustment_lowernom} the price is not weighted by a factor but shifted for all time steps. This is required as 
+% As $\mulowernom$ is a positive number, this will increase the price and therefore the revenue for asset $i$. 
 
 % In order to take this effect into account for the cost allocation, we update the cost factors in \cref{tab:cost_allocation_map} to  
 
@@ -639,7 +675,14 @@ As the other schemes \ref{ap}\ref{gross} - \ref{fbmc}\ref{net} apart from the EB
 
 \section{Application Case}
 
-We apply the cost allocation on a German power system model 
+In order to showcase the cost allocation at a more complex system, we apply it to an cost-optimized German power system model with 50 nodes and one year time span with hourly resolution. The model builds on the PyPSA-EUR workflow \cite{horsch_pypsa-eur_2020} with technigal details and assumptions reported in \cite{horsch_pypsa-eur_2018}. We follow a browfield approach where transmission lines start from today's capacity values originally retreived from the ENTSO-E Transmission System Map \cite{entsoe-e_entso-e_nodate}. Pre-installed generation capacities for wind and solar are distributed proportionally to the average power potential at each site excluding those with an average capacity factor of 10\%. Further, wind and solar capacity expansion are limited by land use restriction. These consider agriculture, urban, forested and protected areas based on the CORINE and NATURA2000 database \cite{corine2012,natura2000}. Pumped Hydro Storages (PHS) are fixed to today's capacities with no more expansion allowed. Additionally, unlimited batteries and H$_{2}$-storages are allowed at each node. We impose a effective carbon price of 120 \euro per tonne-CO$_{2}$. 
+
+\Cref{fig:network} shows the estimate of existent capacities on the left hand side and the capacity expansions on the right. 
+\begin{figure*}
+    \centering
+    \includegraphics[width=\linewidth]{de50bf}
+    \label{fig:network}
+\end{figure*}
 
 
 \clearpage

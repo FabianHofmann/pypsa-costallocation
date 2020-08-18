@@ -22,7 +22,7 @@ plt.rc('font', family='serif')
 
 path = '../figures/example'
 
-net = False
+net = True
 power = 'net' if net else 'gross'
 method = 'ebe'
 
@@ -45,7 +45,7 @@ n.madd('Generator', [0, 1], bus=[n0, n1], p_nom_extendable=True,
 n.madd('Line', ['1'], s_nom_extendable=True, x=0.01, bus0=[n0], bus1=[n1],
        capital_cost=c_l)
 n.lopf(pyomo=False, keep_shadowprices=True, solver_name='gurobi')
-n.generators_t.mu_upper = adjust_shadowprice(n.generators_t.mu_upper, n, 'Generator')
+# n.generators_t.mu_upper = adjust_shadowprice(n.generators_t.mu_upper, n, 'Generator')
 
 sn = 'now'
 

@@ -80,7 +80,8 @@ rule allocate_network:
         check = 'resources/{nname}_shadowprices_checked'
     output:
         costs = 'resources/costs_{nname}_{method}_{power}.nc',
-        payments = 'resources/payments_{nname}_{method}_{power}.nc'
+        payments = 'resources/payments_{nname}_{method}_{power}.nc', 
+        sparcity = 'resources/sparcity_cost_{nname}_{method}_{power}.nc'
     script: 'code/allocate_network.py'
 
 
