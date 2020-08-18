@@ -39,7 +39,8 @@ to_total_symbol = dict(one_port_investment_cost = '$\mathcal{C}^{G}$',
                       branch_sparcity_cost = '$\mathcal{R}^{F sparcity}$',
                       one_port_sparcity_cost = '$\mathcal{G sparcity}$',
                       co2_cost = '$\mathcal{E}$',
-                      nodal_demand_cost = '$\mathcal{TC}$')
+                      nodal_demand_cost = '$\mathcal{TC}$',
+                      remaining_cost = '$\mathcal{R}$')
 
 to_explanation = {'one_port_operational_cost': 'OPEX',
                   'co2_cost': 'Emission Cost',
@@ -53,7 +54,8 @@ color = pd.Series({'one_port_operational_cost': 'darkkhaki',
                    'co2_cost': 'tomato',
                    'one_port_investment_cost': 'palevioletred',
                    'branch_investment_cost': 'mediumaquamarine',
-                   'nodal_demand_cost': 'cadetblue'}).sort_index()
+                   'nodal_demand_cost': 'cadetblue',
+                   'remaining_cost': 'lightsteelblue'}).sort_index()
 
 latex_names = dict(p_nom_opt = '$G$', marginal_cost = '$o$', capital_cost='$c$',
                    bus='$n$')

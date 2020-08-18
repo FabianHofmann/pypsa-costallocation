@@ -26,25 +26,28 @@ cagf = xr.open_dataset(snakemake.input.costs_gf)
 cabf = xr.open_dataset(snakemake.input.costs_bf)
 
 # %%
-fig, ax = plt.subplots()
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
 
 TC_gf = ngf.objective_constant + ngf.objective
 TC_bf = nbf.objective_constant + nbf.objective
-TC = [TC_gf, TC_bf]
 
-stacked_gf = (cagf.sum().to_array().to_series().reindex_like(color).dropna()
-              .rename(to_total_symbol).rename('').to_frame().T)
-stacked_bf = (cabf.sum().to_array().to_series().reindex_like(color).dropna()
-              .rename(to_total_symbol).rename('').to_frame().T)
-stacked_cost = pd.concat([stacked_gf, stacked_bf], keys=['Greenfield', 'Brownfield'])
+stacked_cost = pd.concat([cagf.sum().to_array().to_series(),
+                          cabf.sum().to_array().to_series()],
+                         keys=['Greenfield', 'Brownfield'], axis=1).T
 
-R = TC - stacked_cost.sum(1)
-stacked_cost[r'$\mathcal{R}$'] = R
+stacked_cost['remaining_cost'] =  [TC_gf, TC_bf] - stacked_cost.sum(1)
 
-stacked_cost.plot.bar(color=color, stacked=True, ax=ax, zorder=4)
-ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1), ncol=5, frameon=False)
+# %%
+fig, ax = plt.subplots(figsize=[5,5])
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+color = color[stacked_cost.columns]
+label = pd.Series(to_total_symbol)[stacked_cost.columns]
+
+stacked_cost.div(1e9).plot.bar(color=color,  stacked=True, ax=ax, zorder=4)
+ax.legend(labels=label, loc='lower center', bbox_to_anchor=(0.5, 1), ncol=5, frameon=False)
 ax.grid(axis='y', linestyle='dashed', color='gray', zorder=1, alpha=.5)
+ax.set_ylabel('Total Revenue [Billion €]')
 
 fig.savefig(snakemake.output[0])
