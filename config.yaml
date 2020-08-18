@@ -1,7 +1,7 @@
 
 analysis:
     nname: ['de10gf', 'de10bf', 'eur50bf', 'de50gf', 'de50bf']
-    method: ['ptpf', 'ptpf-adj']
+    method: ['ptpf']
     power: ['net']
 
 
