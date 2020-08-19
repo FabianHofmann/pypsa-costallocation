@@ -57,7 +57,7 @@ for col in prices:
 fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                         figsize=(5, 4))
 ax.spines['geo'].set_visible(False)
-lmp = n.buses_t.marginal_price.mean()
+lmp = n.buses_t.marginal_price.mean().reindex(regions.index).fillna(0)
 regions.plot(column=lmp, legend=True, ax=ax,
              transform=ccrs.PlateCarree(), aspect='equal',
              legend_kwds={'label': 'Average LMP [€/MWh]'})
