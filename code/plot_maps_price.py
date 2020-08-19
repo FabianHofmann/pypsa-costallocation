@@ -11,7 +11,7 @@ import pypsa
 import xarray as xr
 import geopandas as gpd
 import cartopy.crs as ccrs
-from config import to_explanation
+from config import to_explanation, source_carrier
 import matplotlib.pyplot as plt
 import os
 import netallocation as ntl
@@ -19,7 +19,7 @@ import netallocation as ntl
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_price_maps', nname='test-de10gf',
+        snakemake = mock_snakemake('plot_price_maps', nname='test-de10bf',
                                    method='ptpf', power='net')
 
 if not os.path.isdir(snakemake.output.folder):
@@ -28,7 +28,7 @@ if not os.path.isdir(snakemake.output.folder):
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
 
-payments = xr.open_dataset(snakemake.input.payments).sum('source_carrier')
+payments = xr.open_dataset(snakemake.input.payments).sum(source_carrier)
 
 w = ntl.cost.snapshot_weightings(n)
 payments['one_port_operational_cost'] /= w

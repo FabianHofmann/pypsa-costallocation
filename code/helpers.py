@@ -18,7 +18,15 @@ from pandas import DataFrame, Series
 from numpy import array
 from pypsa.descriptors import nominal_attrs
 from pandas import concat
+import xarray as xr
 
+
+def combine_oneports(ds):
+    gen = ds.generator_investment_cost.rename(source_carrier_gen='source_carrier')
+    sus = ds.storage_investment_cost.rename(source_carrier_sus='source_carrier')
+    return ds.drop(['generator_investment_cost', 'storage_investment_cost'])\
+            .drop_dims(['source_carrier_gen', 'source_carrier_sus']) \
+            .assign(one_port_investment_cost=xr.concat([gen, sus], dim='source_carrier'))
 
 def adjust_shadowprice(gamma, c, n, s=None):
     nom = nominal_attrs[c]

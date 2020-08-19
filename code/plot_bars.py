@@ -9,7 +9,7 @@ Created on Mon Jul 13 10:12:28 2020
 import xarray as xr
 import matplotlib.pyplot as plt
 import pypsa
-from config import color, to_symbol, sink_dims
+from config import color, to_symbol, sink_dims, source_carrier
 import netallocation as ntl
 
 
@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
 
 n = pypsa.Network(snakemake.input.network)
-payments = xr.open_dataset(snakemake.input.payments).sum('source_carrier')
+payments = xr.open_dataset(snakemake.input.payments).sum(source_carrier)
 
 if snakemake.config['alloc_to_load_only']:
     demand = ntl.power_demand(n, per_carrier=True)\

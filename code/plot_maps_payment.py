@@ -11,14 +11,14 @@ import pypsa
 import xarray as xr
 import geopandas as gpd
 import cartopy.crs as ccrs
-from config import to_explanation
+from config import to_explanation, source_carrier
 import matplotlib.pyplot as plt
 import os
 
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_payment_maps', nname='test-de10gf',
+        snakemake = mock_snakemake('plot_payment_maps', nname='test-de10bf',
                                    method='ptpf', power='net')
 
 
@@ -26,7 +26,7 @@ n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
 
 payments = xr.open_dataset(snakemake.input.payments)\
-             .sum(['snapshot', 'source_carrier']).to_dataframe()
+             .sum(['snapshot'] + source_carrier).to_dataframe()
 
 if not os.path.isdir(snakemake.output.folder):
     os.mkdir(snakemake.output.folder)
