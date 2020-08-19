@@ -25,8 +25,9 @@ if __name__ == "__main__":
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
 
-payments = xr.open_dataset(snakemake.input.payments)\
-             .sum(['snapshot'] + source_carrier).to_dataframe()
+payments = (xr.open_dataset(snakemake.input.payments)
+            .sum(['snapshot'] + source_carrier).to_dataframe()
+            .reindex(regions.index).fillna(0))
 
 if not os.path.isdir(snakemake.output.folder):
     os.mkdir(snakemake.output.folder)

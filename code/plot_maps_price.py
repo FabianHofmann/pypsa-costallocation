@@ -36,7 +36,8 @@ payments['co2_cost'] /= w
 
 demand = ntl.power_demand(n, per_carrier=True).sel(carrier='Load', drop=True)\
             .rename(bus="sink")
-prices = (payments/demand).mean('snapshot').to_dataframe()
+prices = ((payments/demand).mean('snapshot').to_dataframe()
+          .reindex(regions.index).fillna(0))
 
 
 for col in prices:
