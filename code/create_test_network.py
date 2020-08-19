@@ -11,7 +11,7 @@ import shutil
 
 n = pypsa.Network(snakemake.input.network)
 
-n.set_snapshots(n.snapshots[:10])
+n.set_snapshots(n.snapshots[:50])
 
 n.export_to_netcdf(snakemake.output.network)
 

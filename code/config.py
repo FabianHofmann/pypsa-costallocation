@@ -14,45 +14,42 @@ plt.rcParams['savefig.dpi'] = 200
 
 source_dims = dict(bus='source', carrier='source_carrier')
 sink_dims = dict(bus='sink', carrier='sink_carrier')
-
-to_symbol = dict(one_port_investment_cost = '$\mathcal{C}^{G}_{n,t}$',
-                 branch_investment_cost = '$\mathcal{C}^{F}_{n,t}$',
-                 one_port_operational_cost = '$\mathcal{O}_{n,t}$',
-                 branch_sparcity_cost = '$\mathcal{R}^{F sparcity}_{n,t}$',
-                 one_port_sparcity_cost = '$\mathcal{G sparcity}_{n,t}$',
-                 co2_cost = '$\mathcal{E}_{n,t}$',
-                 nodal_demand_cost = '$\lambda_{n,t} \, d_{n,t}$'
-                 )
-
-to_static_symbol = dict(one_port_investment_cost = '$\mathcal{C}^{G}_{n}$',
-                        branch_investment_cost = '$\mathcal{C}^{F}_{n}$',
-                        one_port_operational_cost = '$\mathcal{O}_{n}$',
-                        branch_sparcity_cost = '$\mathcal{R}^{F sparcity}_{n}$',
-                        one_port_sparcity_cost = '$\mathcal{G sparcity}_{n}$',
-                        co2_cost = '$\mathcal{E}_{n}$',
-                        nodal_demand_cost = '$\lambda_{n} \, d_{n}$')
+source_dims_r = dict(source='bus', source_carrier='carrier')
+sink_dims_r = dict(sink='bus', sink_carrier='carrier')
 
 
-to_total_symbol = dict(one_port_investment_cost = '$\mathcal{C}^{G}$',
-                      branch_investment_cost = '$\mathcal{C}^{F}$',
-                      one_port_operational_cost = '$\mathcal{O}$',
-                      branch_sparcity_cost = '$\mathcal{R}^{F sparcity}$',
-                      one_port_sparcity_cost = '$\mathcal{G sparcity}$',
-                      co2_cost = '$\mathcal{E}$',
-                      nodal_demand_cost = '$\mathcal{TC}$',
-                      remaining_cost = '$\mathcal{R}$')
+symbol = dict(generator_investment_cost = '\mathcal{C}^{G}',
+              storage_investment_cost = '\mathcal{C}^{E}',
+              branch_investment_cost = '\mathcal{C}^{F}',
+              one_port_operational_cost = '\mathcal{O}',
+              branch_sparcity_cost = '\mathcal{R}^{F sparcity}',
+              one_port_sparcity_cost = '\mathcal{G sparcity}',
+              co2_cost = '\mathcal{E}',
+              lmp = '\lambda',
+              demand = 'd')
+
+to_symbol = {k: v + '_{n,t}' for k,v in symbol.items()}
+to_static_symbol = {k: v + '_{n}' for k,v in symbol.items()}
+to_total_symbol = {k: v for k,v in symbol.items()}
+
+for d in [to_symbol, to_static_symbol, to_total_symbol]:
+    d['nodal_demand_cost'] = d['lmp'] + '\,' + d['demand']
+    for k in d:
+        d[k] = '$'+ d[k] + '$'
 
 to_explanation = {'one_port_operational_cost': 'OPEX',
                   'co2_cost': 'Emission Cost',
-                  'one_port_investment_cost': 'Production CAPEX',
+                  'generator_investment_cost': 'Production CAPEX',
+                  'storage_investment_cost': 'Storage CAPEX',
                   'branch_investment_cost': 'Transmission CAPEX',
                   'branch_sparcity_cost': 'Sparcity Cost Production',
                   'one_port_sparcity_cost': 'Sparcity Cost Transmission',
-}
+                  'nodal_demand_cost': 'Nodal Payment'}
 
 color = pd.Series({'one_port_operational_cost': 'darkkhaki',
                    'co2_cost': 'tomato',
-                   'one_port_investment_cost': 'palevioletred',
+                   'generator_investment_cost': 'palevioletred',
+                   'storage_investment_cost': 'royalblue',
                    'branch_investment_cost': 'mediumaquamarine',
                    'nodal_demand_cost': 'cadetblue',
                    'remaining_cost': 'lightsteelblue'}).sort_index()

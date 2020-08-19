@@ -25,7 +25,7 @@ from netallocation.plot_helpers import (make_handler_map_to_scale_circles_as_in,
 
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
-    snakemake = mock_snakemake('plot_allocated_payment', nname='de10gf',
+    snakemake = mock_snakemake('plot_allocated_payment', nname='test-de10bf',
                                method='ptpf', power='net', sink='DE0 1')
 
 
@@ -35,7 +35,7 @@ sink = snakemake.wildcards.sink
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
 
 payment = (xr.open_dataset(snakemake.input.costs)
-           .sel(sink=sink, sink_carrier='Load', drop=True)
+           .sel(sink=sink, drop=True)
            .fillna(0)
            .mean('snapshot')
            .rename(source='bus', source_carrier='carrier')
@@ -47,7 +47,8 @@ branch_colors = (np.sign(payment.branch_investment_cost.to_pandas())
                  .replace({1: 'cadetblue', -1:'indianred'}))
 
 emission_cost = payment[['co2_cost']].sum('carrier').to_dataframe().stack()
-capex = payment.one_port_investment_cost.to_series()
+capex = pd.concat([payment.generator_investment_cost.to_series(),
+                   payment.storage_investment_cost.to_series()]).sort_index()
 opex = (payment.one_port_operational_cost.to_series()
         .rename(index=lambda s: s + ' opex', level=1))
 bus_sizes = pd.concat([emission_cost, capex, opex]).sort_index()

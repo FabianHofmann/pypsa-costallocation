@@ -4,10 +4,13 @@ analysis:
     method: ['ptpf']
     power: ['net']
 
+test:
+    nname: ['test-de10gf']
+    method: ['ptpf']
+    power: ['net']
 
 line_volume_limit: 1.2
-adjust_shadowprices: false
-
+alloc_to_load_only: true
 
 # =============================================================================
 # copied from pypsa-eur config

@@ -21,34 +21,26 @@ if __name__ == "__main__":
         snakemake = mock_snakemake('plot_payment_maps', nname='test-de10gf',
                                    method='ptpf', power='net')
 
-load_only = True
 
 n = pypsa.Network(snakemake.input.network)
-regions = gpd.read_file(snakemake.input.regions)
+regions = gpd.read_file(snakemake.input.regions).set_index('name')
 
-payments = xr.open_dataset(snakemake.input.payments)
-
-if load_only:
-    payments = payments.sel(sink_carrier='Load', drop=True)
-else:
-    payments = payments.sum('sink_carrier')
-
-payments = (payments).sum('snapshot').to_dataframe()
-payments = payments.assign(lmp = (n.buses_t.marginal_price * n.loads_t.p).sum())
-regions = regions.set_index('name').join(payments)
+payments = xr.open_dataset(snakemake.input.payments)\
+             .sum(['snapshot', 'source_carrier']).to_dataframe()
 
 if not os.path.isdir(snakemake.output.folder):
     os.mkdir(snakemake.output.folder)
 
 
-for col, name in to_explanation.items():
+for col in payments:
+    name = to_explanation[col]
 
     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                            figsize=(5.5, 4))
     ax.spines['geo'].set_visible(False)
-    regions.plot(column=col, legend=True, ax=ax,
+    regions.plot(column=payments[col], legend=True, ax=ax,
                  transform=ccrs.PlateCarree(), aspect='equal',
-                 legend_kwds={'label': f'Total Payments for {name} [€]'})
+                 legend_kwds={'label': f'Payments for {name} [€]'})
     fig.canvas.draw()
     fig.tight_layout()
     fig.savefig(snakemake.output.folder + f'/{col}_total.png')
@@ -57,9 +49,10 @@ for col, name in to_explanation.items():
 fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                         figsize=(5.5, 4))
 ax.spines['geo'].set_visible(False)
-regions.plot(column='lmp', legend=True, ax=ax,
+nodal_payment = (n.buses_t.marginal_price * n.loads_t.p).sum()
+regions.plot(column=nodal_payment, legend=True, ax=ax,
              transform=ccrs.PlateCarree(), aspect='equal',
-             legend_kwds={'label': f'Total Payments [€]'})
+             legend_kwds={'label': 'Payments [€]'})
 fig.canvas.draw()
 fig.tight_layout()
-fig.savefig(snakemake.output.folder + f'/electricity_total.png')
+fig.savefig(snakemake.output.folder + '/electricity_total.png')

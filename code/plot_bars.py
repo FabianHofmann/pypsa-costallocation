@@ -16,26 +16,26 @@ import netallocation as ntl
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_bars', nname='acdc',
+        snakemake = mock_snakemake('plot_bars', nname='test-de10bf',
                                    method='ptpf', power='net')
 
-load_only = True
 
 n = pypsa.Network(snakemake.input.network)
-payments = xr.open_dataset(snakemake.input.payments)
-demand = ntl.power_demand(n, per_carrier=True).rename(sink_dims)
-dc = demand * ntl.cost.locational_market_price(n).rename(bus='sink')
+payments = xr.open_dataset(snakemake.input.payments).sum('source_carrier')
 
-if load_only:
-    dc = dc.sel(sink_carrier='Load', drop=True)
-    payments = payments.sel(sink_carrier='Load', drop=True)
+if snakemake.config['alloc_to_load_only']:
+    demand = ntl.power_demand(n, per_carrier=True)\
+                .sel(carrier='Load', drop=True).rename(bus='sink')
 else:
-    dc = dc.sum('sink_carrier')
-    payments = payments.sum('sink_carrier')
+    demand = ntl.power_demand(n).rename(bus='sink')
+
+dc = demand * ntl.cost.locational_market_price(n).rename(bus='sink')
 
 fig, axes = plt.subplots(3, 1, figsize=(12, 7), sharex=True)
 
 for sn, ax in zip(n.snapshots, axes.ravel()):
+    for spine in ['right', 'top', 'bottom']:
+        ax.spines[spine].set_visible(False)
     ca_df = payments.sel(snapshot=sn, drop=True).to_dataframe()
     dc_df = dc.sel(snapshot=sn, drop=True).to_dataframe(name='nodal_demand_cost')
     d = dict(stacked=True, zorder=3, width=0.3, legend=False, ax=ax)
@@ -46,20 +46,21 @@ for sn, ax in zip(n.snapshots, axes.ravel()):
     ax.set_xlim(left=-0.5)
     ax.ticklabel_format(axis="y", style="sci", scilimits=(5, 2))
     ax.set_xlabel("")
-    ax.set_title(f"$t = %i$" % (sn.hour + 1))
-#     ax.grid(axis="y", zorder=1, linestyle="dashed")
+    ax.set_title("$t = %i$" % (sn.hour + 1))
+    ax.grid(axis="y", zorder=1, linestyle="dashed")
+    ax.hlines([0], *ax.get_xlim(),  ls='dashed', alpha=0.7, color='grey', lw=1)
 
 handles, labels = ax.get_legend_handles_labels()
 labels = [to_symbol[l] for l in labels]
 fig.legend(
     handles[:-1],
     labels[:-1],
-    ncol=4,
+    ncol=5,
     frameon=False,
     loc="lower center",
     bbox_to_anchor=(0.3, 1),
     fontsize="large",
-    title="Flow Based (left bars)",
+    title="Cost Allocation (left bars)",
 )
 fig.legend(
     handles[-1:],
@@ -69,7 +70,7 @@ fig.legend(
     loc="lower center",
     bbox_to_anchor=(0.7, 1),
     fontsize="large",
-    title="LMP Based (right bars)",
+    title="Nodal Expenditures (right bars)",
 )
 fig.tight_layout()
 fig.savefig(snakemake.output[0], bbox_inches="tight")

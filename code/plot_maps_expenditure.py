@@ -11,23 +11,21 @@ import pypsa
 import xarray as xr
 import geopandas as gpd
 import cartopy.crs as ccrs
-from config import to_explanation
+from config import to_explanation, source_dims_r
 import matplotlib.pyplot as plt
 import os
 
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_expenditure_maps', nname='test-de10bf',
+        snakemake = mock_snakemake('plot_expenditure_maps', nname='test-de10gf',
                                    method='ptpf', power='net')
 
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
 
 expenditures = xr.open_dataset(snakemake.input.costs).sum(['sink', 'snapshot'])\
-                 .sel(sink_carrier='Load', drop=True) \
-                 .rename(source='bus', source_carrier='carrier')\
-                 .set_index(branch=['component', 'branch_i'])
+                 .rename(source_dims_r).set_index(branch=['component', 'branch_i'])
 
 by_bus_carrier = (expenditures.drop('branch_investment_cost')
                   .drop_dims('branch').to_dataframe().unstack('carrier'))
@@ -58,7 +56,8 @@ if not os.path.isdir(snakemake.output.folder + '/by_carrier'):
 
 for col in by_bus_carrier:
     carrier = n.carriers.nice_name[col[1]]
-    expend = to_explanation[col[0]].replace('Production ', '')
+    expend = to_explanation[col[0]].replace('Production ', '')\
+                .replace('Storage ', '')
     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                             figsize=(5, 4))
     ax.spines['geo'].set_visible(False)

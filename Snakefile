@@ -13,6 +13,14 @@ rule all:
         expand('figures/maps_payment_{nname}_{method}_{power}', **config['analysis']),
         expand('figures/maps_price_{nname}_{method}_{power}', **config['analysis'])
 
+rule test:
+    input:
+        expand('figures/{nname}.png', **config['test']),
+        expand('figures/bars_{nname}_{method}_{power}.png', **config['test']),
+        expand('figures/maps_expenditure_{nname}_{method}_{power}', **config['test']),
+        expand('figures/maps_payment_{nname}_{method}_{power}', **config['test']),
+        expand('figures/maps_price_{nname}_{method}_{power}', **config['test'])
+
 
 subworkflow pypsade:
     workdir: "pypsa-de"

@@ -12,6 +12,7 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 
+from numpy.testing import assert_allclose
 from pypsa.descriptors import nominal_attrs
 
 from netallocation.utils import (reindex_by_bus_carrier as by_bus_carrier,
@@ -26,7 +27,7 @@ from config import source_dims
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('allocate_network', nname='acdc',
+        snakemake = mock_snakemake('allocate_network', nname='test-de10bf',
                                    method='ptpf', power='net')
 
 
@@ -47,7 +48,10 @@ if 'lv_limit' in n.global_constraints.index:
 
 
 ds = ntl.allocate_flow(n, method=method, aggregated=aggregated)  # q=0
-ds = ds.chunk(dict(snapshot=5))
+
+if snakemake.config['alloc_to_load_only']:
+    ds = expand_by_sink_type(ds.chunk(dict(snapshot=5)), n)
+    ds = ds.sel(sink_carrier='Load', drop=True)
 
 A = expand_by_source_type(peer_to_peer(ds, n).peer_to_peer, n, chunksize=5)
 A_f = virtual_patterns(ds, n, q=0).virtual_flow_pattern
@@ -56,14 +60,14 @@ A_f = virtual_patterns(ds, n, q=0).virtual_flow_pattern
 # emission
 ep = nodal_co2_price(n, price=co2_price) * snapshot_weightings(n)
 ep = ep.rename(source_dims)
-A_emission = A * ep
+C_emission = A * ep
 
 
 # opex
 comps = ['Generator', 'StorageUnit', 'Store']
 o = get_as_dense_by_bus_carrier(n, 'marginal_cost', comps).rename(source_dims)
 o = o * snapshot_weightings(n) - ep.reindex_like(o, fill_value=0)
-A_opex = A * o
+O = A * o
 
 
 # =============================================================================
@@ -75,34 +79,37 @@ A_opex = A * o
 # =============================================================================
 
 def sparcity_share(c):
+    """Get the ratio of payments allocated to the sparcity constraint."""
     mu_upper = 'mu_upper_' + nominal_attrs[c]
     return (- n.df(c)[mu_upper] /
             (n.df(c).capital_cost - n.df(c)[mu_upper]))
 
 
-# capex one port
+# capex generator
 c = 'Generator'
-# calculate corrections for capacity restrictions
-# mu_gen = adjust_shadowprice(mu_gen, c, n) if adjust_mu else mu_gen
-mu_gen = by_bus_carrier(n.pnl(c).mu_upper, c, n)
+mu_gen = by_bus_carrier(n.pnl(c).mu_upper, c, n).rename(source_dims)
+C_gen = mu_gen * A.sel(source_carrier=n.df(c).carrier.unique())
+C_gen = C_gen.rename(source_carrier='source_carrier_gen')
+C_spa_gen = C_gen * by_bus_carrier(sparcity_share(c), c, n).rename(source_dims)
+
+if not 'test' in snakemake.input.network:
+    sparcity = n.df(c).p_nom_max.replace(np.inf, 0) @ n.df(c).mu_upper_p_nom
+    subsidy = n.df(c).p_nom_min @ n.df(c).mu_lower_p_nom
+
+    investment = n.df(c).p_nom_opt @ n.df(c).capital_cost
+    revenue = (C_gen.sum() + subsidy + sparcity)
+    assert_allclose(investment, revenue, rtol=1e-4)
 
 
+# capex storage
 c = 'StorageUnit'
 if not n.df(c).empty:
-    # calculate corrections for capacity restrictions
     mu_sus = (n.pnl(c).mu_state_of_charge / n.df(c).efficiency_dispatch
               + n.pnl(c).mu_upper_p_dispatch + n.pnl(c).mu_lower_p_dispatch)
-    # mu_sus = adjust_shadowprice(mu_sus, c, n) if adjust_mu else mu_sus
-    mu_sus = by_bus_carrier(mu_sus, c, n)
-    mu = xr.concat([mu_gen, mu_sus], dim='carrier').rename(source_dims).fillna(0)
-else:
-    mu = mu_gen.rename(source_dims).fillna(0)
-A_capex = mu * A
+    mu_sus = by_bus_carrier(mu_sus, c, n).rename(source_dims)
+    C_sus = mu_sus * A.sel(source_carrier=n.df(c).carrier.unique())
+    C_sus = C_sus.rename(source_carrier='source_carrier_sus')
 
-share_sparcity = xr.concat([by_bus_carrier(sparcity_share(c), c, n)
-                            for c in  ['Generator', 'StorageUnit']],
-                            dim='carrier').rename(source_dims).fillna(0)
-A_sparcity = A_capex * share_sparcity
 
 
 # capex branch
@@ -111,26 +118,25 @@ comps = set(A_f.component.data)
 mu = pd.concat([n.pnl(c).mu_upper + n.pnl(c).mu_lower for c in comps],
                axis=1, names=names, keys=comps)
 mu = xr.DataArray(mu, dims=['snapshot', 'branch'])
-A_capex_branch = (A_f * mu).rename(bus='sink')
+C_branch = (A_f * mu).rename(bus='sink')
 
 share_sparcity = pd.concat([sparcity_share(c) for c in comps], keys=comps,
                            names=names)
 share_sparcity = xr.DataArray(share_sparcity, dims='branch')
-A_sparcity_branch = A_capex_branch * share_sparcity
+C_spa_branch = C_branch * share_sparcity
 
 # collect cost allocations
-ca = xr.Dataset({'one_port_operational_cost': A_opex,
-                 'co2_cost': A_emission,
-                 'one_port_investment_cost': A_capex,
-                 'branch_investment_cost': A_capex_branch})
-ca = expand_by_sink_type(ca, n, chunksize=5)
+ca = xr.Dataset({'one_port_operational_cost': O,
+                 'co2_cost': C_emission,
+                 'generator_investment_cost': C_gen,
+                 'storage_investment_cost': C_sus,
+                 'branch_investment_cost': C_branch})
 
-sa = xr.Dataset({'one_port_sparcity_cost': A_sparcity,
-                 'branch_sparcity_cost': A_sparcity_branch})
-sa = expand_by_sink_type(sa, n, chunksize=5)
+sa = xr.Dataset({'generator_sparcity_cost': C_spa_gen,
+                 'branch_sparcity_cost': C_spa_branch})
 
-payments = ca.sum(['source', 'source_carrier', 'branch'])
-nodal_payments = payments.to_array().sum(['variable', 'sink_carrier'])
+payments = ca.sum(['source', 'branch'])
+
 
 ca.reset_index('branch').to_netcdf(snakemake.output.costs)
 sa.reset_index('branch').to_netcdf(snakemake.output.sparcity)
