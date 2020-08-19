@@ -50,7 +50,7 @@ for col in payments:
 fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                         figsize=(5.5, 4))
 ax.spines['geo'].set_visible(False)
-nodal_payment = (n.buses_t.marginal_price * n.loads_t.p).sum()
+nodal_payment = (n.buses_t.marginal_price * n.loads_t.p).sum().loc[regions.index]
 regions.plot(column=nodal_payment, legend=True, ax=ax,
              transform=ccrs.PlateCarree(), aspect='equal',
              legend_kwds={'label': 'Payments [€]'})

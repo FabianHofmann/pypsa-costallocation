@@ -69,7 +69,7 @@ fig.savefig(snakemake.output.folder + '/electricity_average.png')
 fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                         figsize=(5, 4))
 ax.spines['geo'].set_visible(False)
-demand = n.loads_t.p.mean()
+demand = n.loads_t.p.mean().reindex(regions.index).fillna(0)
 regions.plot(column=demand, legend=True, ax=ax,
              transform=ccrs.PlateCarree(), aspect='equal',
              legend_kwds={'label': 'Average Demand [MWh]'})
