@@ -27,7 +27,7 @@ from config import source_dims
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('allocate_network', nname='acdc',
+        snakemake = mock_snakemake('allocate_network', nname='test-de10gf',
                                    method='ptpf', power='net')
 
 
@@ -141,6 +141,7 @@ payments = ca.sum(['source', 'branch'])
 ca.reset_index('branch').to_netcdf(snakemake.output.costs)
 sa.reset_index('branch').to_netcdf(snakemake.output.sparcity)
 payments.to_netcdf(snakemake.output.payments)
+A.sum(['source']).mean('snapshot').to_netcdf(snakemake.output.power_mix)
 
 # the total revenue for generators and branches is obtained by
 # ca.sum() payed by loads and storage_units

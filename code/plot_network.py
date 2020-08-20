@@ -7,12 +7,10 @@ Created on Fri Jul 10 10:39:11 2020
 """
 
 import pypsa
-import numpy as np
 import matplotlib.pyplot as plt
 import netallocation as ntl
 import cartopy.crs as ccrs
 import geopandas as gpd
-import config
 from matplotlib.pyplot import Line2D
 from netallocation.plot_helpers import (make_handler_map_to_scale_circles_as_in,
                                         make_legend_circles_for)

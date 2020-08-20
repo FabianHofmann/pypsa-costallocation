@@ -9,9 +9,9 @@ rule all:
     input:
         expand('figures/{nname}.png', **config['analysis']),
         expand('figures/total_costs_{nname}.png', **config['analysis']),
+        expand('figures/power_mix_{nname}_{method}_{power}.png', **config['analysis']),
         expand('figures/bars_{nname}_{method}_{power}.png', **config['analysis']),
         expand('figures/maps_expenditure_{nname}_{method}_{power}', **config['analysis']),
-        expand('figures/maps_payment_{nname}_{method}_{power}', **config['analysis']),
         expand('figures/maps_price_{nname}_{method}_{power}', **config['analysis'])
 
 
@@ -19,9 +19,9 @@ rule test:
     input:
         expand('figures/{nname}.png', **config['test']),
         expand('figures/total_costs_{nname}.png', **config['test']),
+        expand('figures/power_mix_{nname}_{method}_{power}.png', **config['test']),
         expand('figures/bars_{nname}_{method}_{power}.png', **config['test']),
         expand('figures/maps_expenditure_{nname}_{method}_{power}', **config['test']),
-        expand('figures/maps_payment_{nname}_{method}_{power}', **config['test']),
         expand('figures/maps_price_{nname}_{method}_{power}', **config['test'])
 
 
@@ -92,7 +92,8 @@ rule allocate_network:
     output:
         costs = 'resources/costs_{nname}_{method}_{power}.nc',
         payments = 'resources/payments_{nname}_{method}_{power}.nc', 
-        sparcity = 'resources/sparcity_cost_{nname}_{method}_{power}.nc'
+        sparcity = 'resources/sparcity_cost_{nname}_{method}_{power}.nc',
+        power_mix = 'resources/power_mix_{nname}_{method}_{power}.nc'
     script: 'code/allocate_network.py'
 
 
@@ -102,6 +103,15 @@ rule plot_total_costs:
         network = 'resources/{nname}.nc',
     output: 'figures/total_costs_{nname}.png'
     script: 'code/plot_total_costs.py'
+
+
+rule plot_power_mix:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+        power_mix = 'resources/power_mix_{nname}_{method}_{power}.nc'
+    output: 'figures/power_mix_{nname}_{method}_{power}.png'
+    script: 'code/plot_power_mix.py'
 
 
 rule plot_total_cost_comparison:
@@ -123,14 +133,14 @@ rule plot_price_maps:
         folder = directory('figures/maps_price_{nname}_{method}_{power}')
     script: 'code/plot_maps_price.py'
 
-rule plot_payment_maps:
-    input:
-        network = 'resources/{nname}.nc',
-        regions = 'resources/{nname}_regions.geojson',
-        payments = 'resources/payments_{nname}_{method}_{power}.nc'
-    output:
-        folder = directory('figures/maps_payment_{nname}_{method}_{power}')
-    script: 'code/plot_maps_payment.py'
+# rule plot_payment_maps:
+#     input:
+#         network = 'resources/{nname}.nc',
+#         regions = 'resources/{nname}_regions.geojson',
+#         payments = 'resources/payments_{nname}_{method}_{power}.nc'
+#     output:
+#         folder = directory('figures/maps_payment_{nname}_{method}_{power}')
+#     script: 'code/plot_maps_payment.py'
 
 
 rule plot_expenditure_maps:

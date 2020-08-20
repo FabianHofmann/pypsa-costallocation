@@ -51,7 +51,7 @@ for var in cost:
         ax.spines['geo'].set_visible(False)
 
         n.plot(bus_sizes=r[carrier]/r[carrier].sum(),
-               bus_colors='rosybrown',
+               bus_colors='rosybrown', geomap='10m',
                line_widths=0, link_widths=0, ax=ax,
                boundaries=regions.total_bounds[[0,2,1,3]])
         regions.plot(column=p[carrier],
@@ -70,7 +70,7 @@ for var in cost:
     ax.spines['geo'].set_visible(False)
 
     n.plot(bus_sizes=r.sum(1)/p.sum().sum(),
-           bus_colors='rosybrown',
+           bus_colors='rosybrown', geomap='10m',
            line_widths=0, link_widths=0, ax=ax,
            boundaries=regions.total_bounds[[0,2,1,3]])
     regions.plot(column=p.sum(1),
