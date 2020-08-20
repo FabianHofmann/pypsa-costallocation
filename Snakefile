@@ -9,6 +9,8 @@ rule all:
     input:
         expand('figures/{nname}.png', **config['analysis']),
         expand('figures/total_costs_{nname}.png', **config['analysis']),
+        expand('figures/average_price_{nname}.png', **config['analysis']),
+        expand('figures/average_demand_{nname}.png', **config['analysis']),
         expand('figures/power_mix_{nname}_{method}_{power}.png', **config['analysis']),
         expand('figures/bars_{nname}_{method}_{power}.png', **config['analysis']),
         expand('figures/maps_expenditure_{nname}_{method}_{power}', **config['analysis']),
@@ -19,6 +21,8 @@ rule test:
     input:
         expand('figures/{nname}.png', **config['test']),
         expand('figures/total_costs_{nname}.png', **config['test']),
+        expand('figures/average_price_{nname}.png', **config['test']),
+        expand('figures/average_demand_{nname}.png', **config['test']),
         expand('figures/power_mix_{nname}_{method}_{power}.png', **config['test']),
         expand('figures/bars_{nname}_{method}_{power}.png', **config['test']),
         expand('figures/maps_expenditure_{nname}_{method}_{power}', **config['test']),
@@ -70,13 +74,6 @@ rule create_test_network:
         regions = 'resources/test-{nname}_regions.geojson'
     script: 'code/create_test_network.py'
 
-rule plot_network:
-    input:
-        network = 'resources/{nname}.nc',
-        regions = 'resources/{nname}_regions.geojson'
-    output: 'figures/{nname}.png'
-    script: 'code/plot_network.py'
-
 rule check_shadowprices:
     input:
         network = 'resources/{nname}.nc'
@@ -95,6 +92,14 @@ rule allocate_network:
         sparcity = 'resources/sparcity_cost_{nname}_{method}_{power}.nc',
         power_mix = 'resources/power_mix_{nname}_{method}_{power}.nc'
     script: 'code/allocate_network.py'
+
+
+rule plot_network:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson'
+    output: 'figures/{nname}.png'
+    script: 'code/plot_network.py'
 
 
 rule plot_total_costs:
@@ -124,14 +129,20 @@ rule plot_total_cost_comparison:
     script: 'code/plot_total_cost_comparison.py'
 
 
-rule plot_price_maps:
+rule plot_average_price:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
-        payments = 'resources/payments_{nname}_{method}_{power}.nc'
-    output:
-        folder = directory('figures/maps_price_{nname}_{method}_{power}')
-    script: 'code/plot_maps_price.py'
+    output: 'figures/average_price_{nname}.png'
+    script: 'code/plot_map.py'
+
+rule plot_average_demand:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+    output: 'figures/average_demand_{nname}.png'
+    script: 'code/plot_map.py'
+
 
 # rule plot_payment_maps:
 #     input:

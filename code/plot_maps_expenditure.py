@@ -11,37 +11,57 @@ import pypsa
 import xarray as xr
 import geopandas as gpd
 import cartopy.crs as ccrs
-from config import to_explanation, source_dims_r
+from config import to_explanation
 import matplotlib.pyplot as plt
 import os
-from helpers import combine_oneports, fmt
+from helpers import combine_oneports, scfmt, load
 
-if __name__ == "__main__":
-    if 'snakemake' not in globals():
-        from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_expenditure_maps', nname='test-de10bf',
-                                   method='ptpf', power='net')
+if 'snakemake' not in globals():
+    from _helpers import mock_snakemake
+    snakemake = mock_snakemake('plot_price_maps', nname='test-de10bf',
+                               method='ptpf', power='net')
+
 
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
+cost = (combine_oneports(xr.open_dataset(snakemake.input.costs).sum('snapshot'))
+        .set_index({'branch': ['component', 'branch_i']})
+        .transpose('sink', 'source', 'source_carrier', 'branch'))
 
-cost = combine_oneports(xr.open_dataset(snakemake.input.costs).sum('snapshot'))
-cost = cost.set_index({'branch': ['component', 'branch_i']})
-cost = cost.transpose('sink', 'source', 'source_carrier', 'branch')
 
-payer = cost.sum('source')
-receiver = cost.sum('sink')
+if 'price' in snakemake.output[0]:
+    if any(n.snapshot_weightings != 1):
+        w = ntl.cost.snapshot_weightings(n)
+        cost['one_port_operational_cost'] /= w
+        cost['co2_cost'] /= w
+    payment_type = 'Average Price for \n'
+    unit = '€/MWh'
+    demand = load(n).sum('snapshot')
+    cost = cost / demand
+    fmt = None
 
+else:
+    payment_type = 'Allocated'
+    unit = '€'
+    fmt = scfmt
+
+payer = cost.sum(['source', 'branch']).reindex(sink=regions.index).fillna(0)
+receiver = cost.sum('sink').reindex(source=regions.index).fillna(0)
+
+nplot_kwargs = dict(bus_colors='rosybrown', geomap='10m',
+                    line_widths=0, link_widths=0,
+                    boundaries=regions.total_bounds[[0,2,1,3]])
+rplot_kwargs = dict(legend=True, transform=ccrs.PlateCarree(), aspect='equal')
 
 os.makedirs(snakemake.output.folder + '/by_carrier', exist_ok=True)
 
 for var in cost:
-    if var == 'branch_investment_cost': continue
-    p = payer[var].to_pandas().reindex(regions.index).fillna(0)
-    r = receiver[var].to_pandas().reindex(regions.index).fillna(0)
+    p = payer[var].to_pandas()
+    r = receiver[var].to_pandas()
     varname = to_explanation[var]
     for carrier in cost.source_carrier.data:
-        if p[carrier].sum() <= 0.001: continue
+        if (var == 'branch_investment_cost'): continue
+        if (p[carrier].sum() <= 0.001): continue
 
         expend = varname.replace('Production & Storage ', '')
         ncarrier = n.carriers.nice_name[carrier]
@@ -50,56 +70,48 @@ for var in cost:
                                 figsize=(5, 4))
         ax.spines['geo'].set_visible(False)
 
-        n.plot(bus_sizes=r[carrier]/r[carrier].sum(),
-               bus_colors='rosybrown', geomap='10m',
-               line_widths=0, link_widths=0, ax=ax,
-               boundaries=regions.total_bounds[[0,2,1,3]])
-        regions.plot(column=p[carrier],
-                     legend=True, ax=ax,
-                     transform=ccrs.PlateCarree(), aspect='equal',
-                     legend_kwds={'label': f'Allocated {ncarrier} {expend} [€]',
+        n.plot(bus_sizes=r[carrier]/r[carrier].sum(), ax=ax, **nplot_kwargs)
+        regions.plot(column=p[carrier], ax=ax, **rplot_kwargs,
+                     legend_kwds={'label': f'{payment_type} {ncarrier} {expend} [{unit}]',
                                   'format': fmt})
 
-        fig.canvas.draw()
-        fig.tight_layout()
+        fig.canvas.draw(), fig.tight_layout()
         fig.savefig(snakemake.output.folder + f'/by_carrier/{carrier}_{var}.png')
 
 
     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
-                            figsize=(5, 4))
+                           figsize=(5, 4))
     ax.spines['geo'].set_visible(False)
 
-    n.plot(bus_sizes=r.sum(1)/p.sum().sum(),
-           bus_colors='rosybrown', geomap='10m',
-           line_widths=0, link_widths=0, ax=ax,
-           boundaries=regions.total_bounds[[0,2,1,3]])
-    regions.plot(column=p.sum(1),
-                 legend=True, ax=ax,
-                 transform=ccrs.PlateCarree(), aspect='equal',
-                 legend_kwds={'label': f'Allocated {varname} [€]', 'format': fmt})
+    if var != 'branch_investment_cost':
+        n.plot(bus_sizes=r.sum(1)/p.sum().sum(), ax=ax, **nplot_kwargs)
+    regions.plot(column=p if var == 'branch_investment_cost' else p.sum(1),
+                 ax=ax, **rplot_kwargs,
+                 legend_kwds={'label': f'{payment_type} {varname} [{unit}]',
+                              'format': fmt})
 
-    fig.canvas.draw()
-    fig.tight_layout()
+    fig.canvas.draw(), fig.tight_layout()
     fig.savefig(snakemake.output.folder + f'/{var}_total.png')
 
+
 # %%
-expanded_i = n.branches().query('s_nom_opt - s_nom_min > 1 | '
-                                'p_nom_opt - p_nom_min > 1').index
+# expanded_i = n.branches().query('s_nom_opt - s_nom_min > 1 | '
+#                                 'p_nom_opt - p_nom_min > 1').index
 
-b = cost.branch_investment_cost.sel(branch=expanded_i).sum('sink')
-line_widths = (b.sel(component='Line').to_series()
-               .reindex(n.lines.index, fill_value=0)/b.sum().item()*10)
-link_widths = (b.sel(component='Link').to_series()
-               .reindex(n.links.index, fill_value=0)/b.sum().item()*10)
+# b = cost.branch_investment_cost.sel(branch=expanded_i).sum('sink')
+# line_widths = (b.sel(component='Line').to_series()
+#                .reindex(n.lines.index, fill_value=0)/b.sum().item()*10)
+# link_widths = (b.sel(component='Link').to_series()
+#                .reindex(n.links.index, fill_value=0)/b.sum().item()*10)
 
-p = (cost.branch_investment_cost.sel(branch=expanded_i).sum('branch')
-    .to_series().reindex(regions.index, fill_value=0))
+# p = (cost.branch_investment_cost.sel(branch=expanded_i).sum('branch')
+#     .to_series().reindex(regions.index, fill_value=0))
 
 
-fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()}, figsize=(5, 4))
-ax.spines['geo'].set_visible(False)
-n.plot(bus_sizes=0, line_widths=line_widths, link_widths=link_widths,
-       ax=ax, boundaries=regions.total_bounds[[0,2,1,3]], geomap='10m')
-regions.plot(column=p, transform=ccrs.PlateCarree(), aspect='equal', ax=ax,
-             legend=True, legend_kwds={'label': 'Payment to Expanded Transmission [€]',
-                                       'format': fmt})
+# fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()}, figsize=(5, 4))
+# ax.spines['geo'].set_visible(False)
+# n.plot(bus_sizes=0, line_widths=line_widths, link_widths=link_widths,
+#        ax=ax, boundaries=regions.total_bounds[[0,2,1,3]], geomap='10m')
+# regions.plot(column=p, transform=ccrs.PlateCarree(), aspect='equal', ax=ax,
+#              legend=True, legend_kwds={'label': 'Payment to Expanded Transmission [€]',
+#                                        'format': fmt})

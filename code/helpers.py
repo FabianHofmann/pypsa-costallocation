@@ -6,23 +6,19 @@ Created on Mon Jun 29 13:26:32 2020
 @author: fabian
 """
 
-import pypsa
-from pypsa.linopt import set_int_index, get_var, get_con, Dict
-import pandas as pd
-from scipy.sparse.linalg import inv as spinv
-from scipy.sparse import diags
 import numpy as np
-from numpy.random import rand
-from numpy.testing import assert_allclose
-from pandas import DataFrame, Series
-from numpy import array
 from pypsa.descriptors import nominal_attrs
-from pandas import concat
 import xarray as xr
 import matplotlib as mpl
+import netallocation as ntl
 
-fmt = mpl.ticker.ScalarFormatter(useMathText=True)
-fmt.set_powerlimits((0, 0))
+scfmt = mpl.ticker.ScalarFormatter(useMathText=True)
+scfmt.set_powerlimits((0, 0))
+
+
+def load(n):
+    return ntl.power_demand(n, per_carrier=True).sel(carrier='Load', drop=True)\
+              .rename(bus="sink")
 
 def combine_oneports(ds):
     gen = ds.generator_investment_cost.rename(source_carrier_gen='source_carrier')

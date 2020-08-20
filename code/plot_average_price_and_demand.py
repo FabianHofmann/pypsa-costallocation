@@ -26,31 +26,6 @@ if not os.path.isdir(snakemake.output.folder):
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
 
-payments = xr.open_dataset(snakemake.input.payments).sum(source_carrier)
-
-w = ntl.cost.snapshot_weightings(n)
-payments['one_port_operational_cost'] /= w
-payments['co2_cost'] /= w
-
-demand = ntl.power_demand(n, per_carrier=True).sel(carrier='Load', drop=True)\
-            .rename(bus="sink")
-prices = ((payments/demand).mean('snapshot').to_dataframe()
-          .reindex(regions.index).fillna(0))
-
-
-for col in prices:
-    name = to_explanation[col]
-
-    fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
-                           figsize=(5, 4))
-    ax.spines['geo'].set_visible(False)
-    regions.plot(column=prices[col], legend=True, ax=ax,
-                 transform=ccrs.PlateCarree(), aspect='equal',
-                 legend_kwds={'label': f'Average LMP for \n {name} [€/MWh]'})
-    fig.canvas.draw()
-    fig.tight_layout()
-    fig.savefig(snakemake.output.folder + f'/{col}_average.png')
-
 
 fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                         figsize=(5, 4))
