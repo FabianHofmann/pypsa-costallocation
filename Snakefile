@@ -7,26 +7,28 @@ wildcard_constraints:
 
 rule all:
     input:
-        expand('figures/{nname}.png', **config['analysis']),
-        expand('figures/total_costs_{nname}.png', **config['analysis']),
-        expand('figures/average_price_{nname}.png', **config['analysis']),
-        expand('figures/average_demand_{nname}.png', **config['analysis']),
-        expand('figures/power_mix_{nname}_{method}_{power}.png', **config['analysis']),
-        expand('figures/bars_{nname}_{method}_{power}.png', **config['analysis']),
-        expand('figures/maps_expenditure_{nname}_{method}_{power}', **config['analysis']),
-        expand('figures/maps_price_{nname}_{method}_{power}', **config['analysis'])
+        expand('figures/{nname}/network.png', **config['analysis']),
+        expand('figures/{nname}/total_costs.png', **config['analysis']),
+        expand('figures/{nname}/average_price.png', **config['analysis']),
+        expand('figures/{nname}/average_demand.png', **config['analysis']),
+        expand('figures/{nname}/power_mix_{method}_{power}.png', **config['analysis']),
+        expand('figures/{nname}/bars_{method}_{power}.png', **config['analysis']),
+        expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['analysis']),
+        expand('figures/{nname}/maps_price_{method}_{power}', **config['analysis']),
+        expand('figures/{nname}/maps_sparcity_expenditure_{method}_{power}', **config['analysis']),
 
 
 rule test:
     input:
-        expand('figures/{nname}.png', **config['test']),
-        expand('figures/total_costs_{nname}.png', **config['test']),
-        expand('figures/average_price_{nname}.png', **config['test']),
-        expand('figures/average_demand_{nname}.png', **config['test']),
-        expand('figures/power_mix_{nname}_{method}_{power}.png', **config['test']),
-        expand('figures/bars_{nname}_{method}_{power}.png', **config['test']),
-        expand('figures/maps_expenditure_{nname}_{method}_{power}', **config['test']),
-        expand('figures/maps_price_{nname}_{method}_{power}', **config['test'])
+        expand('figures/{nname}/network.png', **config['test']),
+        expand('figures/{nname}/total_costs.png', **config['test']),
+        expand('figures/{nname}/average_price.png', **config['test']),
+        expand('figures/{nname}/average_demand.png', **config['test']),
+        expand('figures/{nname}/power_mix_{method}_{power}.png', **config['test']),
+        expand('figures/{nname}/bars_{method}_{power}.png', **config['test']),
+        expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['test']),
+        expand('figures/{nname}/maps_price_{method}_{power}', **config['test']),
+        expand('figures/{nname}/maps_sparcity_expenditure_{method}_{power}', **config['test']),
 
 
 subworkflow pypsade:
@@ -89,7 +91,7 @@ rule allocate_network:
     output:
         costs = 'resources/costs_{nname}_{method}_{power}.nc',
         payments = 'resources/payments_{nname}_{method}_{power}.nc', 
-        sparcity = 'resources/sparcity_cost_{nname}_{method}_{power}.nc',
+        sparcity = 'resources/sparcity_costs_{nname}_{method}_{power}.nc',
         power_mix = 'resources/power_mix_{nname}_{method}_{power}.nc'
     script: 'code/allocate_network.py'
 
@@ -98,7 +100,7 @@ rule plot_network:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson'
-    output: 'figures/{nname}.png'
+    output: 'figures/{nname}/network.png'
     script: 'code/plot_network.py'
 
 
@@ -106,7 +108,7 @@ rule plot_total_costs:
     input:
         costs = 'resources/costs_{nname}_ptpf_net.nc',
         network = 'resources/{nname}.nc',
-    output: 'figures/total_costs_{nname}.png'
+    output: 'figures/{nname}/total_costs.png'
     script: 'code/plot_total_costs.py'
 
 
@@ -115,7 +117,7 @@ rule plot_power_mix:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
         power_mix = 'resources/power_mix_{nname}_{method}_{power}.nc'
-    output: 'figures/power_mix_{nname}_{method}_{power}.png'
+    output: 'figures/{nname}/power_mix_{method}_{power}.png'
     script: 'code/plot_power_mix.py'
 
 
@@ -133,25 +135,15 @@ rule plot_average_price:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
-    output: 'figures/average_price_{nname}.png'
+    output: 'figures/{nname}/average_price.png'
     script: 'code/plot_map.py'
 
 rule plot_average_demand:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
-    output: 'figures/average_demand_{nname}.png'
+    output: 'figures/{nname}/average_demand.png'
     script: 'code/plot_map.py'
-
-
-# rule plot_payment_maps:
-#     input:
-#         network = 'resources/{nname}.nc',
-#         regions = 'resources/{nname}_regions.geojson',
-#         payments = 'resources/payments_{nname}_{method}_{power}.nc'
-#     output:
-#         folder = directory('figures/maps_payment_{nname}_{method}_{power}')
-#     script: 'code/plot_maps_payment.py'
 
 
 rule plot_expenditure_maps:
@@ -160,7 +152,25 @@ rule plot_expenditure_maps:
         regions = 'resources/{nname}_regions.geojson',
         costs = 'resources/costs_{nname}_{method}_{power}.nc'
     output:
-        folder = directory('figures/maps_expenditure_{nname}_{method}_{power}')
+        folder = directory('figures/{nname}/maps_expenditure_{method}_{power}')
+    script: 'code/plot_maps_expenditure.py'
+
+rule plot_price_maps:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+        costs = 'resources/costs_{nname}_{method}_{power}.nc'
+    output:
+        folder = directory('figures/{nname}/maps_price_{method}_{power}')
+    script: 'code/plot_maps_expenditure.py'
+
+rule plot_sparcity_maps:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+        costs = 'resources/sparcity_costs_{nname}_{method}_{power}.nc'
+    output:
+        folder = directory('figures/{nname}/maps_sparcity_expenditure_{method}_{power}')
     script: 'code/plot_maps_expenditure.py'
 
 
@@ -168,8 +178,9 @@ rule plot_bars:
     input:
         network = 'resources/{nname}.nc',
         payments = 'resources/payments_{nname}_{method}_{power}.nc'
-    output: 'figures/bars_{nname}_{method}_{power}.png'
+    output: 'figures/{nname}/bars_{method}_{power}.png'
     script: 'code/plot_bars.py'
+
 
 rule plot_allocated_payment:
     input:
@@ -177,7 +188,7 @@ rule plot_allocated_payment:
         regions = 'resources/{nname}_regions.geojson',
         costs = 'resources/costs_{nname}_{method}_{power}.nc'
     output:
-        'figures/allocated_payment_sink_{sink}.png'
+        'figures/{nname}/allocated_payment_sink_{sink}.png'
 
 
 

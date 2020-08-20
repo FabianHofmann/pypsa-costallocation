@@ -18,7 +18,7 @@ from helpers import combine_oneports, scfmt, load
 
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
-    snakemake = mock_snakemake('plot_price_maps', nname='test-de10bf',
+    snakemake = mock_snakemake('plot_sparcity_maps', nname='test-de10bf',
                                method='ptpf', power='net')
 
 
@@ -48,7 +48,8 @@ else:
 payer = cost.sum(['source', 'branch']).reindex(sink=regions.index).fillna(0)
 receiver = cost.sum('sink').reindex(source=regions.index).fillna(0)
 
-nplot_kwargs = dict(bus_colors='rosybrown', geomap='10m',
+res = '50m' if 'test' in snakemake.output[0] else '10m'
+nplot_kwargs = dict(bus_colors='rosybrown', geomap=res,
                     line_widths=0, link_widths=0,
                     boundaries=regions.total_bounds[[0,2,1,3]])
 rplot_kwargs = dict(legend=True, transform=ccrs.PlateCarree(), aspect='equal')
@@ -60,7 +61,7 @@ for var in cost:
     r = receiver[var].to_pandas()
     varname = to_explanation[var]
     for carrier in cost.source_carrier.data:
-        if (var == 'branch_investment_cost'): continue
+        if 'branch' in var: continue
         if (p[carrier].sum() <= 0.001): continue
 
         expend = varname.replace('Production & Storage ', '')
@@ -83,9 +84,9 @@ for var in cost:
                            figsize=(5, 4))
     ax.spines['geo'].set_visible(False)
 
-    if var != 'branch_investment_cost':
+    if 'branch' not in var:
         n.plot(bus_sizes=r.sum(1)/p.sum().sum(), ax=ax, **nplot_kwargs)
-    regions.plot(column=p if var == 'branch_investment_cost' else p.sum(1),
+    regions.plot(column=p if 'branch' in var else p.sum(1),
                  ax=ax, **rplot_kwargs,
                  legend_kwds={'label': f'{payment_type} {varname} [{unit}]',
                               'format': fmt})

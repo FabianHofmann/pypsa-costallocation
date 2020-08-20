@@ -27,7 +27,7 @@ from config import source_dims
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('allocate_network', nname='test-de10gf',
+        snakemake = mock_snakemake('allocate_network', nname='test-de10bf',
                                    method='ptpf', power='net')
 
 
@@ -89,8 +89,9 @@ def sparcity_share(c):
 c = 'Generator'
 mu_gen = by_bus_carrier(n.pnl(c).mu_upper, c, n).rename(source_dims)
 C_gen = mu_gen * A.sel(source_carrier=n.df(c).carrier.unique())
-C_gen = C_gen.rename(source_carrier='source_carrier_gen')
 C_spa_gen = C_gen * by_bus_carrier(sparcity_share(c), c, n).rename(source_dims)
+# rename for not conflicting later
+C_gen = C_gen.rename(source_carrier='source_carrier_gen')
 
 if not 'test' in snakemake.input.network:
     sparcity = n.df(c).p_nom_max.replace(np.inf, 0) @ n.df(c).mu_upper_p_nom

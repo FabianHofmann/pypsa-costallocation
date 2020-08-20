@@ -47,8 +47,8 @@ to_explanation = {'one_port_operational_cost': 'OPEX',
                   'generator_investment_cost': 'Production CAPEX',
                   'storage_investment_cost': 'Storage CAPEX',
                   'branch_investment_cost': 'Transmission CAPEX',
-                  'branch_sparcity_cost': 'Sparcity Cost Transmission',
-                  'one_port_sparcity_cost': 'Sparcity Cost Production',
+                  'branch_sparcity_cost': 'Sparcity Cost',
+                  'generator_sparcity_cost': 'Sparcity Cost',
                   'nodal_demand_cost': 'Nodal Payment'}
 
 color = pd.Series({'one_port_operational_cost': 'darkkhaki',
