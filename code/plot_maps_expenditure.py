@@ -33,9 +33,7 @@ payer = cost.sum('source')
 receiver = cost.sum('sink')
 
 
-if not os.path.isdir(snakemake.output.folder):
-    os.mkdir(snakemake.output.folder)
-
+os.makedirs(snakemake.output.folder + '/by_carrier', exist_ok=True)
 
 for var in cost:
     if var == 'branch_investment_cost': continue
