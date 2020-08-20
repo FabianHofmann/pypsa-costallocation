@@ -13,6 +13,7 @@ rule all:
         expand('figures/{nname}/average_demand.png', **config['analysis']),
         expand('figures/{nname}/power_mix_{method}_{power}.png', **config['analysis']),
         expand('figures/{nname}/bars_{method}_{power}.png', **config['analysis']),
+        expand('figures/{nname}/locality_{method}_{power}.png', **config['analysis']),
         expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/maps_price_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/maps_sparcity_expenditure_{method}_{power}', **config['analysis']),
@@ -26,6 +27,7 @@ rule test:
         expand('figures/{nname}/average_demand.png', **config['test']),
         expand('figures/{nname}/power_mix_{method}_{power}.png', **config['test']),
         expand('figures/{nname}/bars_{method}_{power}.png', **config['test']),
+        expand('figures/{nname}/locality_{method}_{power}.png', **config['test']),
         expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['test']),
         expand('figures/{nname}/maps_price_{method}_{power}', **config['test']),
         expand('figures/{nname}/maps_sparcity_expenditure_{method}_{power}', **config['test']),
@@ -172,6 +174,14 @@ rule plot_sparcity_maps:
     output:
         folder = directory('figures/{nname}/maps_sparcity_expenditure_{method}_{power}')
     script: 'code/plot_maps_transfer.py'
+
+
+rule plot_locality:
+    input:
+        network = 'resources/{nname}.nc',
+        costs = 'resources/costs_{nname}_{method}_{power}.nc'
+    output: 'figures/{nname}/locality_{method}_{power}.png'
+    script: 'code/plot_locality.py'
 
 
 rule plot_bars:
