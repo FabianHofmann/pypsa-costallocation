@@ -102,4 +102,4 @@ n.plot(bus_sizes=0, line_widths=line_widths, link_widths=link_widths,
        ax=ax, boundaries=regions.total_bounds[[0,2,1,3]], geomap='10m')
 regions.plot(column=p, transform=ccrs.PlateCarree(), aspect='equal', ax=ax,
              legend=True, legend_kwds={'label': 'Payment to Expanded Transmission [€]',
-                                       'format': fmt, 'wrap': True})
+                                       'format': fmt})
