@@ -25,10 +25,11 @@ power_mix = xr.open_dataarray(snakemake.input.power_mix)
 
 bus_sizes = (power_mix / power_mix.sum('source_carrier')).to_series() /5
 
+
 fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                          figsize=(5, 5))
 # optimal
-plot = n.plot(bus_sizes=bus_sizes,  line_widths=0, link_widths=0,
+plot = n.plot(bus_sizes=bus_sizes.fillna(0), line_widths=0, link_widths=0,
               ax=ax, geomap='10m', title='Average Power Mix',
               boundaries=regions.total_bounds[[0,2,1,3]] )
 
