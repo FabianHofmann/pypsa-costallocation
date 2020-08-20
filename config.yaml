@@ -1,6 +1,6 @@
 
 analysis:
-    nname: ['de10gf', 'de10bf', 'eur50bf', 'de50gf', 'de50bf']
+    nname: ['eur50bf', 'de50gf', 'de50bf']
     method: ['ptpf']
     power: ['net']
 
