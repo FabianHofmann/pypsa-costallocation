@@ -69,11 +69,11 @@ for var in cost:
                             figsize=(5, 4))
     ax.spines['geo'].set_visible(False)
 
-    n.plot(bus_sizes=p.sum(1)/p.sum().sum(),
+    n.plot(bus_sizes=r.sum(1)/p.sum().sum(),
            bus_colors='rosybrown',
            line_widths=0, link_widths=0, ax=ax,
            boundaries=regions.total_bounds[[0,2,1,3]])
-    regions.plot(column=r.sum(1),
+    regions.plot(column=p.sum(1),
                  legend=True, ax=ax,
                  transform=ccrs.PlateCarree(), aspect='equal',
                  legend_kwds={'label': f'Allocated {varname} [€]', 'format': fmt})
@@ -102,4 +102,4 @@ n.plot(bus_sizes=0, line_widths=line_widths, link_widths=link_widths,
        ax=ax, boundaries=regions.total_bounds[[0,2,1,3]], geomap='10m')
 regions.plot(column=p, transform=ccrs.PlateCarree(), aspect='equal', ax=ax,
              legend=True, legend_kwds={'label': 'Payment to Expanded Transmission [€]',
-                                       'format': fmt})
+                                       'format': fmt, 'wrap': True})
