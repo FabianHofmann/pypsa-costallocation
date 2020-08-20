@@ -153,7 +153,7 @@ rule plot_expenditure_maps:
         costs = 'resources/costs_{nname}_{method}_{power}.nc'
     output:
         folder = directory('figures/{nname}/maps_expenditure_{method}_{power}')
-    script: 'code/plot_maps_expenditure.py'
+    script: 'code/plot_maps_transfer.py'
 
 rule plot_price_maps:
     input:
@@ -162,7 +162,7 @@ rule plot_price_maps:
         costs = 'resources/costs_{nname}_{method}_{power}.nc'
     output:
         folder = directory('figures/{nname}/maps_price_{method}_{power}')
-    script: 'code/plot_maps_expenditure.py'
+    script: 'code/plot_maps_transfer.py'
 
 rule plot_sparcity_maps:
     input:
@@ -171,7 +171,7 @@ rule plot_sparcity_maps:
         costs = 'resources/sparcity_costs_{nname}_{method}_{power}.nc'
     output:
         folder = directory('figures/{nname}/maps_sparcity_expenditure_{method}_{power}')
-    script: 'code/plot_maps_expenditure.py'
+    script: 'code/plot_maps_transfer.py'
 
 
 rule plot_bars:
