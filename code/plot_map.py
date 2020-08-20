@@ -34,8 +34,7 @@ data = data.reindex(regions.index).fillna(0)
 fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                         figsize=(5, 4))
 ax.spines['geo'].set_visible(False)
-res = '50m' if 'test' in snakemake.output[0] else '10m'
-regions.plot(column=data, legend=True, ax=ax, geomap=res,
+regions.plot(column=data, legend=True, ax=ax,
              transform=ccrs.PlateCarree(), aspect='equal',
              legend_kwds={'label': label})
 fig.canvas.draw()
