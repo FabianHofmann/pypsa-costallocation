@@ -26,8 +26,8 @@ is_brownfield = 'bf' in snakemake.wildcards.nname
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions)
 
-bus_scale = 1e-5
-branch_scale = 1e-3
+bus_scale = 1.5e-5
+branch_scale = 5e-4
 
 
 if is_brownfield:
