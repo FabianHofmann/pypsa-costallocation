@@ -19,7 +19,10 @@ from numpy import array
 from pypsa.descriptors import nominal_attrs
 from pandas import concat
 import xarray as xr
+import matplotlib as mpl
 
+fmt = mpl.ticker.ScalarFormatter(useMathText=True)
+fmt.set_powerlimits((0, 0))
 
 def combine_oneports(ds):
     gen = ds.generator_investment_cost.rename(source_carrier_gen='source_carrier')

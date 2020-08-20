@@ -14,7 +14,7 @@ import cartopy.crs as ccrs
 from config import to_explanation, source_dims_r
 import matplotlib.pyplot as plt
 import os
-from helpers import combine_oneports
+from helpers import combine_oneports, fmt
 
 if __name__ == "__main__":
     if 'snakemake' not in globals():
@@ -25,59 +25,83 @@ if __name__ == "__main__":
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
 
-expenditures = xr.open_dataset(snakemake.input.costs).sum(['sink', 'snapshot'])
-expenditures = combine_oneports(expenditures).rename(source_dims_r)\
-                .set_index(branch=['component', 'branch_i'])
+cost = combine_oneports(xr.open_dataset(snakemake.input.costs).sum('snapshot'))
+cost = cost.set_index({'branch': ['component', 'branch_i']})
+cost = cost.transpose('sink', 'source', 'source_carrier', 'branch')
 
-by_bus_carrier = (expenditures.drop('branch_investment_cost')
-                  .drop_dims('branch').to_dataframe().unstack('carrier'))
-by_bus = by_bus_carrier.sum(level=0, axis=1)
-by_bus_carrier = by_bus_carrier.loc[:, by_bus_carrier.sum()>0.0001]
-by_branch = expenditures.branch_investment_cost.to_series()
+payer = cost.sum('source')
+receiver = cost.sum('sink')
 
-# regions = regions.assign(production = production.mean())
 
 if not os.path.isdir(snakemake.output.folder):
     os.mkdir(snakemake.output.folder)
 
-for col in by_bus:
+
+for var in cost:
+    if var == 'branch_investment_cost': continue
+    p = payer[var].to_pandas().reindex(regions.index).fillna(0)
+    r = receiver[var].to_pandas().reindex(regions.index).fillna(0)
+    varname = to_explanation[var]
+    for carrier in cost.source_carrier.data:
+        if p[carrier].sum() <= 0.001: continue
+
+        expend = varname.replace('Production & Storage ', '')
+        ncarrier = n.carriers.nice_name[carrier]
+
+        fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
+                                figsize=(5, 4))
+        ax.spines['geo'].set_visible(False)
+
+        n.plot(bus_sizes=r[carrier]/r[carrier].sum(),
+               bus_colors='rosybrown',
+               line_widths=0, link_widths=0, ax=ax,
+               boundaries=regions.total_bounds[[0,2,1,3]])
+        regions.plot(column=p[carrier],
+                     legend=True, ax=ax,
+                     transform=ccrs.PlateCarree(), aspect='equal',
+                     legend_kwds={'label': f'Allocated {ncarrier} {expend} [€]',
+                                  'format': fmt})
+
+        fig.canvas.draw()
+        fig.tight_layout()
+        fig.savefig(snakemake.output.folder + f'/by_carrier/{carrier}_{var}.png')
+
+
     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                             figsize=(5, 4))
     ax.spines['geo'].set_visible(False)
-    regions.plot(column=by_bus[col].reindex(regions.index, fill_value=0),
+
+    n.plot(bus_sizes=p.sum(1)/p.sum().sum(),
+           bus_colors='rosybrown',
+           line_widths=0, link_widths=0, ax=ax,
+           boundaries=regions.total_bounds[[0,2,1,3]])
+    regions.plot(column=r.sum(1),
                  legend=True, ax=ax,
                  transform=ccrs.PlateCarree(), aspect='equal',
-                 legend_kwds={'label': f'Total {to_explanation[col]} [€]'})
+                 legend_kwds={'label': f'Allocated {varname} [€]', 'format': fmt})
+
     fig.canvas.draw()
     fig.tight_layout()
-    fig.savefig(snakemake.output.folder + f'/{col}_total.png')
+    fig.savefig(snakemake.output.folder + f'/{var}_total.png')
+
+# %%
+expanded_i = n.branches().query('s_nom_opt - s_nom_min > 1 | '
+                                'p_nom_opt - p_nom_min > 1').index
+
+b = cost.branch_investment_cost.sel(branch=expanded_i).sum('sink')
+line_widths = (b.sel(component='Line').to_series()
+               .reindex(n.lines.index, fill_value=0)/b.sum().item()*10)
+link_widths = (b.sel(component='Link').to_series()
+               .reindex(n.links.index, fill_value=0)/b.sum().item()*10)
+
+p = (cost.branch_investment_cost.sel(branch=expanded_i).sum('branch')
+    .to_series().reindex(regions.index, fill_value=0))
 
 
-if not os.path.isdir(snakemake.output.folder + '/by_carrier'):
-    os.mkdir(snakemake.output.folder + '/by_carrier')
-
-for col in by_bus_carrier:
-    carrier = n.carriers.nice_name[col[1]]
-    expend = to_explanation[col[0]].replace('Production & Storage ', '')
-    fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
-                            figsize=(5, 4))
-    ax.spines['geo'].set_visible(False)
-    regions.plot(column=by_bus_carrier[col].reindex(regions.index, fill_value=0),
-                 legend=True, ax=ax,
-                 transform=ccrs.PlateCarree(), aspect='equal',
-                 legend_kwds={'label': f'{carrier} {expend} [€]'})
-    fig.canvas.draw()
-    fig.tight_layout()
-    fig.savefig(snakemake.output.folder + f'/by_carrier/{col[1]}_{col[0]}.png')
-
-
-
-# fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
-#                         figsize=(5, 4))
-# ax.outline_patch.set_visible(False)
-# regions.plot(column='lmp', legend=True, ax=ax,
-#                   transform=ccrs.PlateCarree(),
-#                   legend_kwds={'label': f'Average LMP [€/MWh]'})
-# fig.canvas.draw()
-# fig.tight_layout()
-# fig.savefig(snakemake.output.folder + f'/electricity_average.png')
+fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()}, figsize=(5, 4))
+ax.spines['geo'].set_visible(False)
+n.plot(bus_sizes=0, line_widths=line_widths, link_widths=link_widths,
+       ax=ax, boundaries=regions.total_bounds[[0,2,1,3]], geomap='10m')
+regions.plot(column=p, transform=ccrs.PlateCarree(), aspect='equal', ax=ax,
+             legend=True, legend_kwds={'label': 'Payment to Expanded Transmission [€]',
+                                       'format': fmt})
