@@ -28,6 +28,7 @@ symbol = dict(generator_investment_cost = '\mathcal{C}^{G}',
               branch_sparcity_cost = '\mathcal{R}^{F sparcity}',
               one_port_sparcity_cost = '\mathcal{G sparcity}',
               co2_cost = '\mathcal{E}',
+              remaining_cost = '\mathcal{R}',
               lmp = '\lambda',
               demand = 'd')
 

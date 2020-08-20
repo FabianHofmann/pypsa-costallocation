@@ -8,14 +8,17 @@ wildcard_constraints:
 rule all:
     input:
         expand('figures/{nname}.png', **config['analysis']),
+        expand('figures/total_costs_{nname}.png', **config['analysis']),
         expand('figures/bars_{nname}_{method}_{power}.png', **config['analysis']),
         expand('figures/maps_expenditure_{nname}_{method}_{power}', **config['analysis']),
         expand('figures/maps_payment_{nname}_{method}_{power}', **config['analysis']),
         expand('figures/maps_price_{nname}_{method}_{power}', **config['analysis'])
 
+
 rule test:
     input:
         expand('figures/{nname}.png', **config['test']),
+        expand('figures/total_costs_{nname}.png', **config['test']),
         expand('figures/bars_{nname}_{method}_{power}.png', **config['test']),
         expand('figures/maps_expenditure_{nname}_{method}_{power}', **config['test']),
         expand('figures/maps_payment_{nname}_{method}_{power}', **config['test']),
@@ -95,12 +98,21 @@ rule allocate_network:
 
 rule plot_total_costs:
     input:
+        costs = 'resources/costs_{nname}_ptpf_net.nc',
+        network = 'resources/{nname}.nc',
+    output: 'figures/total_costs_{nname}.png'
+    script: 'code/plot_total_costs.py'
+
+
+rule plot_total_cost_comparison:
+    input:
         costs_gf = 'resources/costs_{nname_wo_field}gf_ptpf_net.nc',
         costs_bf = 'resources/costs_{nname_wo_field}bf_ptpf_net.nc',
         network_gf = 'resources/{nname_wo_field}gf.nc',
         network_bf = 'resources/{nname_wo_field}bf.nc'
     output: 'figures/total_costs_{nname_wo_field}.png'
-    script: 'code/plot_total_costs.py'
+    script: 'code/plot_total_cost_comparison.py'
+
 
 rule plot_price_maps:
     input:
