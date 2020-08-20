@@ -41,5 +41,6 @@ stacked_cost.to_frame('').T.div(1e9).plot.bar(color=color,  stacked=True, ax=ax,
 ax.legend(labels=label, loc='lower center', bbox_to_anchor=(0.5, 1), ncol=3, frameon=False)
 ax.grid(axis='y', linestyle='dashed', color='gray', zorder=1, alpha=.5)
 ax.set_ylabel('Total Cost [Billion €]')
+fig.tight_layout()
 
-fig.savefig(snakemake.output[0])
+fig.savefig(snakemake.output[0], bbox_inches='tight')
