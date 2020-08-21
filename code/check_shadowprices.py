@@ -8,11 +8,12 @@ Created on Wed Aug 12 11:06:12 2020
 
 import pypsa
 from helpers import adjust_shadowprice
+import numpy as np
 
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('check_shadowprices', nname='de10bf')
+        snakemake = mock_snakemake('check_shadowprices', nname='acdc')
 
 if not 'test' in snakemake.input[0]:
     n = pypsa.Network(snakemake.input[0])
@@ -38,10 +39,9 @@ if not 'test' in snakemake.input[0]:
 
     investment = g.eval('p_nom_opt * capital_cost')
     revenue = (gt.mu_upper * gt.p).sum()
-
-    gamma = adjust_shadowprice(gt.mu_upper, 'Generator', n)
-    revenue = (gamma * gt.p).sum()
-    assert close(investment.where(gt.p.sum()>0, 0), revenue)
+    subsidy = g.p_nom_min * g.mu_lower_p_nom
+    scarcity = g.p_nom_max.replace(np.inf, 0) * g.mu_upper_p_nom
+    assert close(investment, revenue + subsidy + scarcity)
 
 
 
@@ -52,12 +52,9 @@ if not 'test' in snakemake.input[0]:
 
     investment = l.eval('s_nom_opt * capital_cost')
     revenue = ((lt.mu_upper + lt.mu_lower) * lt.p0).sum()
-
-
-    gamma = lt.mu_upper + lt.mu_lower
-    gamma_adj = adjust_shadowprice(gamma, 'Line', n)
-    revenue = (gamma_adj * lt.p0).sum()
-    assert close(investment, revenue)
+    subsidy = l.s_nom_min * l.mu_lower_s_nom
+    scarcity = l.s_nom_max.replace(np.inf, 0) * l.mu_upper_s_nom
+    assert close(investment, revenue + subsidy + scarcity)
 
 
     l = n.links
@@ -65,12 +62,10 @@ if not 'test' in snakemake.input[0]:
 
     investment = l.eval('p_nom_opt * capital_cost')
     revenue = ((lt.mu_upper + lt.mu_lower) * lt.p0).sum()
+    subsidy = l.p_nom_min * l.mu_lower_p_nom
+    scarcity = l.p_nom_max.replace(np.inf, 0) * l.mu_upper_p_nom
+    assert close(investment, revenue + subsidy + scarcity)
 
-    lv_mu = - n.global_constraints.at['lv_limit', 'mu']
-    gamma = lt.mu_upper + lt.mu_lower
-    gamma_adj = adjust_shadowprice(gamma, 'Link', n)
-    revenue = (gamma_adj * lt.p0).sum()
-    assert close(investment, revenue)
 
 
     # Storage Units
@@ -89,13 +84,16 @@ if not 'test' in snakemake.input[0]:
                   st.mu_state_of_charge / s.efficiency_dispatch)[store],
                  n.buses_t.marginal_price[bus])
 
-    investment = s.eval('p_nom_opt * capital_cost')
 
     gamma = (st.mu_lower_p_dispatch + st.mu_upper_p_dispatch +
              st.mu_state_of_charge / s.efficiency_dispatch)
-    gamma_adj = adjust_shadowprice(gamma, 'StorageUnit', n)
-    revenue = (gamma_adj * st.p_dispatch - gamma * st.p_store).sum()
-    assert close(investment.where(st.p_dispatch.sum()>0, 0), revenue)
+    investment = s.eval('p_nom_opt * capital_cost')
+    # gamma + marginal_cost is the lmp
+    revenue = ((gamma) * st.p_dispatch - (gamma + s.marginal_cost) * st.p_store).sum()
+    subsidy = s.p_nom_min * s.mu_lower_p_nom
+    scarcity = s.p_nom_max.replace(np.inf, 0) * s.mu_upper_p_nom
+    assert close(investment, revenue + subsidy + scarcity)
+
 
 
 

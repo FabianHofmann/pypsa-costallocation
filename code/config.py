@@ -9,6 +9,8 @@ Created on Fri May 15 15:20:25 2020
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# plt.rc('text', usetex=True)
+# plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 plt.rc('font', family='serif')
 plt.rcParams['savefig.dpi'] = 200
 
@@ -25,10 +27,12 @@ symbol = dict(generator_investment_cost = '\mathcal{C}^{G}',
               branch_investment_cost = '\mathcal{C}^{F}',
               one_port_operational_cost = '\mathcal{O}',
               one_port_investment_cost = '\mathcal{C}',
-              branch_sparcity_cost = '\mathcal{R}^{F sparcity}',
-              one_port_sparcity_cost = '\mathcal{G sparcity}',
+              branch_scarcity_cost = '\mathcal{R}^{F scarcity}',
+              one_port_scarcity_cost = '\mathcal{G scarcity}',
               co2_cost = '\mathcal{E}',
               remaining_cost = '\mathcal{R}',
+              scarcity_cost = '\mathcal{R}^{scarcity}',
+              subsidy_cost = '\mathcal{R}^{subsidy}',
               lmp = '\lambda',
               demand = 'd')
 
@@ -47,18 +51,23 @@ to_explanation = {'one_port_operational_cost': 'OPEX',
                   'generator_investment_cost': 'Production CAPEX',
                   'storage_investment_cost': 'Storage CAPEX',
                   'branch_investment_cost': 'Transmission CAPEX',
-                  'branch_sparcity_cost': 'Sparcity Cost',
-                  'generator_sparcity_cost': 'Sparcity Cost',
+                  'branch_scarcity_cost': 'Scarcity Cost',
+                  'generator_scarcity_cost': 'Scarcity Cost',
+                  'scarcity_cost': 'Scarcity Cost',
+                  'subsidy_cost': 'Subsidy Cost',
                   'nodal_demand_cost': 'Nodal Payment'}
 
 color = pd.Series({'one_port_operational_cost': 'darkkhaki',
                    'one_port_investment_cost': 'palevioletred',
                    'co2_cost': 'tomato',
                    'generator_investment_cost': 'palevioletred',
-                   'storage_investment_cost': 'royalblue',
+                   'storage_investment_cost': 'skyblue',
                    'branch_investment_cost': 'mediumaquamarine',
                    'nodal_demand_cost': 'cadetblue',
-                   'remaining_cost': 'lightsteelblue'}).sort_index()
+                   'remaining_cost': 'lightsteelblue',
+                   'scarcity_cost': 'lightsteelblue',
+                   'subsidy_cost': 'slategrey',
+                   }).sort_index()
 
 latex_names = dict(p_nom_opt = '$G$', marginal_cost = '$o$', capital_cost='$c$',
                    bus='$n$')

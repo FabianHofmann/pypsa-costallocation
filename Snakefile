@@ -16,7 +16,7 @@ rule all:
         expand('figures/{nname}/locality_{method}_{power}.png', **config['analysis']),
         expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/maps_price_{method}_{power}', **config['analysis']),
-        expand('figures/{nname}/maps_sparcity_expenditure_{method}_{power}', **config['analysis']),
+        expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['analysis']),
 
 
 rule test:
@@ -30,7 +30,7 @@ rule test:
         expand('figures/{nname}/locality_{method}_{power}.png', **config['test']),
         expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['test']),
         expand('figures/{nname}/maps_price_{method}_{power}', **config['test']),
-        expand('figures/{nname}/maps_sparcity_expenditure_{method}_{power}', **config['test']),
+        expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['test']),
 
 
 subworkflow pypsade:
@@ -93,7 +93,7 @@ rule allocate_network:
     output:
         costs = 'resources/costs_{nname}_{method}_{power}.nc',
         payments = 'resources/payments_{nname}_{method}_{power}.nc', 
-        sparcity = 'resources/sparcity_costs_{nname}_{method}_{power}.nc',
+        scarcity = 'resources/scarcity_costs_{nname}_{method}_{power}.nc',
         power_mix = 'resources/power_mix_{nname}_{method}_{power}.nc'
     script: 'code/allocate_network.py'
 
@@ -166,13 +166,13 @@ rule plot_price_maps:
         folder = directory('figures/{nname}/maps_price_{method}_{power}')
     script: 'code/plot_maps_transfer.py'
 
-rule plot_sparcity_maps:
+rule plot_scarcity_maps:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
-        costs = 'resources/sparcity_costs_{nname}_{method}_{power}.nc'
+        costs = 'resources/scarcity_costs_{nname}_{method}_{power}.nc'
     output:
-        folder = directory('figures/{nname}/maps_sparcity_expenditure_{method}_{power}')
+        folder = directory('figures/{nname}/maps_scarcity_expenditure_{method}_{power}')
     script: 'code/plot_maps_transfer.py'
 
 

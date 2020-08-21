@@ -21,7 +21,7 @@ def load(n):
               .rename(bus="sink")
 
 def combine_oneports(ds):
-    if 'generator_sparcity_cost' in ds:
+    if 'generator_scarcity_cost' in ds:
         return ds
     gen = ds.generator_investment_cost.rename(source_carrier_gen='source_carrier')
     sus = ds.storage_investment_cost.rename(source_carrier_sus='source_carrier')

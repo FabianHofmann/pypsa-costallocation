@@ -7,6 +7,7 @@ Created on Fri Jul 10 10:39:11 2020
 """
 
 import pypsa
+import config
 import matplotlib.pyplot as plt
 import netallocation as ntl
 import cartopy.crs as ccrs

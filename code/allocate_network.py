@@ -78,8 +78,8 @@ O = A * o
 # not positive.
 # =============================================================================
 
-def sparcity_share(c):
-    """Get the ratio of payments allocated to the sparcity constraint."""
+def scarcity_share(c):
+    """Get the ratio of payments allocated to the scarcity constraint."""
     mu_upper = 'mu_upper_' + nominal_attrs[c]
     return (- n.df(c)[mu_upper] /
             (n.df(c).capital_cost - n.df(c)[mu_upper]))
@@ -89,16 +89,16 @@ def sparcity_share(c):
 c = 'Generator'
 mu_gen = by_bus_carrier(n.pnl(c).mu_upper, c, n).rename(source_dims)
 C_gen = mu_gen * A.sel(source_carrier=n.df(c).carrier.unique())
-C_spa_gen = C_gen * by_bus_carrier(sparcity_share(c), c, n).rename(source_dims)
+C_sca_gen = C_gen * by_bus_carrier(scarcity_share(c), c, n).rename(source_dims)
 # rename for not conflicting later
 C_gen = C_gen.rename(source_carrier='source_carrier_gen')
 
 if not 'test' in snakemake.input.network:
-    sparcity = n.df(c).p_nom_max.replace(np.inf, 0) @ n.df(c).mu_upper_p_nom
+    scarcity = n.df(c).p_nom_max.replace(np.inf, 0) @ n.df(c).mu_upper_p_nom
     subsidy = n.df(c).p_nom_min @ n.df(c).mu_lower_p_nom
 
     investment = n.df(c).p_nom_opt @ n.df(c).capital_cost
-    revenue = (C_gen.sum() + subsidy + sparcity)
+    revenue = (C_gen.sum() + subsidy + scarcity)
     assert_allclose(investment, revenue, rtol=1e-2, atol=np.inf)
 
 
@@ -121,10 +121,10 @@ mu = pd.concat([n.pnl(c).mu_upper + n.pnl(c).mu_lower for c in comps],
 mu = xr.DataArray(mu, dims=['snapshot', 'branch'])
 C_branch = (A_f * mu).rename(bus='sink')
 
-share_sparcity = pd.concat([sparcity_share(c) for c in comps], keys=comps,
+share_scarcity = pd.concat([scarcity_share(c) for c in comps], keys=comps,
                            names=names)
-share_sparcity = xr.DataArray(share_sparcity, dims='branch')
-C_spa_branch = C_branch * share_sparcity
+share_scarcity = xr.DataArray(share_scarcity, dims='branch')
+C_sca_branch = C_branch * share_scarcity
 
 # collect cost allocations
 ca = xr.Dataset({'one_port_operational_cost': O,
@@ -133,14 +133,14 @@ ca = xr.Dataset({'one_port_operational_cost': O,
                  'storage_investment_cost': C_sus,
                  'branch_investment_cost': C_branch})
 
-sa = xr.Dataset({'generator_sparcity_cost': C_spa_gen,
-                 'branch_sparcity_cost': C_spa_branch})
+sa = xr.Dataset({'generator_scarcity_cost': C_sca_gen,
+                 'branch_scarcity_cost': C_sca_branch})
 
 payments = ca.sum(['source', 'branch'])
 
 
 ca.reset_index('branch').to_netcdf(snakemake.output.costs)
-sa.reset_index('branch').to_netcdf(snakemake.output.sparcity)
+sa.reset_index('branch').to_netcdf(snakemake.output.scarcity)
 payments.to_netcdf(snakemake.output.payments)
 A.sum(['source']).mean('snapshot').to_netcdf(snakemake.output.power_mix)
 

@@ -10,6 +10,8 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 from config import color, to_total_symbol
+import numpy as np
+from pypsa.descriptors import nominal_attrs
 
 plt.rc('font', family='serif')
 plt.rc("text", usetex=False)
@@ -18,15 +20,33 @@ plt.rc("text", usetex=False)
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_total_costs', nname='de10bf')
+        snakemake = mock_snakemake('plot_total_costs', nname='acdc')
 
 n = pypsa.Network(snakemake.input.network)
 ca = xr.open_dataset(snakemake.input.costs)
 
-TC = n.objective_constant + n.objective
+
 
 stacked_cost = ca.sum().to_array().to_series()
-stacked_cost['remaining_cost'] =  TC - stacked_cost.sum()
+
+
+if 'lv_limit' in n.global_constraints.index:
+    for c in n.branch_components:
+        if n.df(c).empty: continue
+        mu_upper = (n.global_constraints.at['lv_limit', 'mu'] * n.df(c).length)
+        nom = nominal_attrs[c]
+        n.df(c)['mu_upper_'+nom] += mu_upper
+
+stacked_cost['subsidy_cost'] = 0
+stacked_cost['scarcity_cost'] = 0
+for c in ['Generator', 'StorageUnit', 'Line', 'Link']:
+    nom = nominal_attrs[c]
+    stacked_cost['subsidy_cost'] += n.df(c)[nom + '_min'] @ n.df(c)['mu_lower_' + nom]
+    stacked_cost['scarcity_cost'] += (n.df(c)[nom + '_max'].replace(np.inf, 0) @
+                                      n.df(c)['mu_upper_' + nom])
+
+
+assert ((n.objective_constant + n.objective)/stacked_cost.sum()).round(2) == 1
 
 # %%
 fig, ax = plt.subplots(figsize=[3,5])
