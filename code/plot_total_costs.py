@@ -45,8 +45,8 @@ for c in ['Generator', 'StorageUnit', 'Line', 'Link']:
     stacked_cost['scarcity_cost'] += (n.df(c)[nom + '_max'].replace(np.inf, 0) @
                                       n.df(c)['mu_upper_' + nom])
 
-
-assert ((n.objective_constant + n.objective)/stacked_cost.sum()).round(2) == 1
+if 'test' not in snakemake.wildcards.nname:
+    assert ((n.objective_constant + n.objective)/stacked_cost.sum()).round(2) == 1
 
 # %%
 fig, ax = plt.subplots(figsize=[3,5])
