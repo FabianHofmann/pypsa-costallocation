@@ -32,6 +32,9 @@ for c in ['Generator', 'StorageUnit']:
 
 n.mremove('Line', n.lines.query('num_parallel == 0').index)
 
+# remove preexisting infrastructure from objective function
+for c, attr in pypsa.descriptors.nominal_attrs.items():
+    n.df(c)[attr] = 0
 
 # set lv limit here, as long as #175 is not solved
 if 'line_volume_limit' in snakemake.config:
