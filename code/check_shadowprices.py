@@ -13,7 +13,7 @@ import numpy as np
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('check_shadowprices', nname='acdc')
+        snakemake = mock_snakemake('check_shadowprices', nname='de50bf')
 
 if not 'test' in snakemake.input[0]:
     n = pypsa.Network(snakemake.input[0])
@@ -39,7 +39,7 @@ if not 'test' in snakemake.input[0]:
 
     investment = g.eval('p_nom_opt * capital_cost')
     revenue = (gt.mu_upper * gt.p).sum()
-    subsidy = g.p_nom_min * g.mu_lower_p_nom
+    subsidy = g.p_nom_opt * g.mu_lower_p_nom
     scarcity = g.p_nom_max.replace(np.inf, 0) * g.mu_upper_p_nom
     assert close(investment, revenue + subsidy + scarcity)
 
@@ -52,8 +52,8 @@ if not 'test' in snakemake.input[0]:
 
     investment = l.eval('s_nom_opt * capital_cost')
     revenue = ((lt.mu_upper + lt.mu_lower) * lt.p0).sum()
-    subsidy = l.s_nom_min * l.mu_lower_s_nom
-    scarcity = l.s_nom_max.replace(np.inf, 0) * l.mu_upper_s_nom
+    subsidy = l.s_nom_opt * l.mu_lower_s_nom
+    scarcity = l.s_nom_opt * l.mu_upper_s_nom
     assert close(investment, revenue + subsidy + scarcity)
 
 
@@ -62,8 +62,8 @@ if not 'test' in snakemake.input[0]:
 
     investment = l.eval('p_nom_opt * capital_cost')
     revenue = ((lt.mu_upper + lt.mu_lower) * lt.p0).sum()
-    subsidy = l.p_nom_min * l.mu_lower_p_nom
-    scarcity = l.p_nom_max.replace(np.inf, 0) * l.mu_upper_p_nom
+    subsidy = l.p_nom_opt * l.mu_lower_p_nom
+    scarcity = l.p_nom_opt * l.mu_upper_p_nom
     assert close(investment, revenue + subsidy + scarcity)
 
 
@@ -90,8 +90,8 @@ if not 'test' in snakemake.input[0]:
     investment = s.eval('p_nom_opt * capital_cost')
     # gamma + marginal_cost is the lmp
     revenue = ((gamma) * st.p_dispatch - (gamma + s.marginal_cost) * st.p_store).sum()
-    subsidy = s.p_nom_min * s.mu_lower_p_nom
-    scarcity = s.p_nom_max.replace(np.inf, 0) * s.mu_upper_p_nom
+    subsidy = s.p_nom_opt * s.mu_lower_p_nom
+    scarcity = s.p_nom_opt * s.mu_upper_p_nom
     assert close(investment, revenue + subsidy + scarcity)
 
 

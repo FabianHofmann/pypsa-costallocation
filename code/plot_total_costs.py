@@ -20,7 +20,7 @@ plt.rc("text", usetex=False)
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_total_costs', nname='acdc')
+        snakemake = mock_snakemake('plot_total_costs', nname='de50bf')
 
 n = pypsa.Network(snakemake.input.network)
 ca = xr.open_dataset(snakemake.input.costs)
@@ -41,9 +41,8 @@ stacked_cost['subsidy_cost'] = 0
 stacked_cost['scarcity_cost'] = 0
 for c in ['Generator', 'StorageUnit', 'Line', 'Link']:
     nom = nominal_attrs[c]
-    stacked_cost['subsidy_cost'] += n.df(c)[nom + '_min'] @ n.df(c)['mu_lower_' + nom]
-    stacked_cost['scarcity_cost'] += (n.df(c)[nom + '_max'].replace(np.inf, 0) @
-                                      n.df(c)['mu_upper_' + nom])
+    stacked_cost['subsidy_cost'] += n.df(c)[nom+'_opt'] @ n.df(c)['mu_lower_'+nom]
+    stacked_cost['scarcity_cost'] += n.df(c)[nom+'_opt'] @ n.df(c)['mu_upper_'+nom]
 
 if 'test' not in snakemake.wildcards.nname:
     assert ((n.objective_constant + n.objective)/stacked_cost.sum()).round(2) == 1
