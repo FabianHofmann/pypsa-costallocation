@@ -65,8 +65,8 @@ color = pd.Series({'one_port_operational_cost': 'darkkhaki',
                    'branch_investment_cost': 'mediumaquamarine',
                    'nodal_demand_cost': 'cadetblue',
                    'remaining_cost': 'lightsteelblue',
-                   'scarcity_cost': 'lightsteelblue',
-                   'subsidy_cost': 'slategrey',
+                   'scarcity_cost': 'rosybrown',
+                   'subsidy_cost': 'lightgrey',
                    }).sort_index()
 
 latex_names = dict(p_nom_opt = '$G$', marginal_cost = '$o$', capital_cost='$c$',
