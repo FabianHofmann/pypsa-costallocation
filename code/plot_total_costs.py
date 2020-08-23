@@ -20,7 +20,7 @@ plt.rc("text", usetex=False)
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_total_costs', nname='de10bf')
+        snakemake = mock_snakemake('plot_total_costs', nname='acdc')
 
 n = pypsa.Network(snakemake.input.network)
 ca = xr.open_dataset(snakemake.input.costs)
@@ -28,7 +28,7 @@ ca = xr.open_dataset(snakemake.input.costs)
 
 
 stacked_cost = ca.sum().to_array().to_series()
-
+TC = n.objective_constant + n.objective
 
 if 'lv_limit' in n.global_constraints.index:
     for c in n.branch_components:
@@ -45,7 +45,7 @@ for c in ['Generator', 'StorageUnit', 'Line', 'Link']:
     stacked_cost['scarcity_cost'] += n.df(c)[nom+'_opt'] @ n.df(c)['mu_upper_'+nom]
 
 if 'test' not in snakemake.wildcards.nname:
-    assert ((n.objective_constant + n.objective)/stacked_cost.sum()).round(2) == 1
+    assert (TC/stacked_cost.sum()).round(2) == 1
 
 # %%
 fig, ax = plt.subplots(figsize=[3,5])
@@ -54,10 +54,17 @@ ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 
 color = color[stacked_cost.index]
-label = pd.Series(to_total_symbol)[stacked_cost.index]
 
 stacked_cost.to_frame('').T.div(1e9).plot.bar(color=color,  stacked=True, ax=ax, zorder=4)
-ax.legend(labels=label, loc='lower center', bbox_to_anchor=(0.5, 1), ncol=3, frameon=False)
+ax.hlines([TC/1e9], -1, 1, zorder=5, ls='dashed', lw=1.2, color='darkorange',
+          label='Total Cost')
+handles, labels = ax.get_legend_handles_labels()
+_ = handles.pop(0); handles.append(_)
+_ = labels.pop(0); labels.append(_)
+labels = [to_total_symbol.get(k, k) for k in labels]
+
+ax.legend(handles[::-1], labels[::-1], loc='lower center',
+          bbox_to_anchor=(0.5, 1), ncol=3, frameon=False)
 ax.grid(axis='y', linestyle='dashed', color='gray', zorder=1, alpha=.5)
 ax.set_ylabel('Total Payments [Billion €]')
 fig.tight_layout()
