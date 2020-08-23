@@ -56,7 +56,7 @@ ax.spines['right'].set_visible(False)
 color = color[stacked_cost.index]
 
 stacked_cost.to_frame('').T.div(1e9).plot.bar(color=color,  stacked=True, ax=ax, zorder=4)
-ax.hlines([TC/1e9], -1, 1, zorder=5, ls='dashed', lw=1.2, color='darkorange',
+ax.hlines([TC/1e9], -1, 1, zorder=5, ls=':', lw=1.5, color='darkgreen',
           label='Total Cost')
 handles, labels = ax.get_legend_handles_labels()
 _ = handles.pop(0); handles.append(_)
