@@ -65,7 +65,7 @@ color = pd.Series({'one_port_operational_cost': 'darkkhaki',
                    'branch_investment_cost': 'mediumaquamarine',
                    'nodal_demand_cost': 'cadetblue',
                    'remaining_cost': 'lightsteelblue',
-                   'scarcity_cost': 'rosybrown',
+                   'scarcity_cost': 'gold',
                    'subsidy_cost': 'lightgrey',
                    }).sort_index()
 

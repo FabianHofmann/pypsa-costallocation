@@ -12,6 +12,7 @@ code/__pycache__
 *.nc
 pypsa-eur
 pypsa-de
+technology-data
 .snakemake
 resources/*
 figures/*
