@@ -2,7 +2,7 @@ configfile: "config.yaml"
 
 
 wildcard_constraints:
-    clusters="[0-9][0-9]",
+    clusters="\d+",
     field="(bf|gf)"
 
 rule all:
