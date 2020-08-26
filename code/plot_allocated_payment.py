@@ -34,7 +34,6 @@ costs = xr.open_dataset(snakemake.input.costs)
 sink = snakemake.wildcards.sink
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
 
-%break
 if sink == 'lowest-lmp':
     sink = n.buses_t.marginal_price.mean().idxmin()
 elif sink == 'highest-lmp':

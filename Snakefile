@@ -3,7 +3,9 @@ configfile: "config.yaml"
 
 wildcard_constraints:
     clusters="\d+",
-    field="(bf|gf)"
+    field="(bf|gf)",
+    method="(ptpf|ebe)",
+
 
 rule all:
     input:
@@ -18,6 +20,7 @@ rule all:
         expand('figures/{nname}/maps_price_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/maps_scarcity_price_{method}_{power}', **config['analysis']),
+        expand('figures/{nname}/{method}_{power}_to_{sink}.png', **config['analysis']),
 
 
 rule test:
@@ -33,6 +36,7 @@ rule test:
         expand('figures/{nname}/maps_price_{method}_{power}', **config['test']),
         expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['test']),
         expand('figures/{nname}/maps_scarcity_price_{method}_{power}', **config['test']),
+        expand('figures/{nname}/{method}_{power}_to_{sink}.png', **config['test']),
 
 
 subworkflow pypsade:
@@ -79,6 +83,7 @@ rule create_test_network:
         network = 'resources/test-{nname}.nc',
         regions = 'resources/test-{nname}_regions.geojson'
     script: 'code/create_test_network.py'
+
 
 rule check_shadowprices:
     input:
@@ -209,8 +214,9 @@ rule plot_allocated_payment:
         regions = 'resources/{nname}_regions.geojson',
         costs = 'resources/costs_{nname}_{method}_{power}.nc'
     output:
-        'figures/{nname}/allocated_payment_sink_{sink}.png'
-
+        'figures/{nname}/{method}_{power}_to_{sink}.png'
+    script: 
+        'code/plot_allocated_payment.py'
 
 
 # Local Variables:
