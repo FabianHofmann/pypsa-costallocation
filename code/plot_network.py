@@ -42,7 +42,7 @@ if is_brownfield:
         link_widths=n.links.p_nom_min * branch_scale,
         ax=axes[0],
         geomap='10m',
-        title='Existent Capacities',
+        title='Lower Capacity Bounds',
         boundaries=regions.total_bounds[[0,2,1,3]]
     )
     regions.plot(ax=axes[0], transform=ccrs.PlateCarree(), aspect='equal')
