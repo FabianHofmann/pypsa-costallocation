@@ -25,7 +25,7 @@ from netallocation.plot_helpers import (make_handler_map_to_scale_circles_as_in,
 
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
-    snakemake = mock_snakemake('plot_allocated_payment', nname='test-de10bf',
+    snakemake = mock_snakemake('plot_allocated_payment', nname='de50bf',
                                method='ptpf', power='net', sink='DE0 1')
 
 
@@ -33,6 +33,13 @@ n = pypsa.Network(snakemake.input.network)
 costs = xr.open_dataset(snakemake.input.costs)
 sink = snakemake.wildcards.sink
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
+
+%break
+if sink == 'lowest-lmp':
+    sink = n.buses_t.marginal_price.mean().idxmin()
+elif sink == 'highest-lmp':
+    sink = n.buses_t.marginal_price.mean().idxmax()
+
 
 payment = (xr.open_dataset(snakemake.input.costs)
            .sel(sink=sink, drop=True)

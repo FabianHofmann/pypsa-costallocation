@@ -50,7 +50,7 @@ receiver = cost.sum('sink').reindex(source=regions.index).fillna(0)
 
 res = '50m' if 'test' in snakemake.output[0] else '10m'
 nplot_kwargs = dict(bus_colors='rosybrown', geomap=res,
-                    line_widths=0, link_widths=0,
+                    line_widths=0, link_widths=0, bus_alpha=0.8,
                     boundaries=regions.total_bounds[[0,2,1,3]])
 rplot_kwargs = dict(legend=True, transform=ccrs.PlateCarree(), aspect='equal')
 
@@ -71,7 +71,7 @@ for var in cost:
                                 figsize=(5, 4))
         ax.spines['geo'].set_visible(False)
 
-        n.plot(bus_sizes=r[carrier]/r[carrier].sum(), ax=ax, **nplot_kwargs)
+        n.plot(bus_sizes=r[carrier]/r[carrier].sum()*0.7, ax=ax, **nplot_kwargs)
         regions.plot(column=p[carrier], ax=ax, **rplot_kwargs,
                      legend_kwds={'label': f'{payment_type} {ncarrier} {expend} [{unit}]',
                                   'format': fmt})
