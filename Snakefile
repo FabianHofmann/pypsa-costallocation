@@ -21,6 +21,7 @@ rule all:
         expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/maps_scarcity_price_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/{method}_{power}_to_{sink}.png', **config['analysis']),
+        expand('tables/{nname}_{method}_{power}', **config['analysis']),
 
 
 rule test:
@@ -37,6 +38,7 @@ rule test:
         expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['test']),
         expand('figures/{nname}/maps_scarcity_price_{method}_{power}', **config['test']),
         expand('figures/{nname}/{method}_{power}_to_{sink}.png', **config['test']),
+        expand('tables/{nname}_{method}_{power}', **config['test']),
 
 
 subworkflow pypsade:
@@ -217,6 +219,16 @@ rule plot_allocated_payment:
         'figures/{nname}/{method}_{power}_to_{sink}.png'
     script: 
         'code/plot_allocated_payment.py'
+
+
+rule write_tables:
+    input:
+        network = 'resources/{nname}.nc',
+        costs = 'resources/costs_{nname}_{method}_{power}.nc',
+        scarcity = 'resources/scarcity_costs_{nname}_{method}_{power}.nc',
+    output:
+        folder = directory('tables/{nname}_{method}_{power}')
+    script: 'code/write_out_tables.py'
 
 
 # Local Variables:

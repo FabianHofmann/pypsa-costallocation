@@ -215,6 +215,8 @@ INPUT ../figures/example/example_allocation_bus1_net_ebe.png
 INPUT /home/fabian/papers/costallocation/paper/../figures/example/example_allocation_bus2_net_ebe.png
 INPUT ../figures/example/example_allocation_bus2_net_ebe.png
 INPUT ../figures/example/example_allocation_bus2_net_ebe.png
+INPUT ../tables/test-de10bf/prices.tex
+INPUT ../tables/test-de10bf/prices.tex
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmcsc10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm
 INPUT /home/fabian/papers/costallocation/paper/flow_based.aux

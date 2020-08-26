@@ -698,16 +698,13 @@ The left side of \cref{fig:network} shows the lower capacity bounds for renewabl
     \label{fig:average_price}
     \caption{Average electricity price $\lmp$ in the network.}
 \end{figure}
-
+ 
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{de50bf/locality_ptpf_net}
     \label{fig:locality}
     \caption{Average distance between payer and receiver for different technologies and shares of the total production.}
 \end{figure}
-
-
-
 
 \clearpage
 \appendix
@@ -884,7 +881,7 @@ The stationarity of the dispatched power leads us to
     \operationalpricestorage -  \lmp \, \incidencestorage - \mulowerstoragedispatch + \muupperstoragedispatch + (\efficiencydispatch )^{-1} \mustateofcharge &= 0  
     \label{eq:stationarity_storagedispatch}
 \end{align}
-which we can use to define the revenue which compensates the CAPEX at $r$, 
+which we  can use to define the revenue which compensates the CAPEX at $r$, 
 \begin{align}
     \notag
     \capitalpricestorage \, \capacitystorage = \sum_t \left(\muupperstoragedispatch - \mulowerstoragedispatch  + (\efficiencydispatch )^{-1} \mustateofcharge \right) \storagedispatch \\
@@ -1084,7 +1081,7 @@ The distributed slack is for time step $t$ is then given by
 \end{align}
 
 
-\subsection{Example: Power Flow Allocations of different Types}
+\subsection{Numerical Example: Power Flow Allocation of type \ref{net}\ref{ebe}}
 \label{sec:example_plots}
 \begin{figure}[h!]
     \begin{subfigure}[c]{\linewidth}
@@ -1104,6 +1101,15 @@ The distributed slack is for time step $t$ is then given by
 \end{figure}
 
 
+\subsection{Working Example}
+
+\subsubsection{Cost Assumptions}
+
+\begin{table*}
+    \centering
+    \input{../tables/de50bf/prices}    
+    \caption{Operational and capital price assumptions for all type of assets used in the working example.}
+\end{table*} 
 
 \clearpage
 \printbibliography
