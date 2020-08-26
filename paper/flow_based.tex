@@ -675,14 +675,38 @@ As the other schemes \ref{ap}\ref{gross} - \ref{fbmc}\ref{net} apart from the EB
 
 \section{Application Case}
 
-In order to showcase the cost allocation at a more complex system, we apply it to an cost-optimized German power system model with 50 nodes and one year time span with hourly resolution. The model builds on the PyPSA-EUR workflow \cite{horsch_pypsa-eur_2020} with technigal details and assumptions reported in \cite{horsch_pypsa-eur_2018}. We follow a browfield approach where transmission lines start from today's capacity values originally retreived from the ENTSO-E Transmission System Map \cite{entsoe-e_entso-e_nodate}. Pre-installed generation capacities for wind and solar are distributed proportionally to the average power potential at each site excluding those with an average capacity factor of 10\%. Further, wind and solar capacity expansion are limited by land use restriction. These consider agriculture, urban, forested and protected areas based on the CORINE and NATURA2000 database \cite{corine2012,natura2000}. Pumped Hydro Storages (PHS) are fixed to today's capacities with no more expansion allowed. Additionally, unlimited batteries and H$_{2}$-storages are allowed at each node. We impose a effective carbon price of 120 \euro per tonne-CO$_{2}$. 
+In order to showcase the cost allocation at a more complex system, we apply it to an cost-optimized German power system model with 50 nodes and one year time span with hourly resolution. The model builds on the PyPSA-EUR workflow \cite{horsch_pypsa-eur_2020} with technical details and assumptions reported in \cite{horsch_pypsa-eur_2018}. We follow a browfield approach where transmission lines can be expanded starting from today's capacity values, originally retreived from the ENTSO-E Transmission System Map \cite{entsoe-e_entso-e_nodate}. Pre-installed generation capacities for wind and solar are distributed proportionally to the average power potential at each site excluding those with an average capacity factor of 10\%. Further, wind and solar capacity expansion are limited by land use restriction. These consider agriculture, urban, forested and protected areas based on the CORINE and NATURA2000 database \cite{corine2012,natura2000}. Pumped Hydro Storages (PHS) are fixed to today's capacities with no more expansion allowed. Additionally, unlimited batteries and H$_{2}$-storages are allowed at each node. We impose a effective carbon price of 120 \euro per tonne-CO$_{2}$. 
 
-\Cref{fig:network} shows the estimate of existent capacities on the left hand side and the capacity expansions on the right. 
 \begin{figure*}
     \centering
     \includegraphics[width=\linewidth]{de50bf/network}
     \label{fig:network}
+    \caption{Brownfield optimization of the German power system. The left side shows existent renewable capacities which serve as lower capacity limits for the optimization. The right side shows the capacity expansion of renewables as well as installation of backup gas power plants. The effective CO$_2$ price is set to 120 \euro per tonne CO$_2$ emission.}
 \end{figure*}
+The left side of \cref{fig:network} shows the lower capacity bounds for renewable generators and transmission infrastructure, the right side the capacity expansion for generation, storage and transmission. The optimization expands the solar capacity in the south, onshore and offshore wind in the upper north and most west. OCGT generators are build all over the network except for most south and north.  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\linewidth]{de50bf/total_costs}
+    \label{fig:total_cost}
+    \caption{Total allocated payments of the system. }
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{de50bf/average_price}
+    \label{fig:average_price}
+    \caption{Average electricity price $\lmp$ in the network.}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{de50bf/locality_ptpf_net}
+    \label{fig:locality}
+    \caption{Average distance between payer and receiver for different technologies and shares of the total production.}
+\end{figure}
+
+
 
 
 \clearpage
