@@ -37,7 +37,7 @@ cumshare = (df/df.sum()).sum(level=0).cumsum().mul(100) # in %
 cumshare = cumshare[cumshare.iloc[20].sort_values(ascending=False).index]
 
 # %%
-fig, ax = plt.subplots(figsize=(8,5))
+fig, ax = plt.subplots(figsize=(5,5))
 colors = n.carriers.color[cumshare.columns]
 labels = n.carriers.nice_name[cumshare.columns]
 cumshare.plot(ax=ax, color=colors, lw=2)

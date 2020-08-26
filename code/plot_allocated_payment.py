@@ -72,7 +72,7 @@ bus_colors = pd.concat([capex_colors, opex_colors, emission_color])
 # %%
 
 bus_scale = 1e-6
-branch_scale = 1e-3
+branch_scale = 3e-3
 
 fig, ax = plt.subplots(figsize=(5,5), subplot_kw={'projection': ccrs.EqualEarth()})
 n.plot(line_widths=branch_widths['Line'] * branch_scale,
@@ -81,7 +81,7 @@ n.plot(line_widths=branch_widths['Line'] * branch_scale,
        link_colors=branch_colors['Link'],
        ax=ax,
        bus_alpha=None,
-       # geomap='10m',
+        geomap='10m',
        boundaries=regions.total_bounds[[0,2,1,3]],
        bus_sizes=bus_sizes * bus_scale,
        bus_colors=bus_colors,
@@ -117,7 +117,7 @@ fig.add_artist(legend)
 
 # legend transmission capacitues
 handles, labels = [], []
-reference_caps = [10,-5]
+reference_caps = [5,-2]
 handles = [Line2D([0], [0], color=c, linewidth=abs(s)*1e3*branch_scale)
            for s, c in zip(reference_caps, ['cadetblue', 'indianred'])]
 labels = ['%ik €'%s for s in reference_caps]
