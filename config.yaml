@@ -3,7 +3,7 @@ analysis:
     nname: ['eur50bf', 'de50gf', 'de50bf']
     method: ['ptpf']
     power: ['net']
-    sink: ['highest_lmp', 'lowest_lmp']
+    sink: ['highest-lmp', 'lowest-lmp']
 test:
     nname: ['test-de10gf']
     method: ['ptpf']
