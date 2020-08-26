@@ -17,6 +17,7 @@ rule all:
         expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/maps_price_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['analysis']),
+        expand('figures/{nname}/maps_scarcity_price_{method}_{power}', **config['analysis']),
 
 
 rule test:
@@ -31,6 +32,7 @@ rule test:
         expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['test']),
         expand('figures/{nname}/maps_price_{method}_{power}', **config['test']),
         expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['test']),
+        expand('figures/{nname}/maps_scarcity_price_{method}_{power}', **config['test']),
 
 
 subworkflow pypsade:
@@ -173,6 +175,15 @@ rule plot_scarcity_maps:
         costs = 'resources/scarcity_costs_{nname}_{method}_{power}.nc'
     output:
         folder = directory('figures/{nname}/maps_scarcity_expenditure_{method}_{power}')
+    script: 'code/plot_maps_transfer.py'
+
+rule plot_scarcity_price_maps:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+        costs = 'resources/scarcity_costs_{nname}_{method}_{power}.nc'
+    output:
+        folder = directory('figures/{nname}/maps_scarcity_price_{method}_{power}')
     script: 'code/plot_maps_transfer.py'
 
 
