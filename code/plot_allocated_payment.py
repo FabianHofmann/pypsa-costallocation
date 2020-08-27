@@ -74,7 +74,7 @@ bus_colors = pd.concat([capex_colors, opex_colors, emission_color])
 bus_scale = 1e-6
 branch_scale = 3e-3
 
-fig, ax = plt.subplots(figsize=(5,5), subplot_kw={'projection': ccrs.EqualEarth()})
+fig, ax = plt.subplots(figsize=(4.5,4.5), subplot_kw={'projection': ccrs.EqualEarth()})
 n.plot(line_widths=branch_widths['Line'] * branch_scale,
        link_widths=branch_widths['Link'] * branch_scale,
        line_colors=branch_colors['Line'],

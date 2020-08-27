@@ -12,5 +12,5 @@ git clone https://github.com/PyPSA/technology-data.git
 # python 
 # '''
 # import powerplantmatching as pm
-# pm.data.OPSD_VRE_country("DE").to_csv("pypsa-de/data/custom_powerplants.csv")
+# pm.data.OPSD_VRE_country("DE").powerplant.convert_country_to_alpha2().to_csv("pypsa-de/data/custom_powerplants.csv")
 # '''
