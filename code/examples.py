@@ -22,9 +22,9 @@ plt.rc('font', family='serif')
 
 path = '../figures/example'
 
-net = True
+net = False
 power = 'net' if net else 'gross'
-method = 'ebe'
+method = 'ptpf'
 
 
 n = pypsa.Network()
@@ -57,7 +57,8 @@ g0, g1 = n.generators_t.p.loc['now']
 f = n.lines_t.p0.loc['now'].item()
 l0, l1 = n.buses_t.marginal_price.loc['now']
 
-ds = ntl.allocate_flow(n, method='ebe', q=0, aggregated=net)
+kwargs = {q: 0} if method == 'ebe' else {}
+ds = ntl.allocate_flow(n, method=method, aggregated=net, **kwargs)
 ds = ntl.convert.peer_to_peer(ds, n)
 dc = ntl.cost.nodal_demand_cost(n).rename(bus='payer')
 ca = ntl.allocate_cost(n, method=ds, q=0)
