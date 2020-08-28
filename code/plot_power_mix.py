@@ -30,10 +30,22 @@ fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
                          figsize=(5, 5))
 # optimal
 plot = n.plot(bus_sizes=bus_sizes.fillna(0)*.7, line_widths=0, link_widths=0,
-              ax=ax, geomap='10m', title='Average Power Mix',
+              ax=ax, geomap='10m',
               boundaries=regions.total_bounds[[0,2,1,3]] )
 
-regions.plot(ax=ax, transform=ccrs.PlateCarree(), aspect='equal')
+regions.plot(ax=ax, transform=ccrs.PlateCarree(), aspect='equal',
+             color='white', edgecolor='lightgrey', lw=0.5)
+
+fig.legend(
+    *ntl.plot.handles_labels_for(n.carriers.set_index('nice_name').color),
+    loc="lower center",
+    bbox_to_anchor=(.5, 1),
+    title='Carrier',
+    frameon=False,
+    ncol=2
+)
+
+
 
 fig.canvas.draw()
 fig.tight_layout()
