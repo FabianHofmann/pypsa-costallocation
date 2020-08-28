@@ -13,6 +13,7 @@ rule all:
         expand('figures/{nname}/total_costs.png', **config['analysis']),
         expand('figures/{nname}/average_price.png', **config['analysis']),
         expand('figures/{nname}/average_demand.png', **config['analysis']),
+        expand('figures/{nname}/subsidy.png', **config['analysis']),
         expand('figures/{nname}/power_mix_{method}_{power}.png', **config['analysis']),
         expand('figures/{nname}/bars_{method}_{power}.png', **config['analysis']),
         expand('figures/{nname}/locality_{method}_{power}.png', **config['analysis']),
@@ -30,6 +31,7 @@ rule test:
         expand('figures/{nname}/total_costs.png', **config['test']),
         expand('figures/{nname}/average_price.png', **config['test']),
         expand('figures/{nname}/average_demand.png', **config['test']),
+        expand('figures/{nname}/subsidy.png', **config['test']),
         expand('figures/{nname}/power_mix_{method}_{power}.png', **config['test']),
         expand('figures/{nname}/bars_{method}_{power}.png', **config['test']),
         expand('figures/{nname}/locality_{method}_{power}.png', **config['test']),
@@ -198,7 +200,7 @@ rule plot_subsidy:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
     output:
-        'figures/{nname}/subsidy'
+        'figures/{nname}/subsidy.png'
     script: 'code/plot_subsidy.py'
 
 
