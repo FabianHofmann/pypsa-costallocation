@@ -193,6 +193,14 @@ rule plot_scarcity_price_maps:
         folder = directory('figures/{nname}/maps_scarcity_price_{method}_{power}')
     script: 'code/plot_maps_transfer.py'
 
+rule plot_subsidy:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+    output:
+        'figures/{nname}/subsidy'
+    script: 'code/plot_subsidy.py'
+
 
 rule plot_locality:
     input:
