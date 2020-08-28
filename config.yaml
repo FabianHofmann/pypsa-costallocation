@@ -10,7 +10,6 @@ test:
     power: ['net']
     sink: ['highest-lmp', 'lowest-lmp']
 
-line_volume_limit: 1.2
 alloc_to_load_only: true
 
 # =============================================================================

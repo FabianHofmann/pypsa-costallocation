@@ -42,21 +42,6 @@ else:
         n.df(c)[attr] = 0
 
 
-# set lv limit here, as long as #175 is not solved
-if 'line_volume_limit' in snakemake.config:
-    links_dc_b = n.links.carrier == 'DC' if not n.links.empty else pd.Series()
-    lines_s_nom = n.lines.s_nom.where(n.lines.type == '',
-                                      np.sqrt(3) * n.lines.num_parallel *
-                                      n.lines.type.map(n.line_types.i_nom) *
-                                      n.lines.bus0.map(n.buses.v_nom))
-    total_line_volume = ((lines_s_nom * n.lines['length']).sum() +
-                         n.links.loc[links_dc_b].eval('p_nom * length').sum())
-    line_volume = snakemake.config['line_volume_limit'] * total_line_volume
-    n.add('GlobalConstraint', 'lv_limit',
-          type='transmission_volume_expansion_limit',
-          sense='<=', constant=line_volume, carrier_attribute='AC, DC')
-
-
 n.lopf(pyomo=False, solver_name=solver_name, solver_options=solver_opts,
         keep_shadowprices=True)
 

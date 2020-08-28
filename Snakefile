@@ -56,7 +56,7 @@ subworkflow pypsaeur:
 
 rule solve_and_sanitize_german_network:
     input:
-        network = pypsade('networks/elec_s_{clusters}_ec_lvopt_Ep.nc'),
+        network = pypsade('networks/elec_s_{clusters}_ec_lv1.2_Ep.nc'),
         regions = pypsade('resources/regions_onshore_elec_s_{clusters}.geojson')
     output: 
         network = 'resources/de{clusters}{field}.nc',
@@ -66,7 +66,7 @@ rule solve_and_sanitize_german_network:
 
 rule solve_and_sanitize_european_network:
     input:
-        network = pypsaeur('networks/elec_s_{clusters}_ec_lvopt_Ep.nc'),
+        network = pypsaeur('networks/elec_s_{clusters}_ec_lv1.2_Ep.nc'),
         regions = pypsaeur('resources/regions_onshore_elec_s_{clusters}.geojson')
     output: 
         network = 'resources/eur{clusters}{field}.nc',
