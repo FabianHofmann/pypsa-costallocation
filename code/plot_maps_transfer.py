@@ -64,7 +64,7 @@ for var in cost:
         if 'branch' in var: continue
         if (p[carrier].sum() <= 0.001): continue
 
-        expend = varname.replace('Production & Storage ', '')
+        expand = varname.replace('Production & Storage ', '')
         ncarrier = n.carriers.nice_name[carrier]
 
         fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
@@ -73,7 +73,7 @@ for var in cost:
 
         n.plot(bus_sizes=r[carrier]/r[carrier].sum()*0.7, ax=ax, **nplot_kwargs)
         regions.plot(column=p[carrier], ax=ax, **rplot_kwargs,
-                     legend_kwds={'label': f'{payment_type} {ncarrier} {expend} [{unit}]',
+                     legend_kwds={'label': f'{payment_type} {ncarrier} {expand} [{unit}]',
                                   'format': fmt})
 
         fig.canvas.draw(), fig.tight_layout()
@@ -84,7 +84,12 @@ for var in cost:
                            figsize=(5, 4))
     ax.spines['geo'].set_visible(False)
 
-    if 'branch' not in var:
+    if 'branch' in var:
+        normed = r/r.sum()
+        n.plot(bus_sizes=0, line_widths=normed['Line'],
+               link_widths=normed['Link'], ax=ax,
+               boundaries=regions.total_bounds[[0,2,1,3]], geomap=res)
+    else:
         n.plot(bus_sizes=r.sum(1)/p.sum().sum(), ax=ax, **nplot_kwargs)
     regions.plot(column=p if 'branch' in var else p.sum(1),
                  ax=ax, **rplot_kwargs,

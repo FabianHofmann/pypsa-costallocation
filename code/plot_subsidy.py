@@ -25,11 +25,12 @@ n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
 
 
-oneports = pd.concat([n.df(c).groupby(['bus', 'carrier']).mu_lower_p_nom.sum()
+oneports = pd.concat([n.df(c).eval('cost = mu_lower_p_nom * p_nom_opt')
+                      .groupby(['bus', 'carrier']).cost.sum()
                       for c in ['Generator', 'StorageUnit']]).sort_index()
 
-line_widths  = n.lines.mu_lower_s_nom
-link_widths = n.links.mu_lower_p_nom
+line_widths  = n.lines.eval('mu_lower_s_nom * s_nom_opt')
+link_widths = n.links.eval('mu_lower_p_nom * p_nom_opt')
 branch_sum = line_widths.sum() + link_widths.sum()
 
 bus_scale = 2
@@ -60,12 +61,12 @@ fig.legend(
 
 
 # legend generator capacities
-reference_caps = [50e3, 10e3]
+reference_caps = [50e6, 10e6]
 scale = oneports.sum() / bus_scale / projected_area_factor(ax)**2
 handles = make_legend_circles_for(reference_caps, scale=scale,
                                   facecolor="w", edgecolor='grey',
                                   alpha=.5)
-labels = ["%ik €"%(s / 1e3) for s in reference_caps]
+labels = ["%iM €"%(s / 1e6) for s in reference_caps]
 handler_map = make_handler_map_to_scale_circles_as_in(ax)
 legend = fig.legend(handles, labels,
                 loc="upper left", bbox_to_anchor=(1., 0.4),
@@ -75,10 +76,10 @@ fig.add_artist(legend)
 
 # legend transmission capacitues
 handles, labels = [], []
-reference_caps = [10e3, 5e3]
+reference_caps = [10e6, 5e6]
 handles = [Line2D([0], [0], color='grey', linewidth=s * branch_scale / branch_sum)
            for s in reference_caps]
-labels = ['%ik €'%(s / 1e3) for s in reference_caps]
+labels = ['%iM €'%(s / 1e6) for s in reference_caps]
 
 legend = fig.legend(handles, labels,
                     loc="lower left", bbox_to_anchor=(1, .1),

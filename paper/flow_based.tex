@@ -230,7 +230,7 @@ In turn, each of these terms $\mathcal{C} = \{\opexgeneration, \emissioncost, \c
     \cost = \sum_{i} \cost_{i}
     \label{eq:asset_cost}
 \end{align} 
-where an asset describes any component of the network, such as a generator, line, energy storage etc. %For example the total OPEX, $\opexgeneration = \sum_{s} \opexgeneration_{s}$, is the combined OPEX of all generators $s$.
+where an asset describes any operating part of the network, such as a generator, line, energy storage etc. %For example the total OPEX, $\opexgeneration = \sum_{s} \opexgeneration_{s}$, is the combined OPEX of all generators $s$.
 
 
 In a cost-optimal setup with minimized $\totalcost$, the Locational Marginal Price (LMP) describes the price for an incremental increase of electricity demand $\demand$ at node $n$. It is given by the derivative of the total system cost $\totalcost$ with respect to the local demand $\demand$
@@ -420,6 +420,7 @@ The  shadow prices $\muupperflow$ and $\mulowerflow$ again can be seen as a meas
 
 
 \subsubsection{Storages}
+\label{sec:storages}
 
 % The complementary slackness of the above constraints,  
 % \begin{align}
@@ -457,16 +458,23 @@ It is possible to incorporate this redistribution effect into the cost allocatio
 
 
 \subsection{Design Constraints}
-
+\label{sec:design_constraints}
 Power system modelling does rarely follow a pure Greenfield approach with unlimited capacity expansion. Rather, today's models are setting various constraints defining socio-political or  technical requirements. As mentioned before this will alter the equality of total cost and total revenue, \ie leads to $\remainingcost \ne 0$ in \cref{eq:total_revenue}. More precisely, each constraint $h_j$ (other then the nodal balance constraint) of the form 
 \begin{align}
     h_j \left(\state, \capacity \right) - K < 0
+    \label{eq:design_constraint}
 \end{align}
 where $K$ is any non-zero constant, will result in a cost term contributing to $\remainingcost$ and in some cases alter \cref{eq:cost_decomposition} to 
 \begin{align}
     \cost_i - \remainingcost_i = \sum_t \costfactor \, \state
 \end{align}
-In the following we highlight two often used classes of constraints and show how to incorporate them into the cost allocation.  
+The effective revenue per asset $i$ associated with cost term $\cost$ can then be defined as 
+\begin{align}
+    \cost' = \sum_i  \cost_i - \remainingcost_i
+    \label{altered_cost}
+\end{align}
+Note that $\cost'$ is the amount which is allocated to consumers which, according to the quality of \cref{eq:design_constraint} and the corresponding $\remainingcost_i$, can either be larger, equal or lower than $\cost$.  
+In the following we highlight two often used classes of designs constraints in the form of \cref{eq:design_constraint} and show how to incorporate them into the cost allocation.  
 
 \subsubsection{Capacity Expansion Limit}
 
@@ -559,7 +567,8 @@ with $\incidenceasset[m]$ being 1 if asset $i$ is attached to bus $m$ and zero o
 \end{align}
 Now, let $\ptdf$ denote Power Transfer Distribution Factors (PTDF) giving the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $n$. The linear power flow equation can be written as 
 \begin{align}
- \flow  = \sum_m \ptdf[m] \left( \nodalgeneration[m] - \demand[m] \right)  
+ \flow  = \sum_m \ptdf[m] \left( \nodalgeneration[m] - \demand[m] \right)
+ \label{eq:power_flow_equation}  
 \end{align}
 Note that for transport models or mixed AC-DC networks, $\ptdf$ can be artificially calculated using the formulation presented in \cite{hofmann_flow_2020-1}.
 Taking the derivative with respect to the demand, 
@@ -652,9 +661,9 @@ The example shows that allocating net power injection leads to intuitive and tra
 
 \section{Application Case}
 
-For showcasing the behavior of the cost allocation in a more complex system, we apply it to an cost-optimized German power system model with 50 nodes and one year time span with hourly resolution. The model builds on the PyPSA-EUR workflow \cite{horsch_jonas_pypsa-eur_2020} with technical details and assumptions reported in \cite{horsch_pypsa-eur_2018}. 
+We showcase the behavior of the cost allocation in a more complex system, by applying it to an cost-optimized German power system model with 50 nodes and one year time span with hourly resolution. The model builds on the PyPSA-EUR workflow \cite{horsch_jonas_pypsa-eur_2020} with technical details and assumptions reported in \cite{horsch_pypsa-eur_2018}. 
 
-We follow a brownfield approach where transmission lines can be expanded starting from today's capacity values, originally retrieved from the ENTSO-E Transmission System Map \cite{entso-e_entso-e_nodate}. Pre-installed generation capacity totals for the year 2017 for wind and solar were distributed in proportion to the average power potential at each site excluding those with an average capacity factor of 10\%. Further, wind and solar capacity expansion are limited by land use restriction. These consider agriculture, urban, forested and protected areas based on the CORINE and NATURA2000 database \cite{corine2012,natura2000}. Pumped Hydro Storages (PHS) and Run-of-River power plants are fixed to today's capacities with no more expansion allowed. Additionally, unlimited expansion of batteries and H$_{2}$-storages and Open-Cycle Gas Turbines (OCGT) are allowed at each node. 
+We follow a brownfield approach where transmission lines can be expanded starting from today's capacity values, originally retrieved from the ENTSO-E Transmission System Map \cite{entso-e_entso-e_nodate}. Pre-installed wind and solar generation capacity totals of the year 2017 were distributed in proportion to the average power potential at each site excluding those with an average capacity factor of 10\%. Further, wind and solar capacity expansion are limited by land use restriction. These consider agriculture, urban, forested and protected areas based on the CORINE and NATURA2000 database \cite{corine2012,natura2000}. Pumped Hydro Storages (PHS) and Run-of-River power plants are fixed to today's capacities with no more expansion allowed. Additionally, unlimited expansion of batteries and H$_{2}$-storages and Open-Cycle Gas Turbines (OCGT) are allowed at each node. 
 % 
 \begin{figure*}[t]
     \centering
@@ -669,25 +678,27 @@ We follow a brownfield approach where transmission lines can be expanded startin
     \caption{Average electricity price $\averagelmp$ per region as a result from the optimization of the German power system. Regions in the middle and south of Germany have high prices whereas electricity in the North with a strong wind, transmission and OCGT infrastructure is cheaper.}
     \label{fig:average_price}
 \end{figure}
-We impose a effective carbon price of 120 \euro\, per tonne-CO$_{2}$ which, with an gross emission of 180~kg/MWh and an efficiency of 39\% for OCGT, adds an effective price of 55 \euro/\megawatthour. All cost assumptions on operational costs $o_i$ and annualized capital cost $c_i$ are summarized in detail in \cref{tab:cost_assumptions}. 
+We impose a effective carbon price of 120 \euro\, per tonne-CO$_{2}$ which, for OCGT, adds an effective price of 55 \euro/\megawatthour (assuming a gross emission of 180~kg/MWh and an efficiency of 39\%). All cost assumptions on operational costs $o_i$ and annualized capital cost $c_i$ are summarized in detail in \cref{tab:cost_assumptions}. 
 
-The optimized network is shown in  \cref{fig:network} with lower capacity bounds for renewable generators and transmission infrastructure on the left and capacity expansion for generation, storage and transmission on the right. The optimization expands the solar capacity in the south, onshore and offshore wind in the upper north and most west. Open-Cycle Gas Turbines (OCGT) are build within the broad middle of the network. Transmission lines are amplified in along the North-South axis, including one large DC link, associated with the German S\"ud-Link, leading from the coastal region to the South-West. 
-% 
-% 
+The optimized network is shown in  \cref{fig:network}. On the left we find the lower capacity bounds for renewable generators and transmission infrastructure, on the right the capacity expansion for generation, storage and transmission. The optimization expands solar capacities in the south, onshore and offshore wind in the upper north and most west. Open-Cycle Gas Turbines (OCGT) are build within the broad middle of the network. Transmission lines are amplified in along the North-South axis, including one large DC link, associated with the German S\"ud-Link, leading from the coastal region to the South-West. 
 The total annualized cost of the power system roughly sums up to 42 billion \euro.
+% 
+
 \Cref{fig:average_price} displays the average electricity price $\lmp$ per region. We observe a relatively strong gradient from south (at roughly 92 \euro/MWh) to north (80 \euro/MWh). Regions with with little pre-installed capacity and capacity expansion, especially for renewables, tend to have higher prices. The node with the lowest LMP in the upper North-West, stands out through high pre-installed offshore capacities. \\
+ 
+The costs are allocated according to type \ref{net}\ref{ap}, DC-lines are incorporated into the PTDF in \cref{eq:power_flow_equation} using the method described in \cite{hofmann_flow_2020-1}.
+In \cref{fig:total_cost} we show the total of all ``allocatable'' costs $\cost'$. Due to the design constraints, \cref{sec:design_constraints}, and the role of storage units, \cref{sec:storages}, these are different from the original cost terms $\cost$. The figure also includes costs for scarcity $\scarcitycost$ and subsidy  $\subsidycost$. Note that the sum of all contributions in \cref{fig:total_cost} equals the total cost $\totalcost$.  
 
 
-We allocate all costs under the assumption that the \textit{net} dispatch is assigned according to the AP method (type \ref{net}\ref{ap}). 
-From the perspective of consumers, the largest proportion of the system cost is covered by payments associated with CAPEX for generators, transmission system and storage units in decreasing order, see \cref{fig:total_cost}. 
-In \cref{fig:capex_price} we depict the share of the average nodal price $\left<\lmp\right>_t$ which is dedicated to the CAPEX of different technologies. It turns out that  mostly areas with high CAPEX allocation are the ones with low average LMP. In particular, this counts for the coastal regions where strong offshore and onshore investments are taken. Inside the country, some regions also pay a fairly high shares dedicated to CAPEX, which are however allocated to non-local assets. The most even spatial distribution of CAPEX allocations accounts for OCGT. These are however primarily built nearby strong wind capacities in the North.  
+The largest proportion of the payments is associated with CAPEX for generators, transmission system and storage units in decreasing order. 
+It turns out that  mostly areas with high CAPEX allocation are the ones with low average LMP. In particular, this counts for the coastal regions where strong offshore and onshore investments are taken, see \cref{fig:capex_price}. Particular regions inside the country also pay comparably high share to CAPEX, however these are allocated to non-local assets. We further observe that CAPEX for OCGT is allocated very evenly among all consumers. Again, these payments benefit primarily regions nearby strong wind capacities in the North.  
 
 Together with the emission cost $\emissioncost$, the total OPEX $\opex$ amount around 16 billion \euro. As to expect, 99.97\% are dedicated to OCGT alone. For a detailed regional distribution of payments per MWh and the resulting revenues for generator, see \cref{fig:opex_price,fig:emission_cost}. Compared to the CAPEX allocation for OCGT, the OPEX distributes in a more local manner. This results from the fact that during ``standard'' demand peaks, it is rather local OCGT generators which serve as backup generators. In the average power mix per region, see \cref{fig:power_mix}, we observe that regions with strong OCGT capacities predominately have high shares of OCGT power. The OPEX allocations for renewables play with 0.2 \euro/MWh in average an inferior role. 
 
 The negative segment in \cref{fig:total_cost} is associated with the scarcity costs $\scarcitycost$, caused by land use constraints for renewables and the transmission expansion limit. These sum up approximately to 7.5 b\euro. Note again, that according to \cref{eq:scarcitycost} this term is negative and is part of the allocated CAPEX payments. It translates to the cost that consumers pay ``too much'' for assets limited in their capacity expansion. In the real world this money would be used to pay for augmented land costs or civic participation in the dedicated areas. In \cref{fig:scarcity_price} we give a detailed insight of how the scarcity cost manifest in the average price $\left<\lmp\right>_t$. The scarcity for wind and solar are relatively low and impact the average price by around 2\euro/MWh. They mostly affect regions with strong investments and those in close vicinity. Remarkably, the scarcity cost per MWh for run-of-river power plants amounts up to 16\euro. This high impact is due to the steady power potential from run-off water and the strong limitation of capacity expansion. However, as these power plants in particular are already amortized and scarcity cost should be reconsidered and removed from a final cost allocation.    
 The scarcity cost for the transmission system, resulting from the limited transmission volume expansion of 25\% mostly influence regions in the middle of Germany, where in average 8\euro/MWh account for transmission scarcity, see \cref{fig:branch_scarcity_price}. This illustrates the strong impact that the line volume constraint has on the optimization. Regions in the North are not touched by the constraint. 
 
-The last cost term in \cref{fig:total_cost}, is  caused by lower capacity constraints for pre-existing assets. These violate the optimal design and are not compensated by the nodal payments $\demand \, \lmp$. This ...
+The last cost term in \cref{fig:total_cost}, is  caused by lower capacity constraints for pre-existing assets. These violate the optimal design and are not compensated through the nodal payments $\demand \, \lmp$. 
 
 \begin{figure}
     \centering
@@ -711,15 +722,6 @@ The last cost term in \cref{fig:total_cost}, is  caused by lower capacity constr
     \caption{Comparison of payments of the node with the \textbf{lowest LMP (left)} and the node with the \textbf{highest LMP (right)}. The region of the paying bus is colored in dark blue. The circles indicate where to which bus and technology combined OPEX and CAPEX payments. Further the thickness of the lines indicates the dedicated amount of payments. The cheap prices in the North...  }
     \label{fig:direct-allocation}
 \end{figure*}
-
-
-
-
-
-
-
-
-
  
 \begin{figure}
     \centering
@@ -727,6 +729,11 @@ The last cost term in \cref{fig:total_cost}, is  caused by lower capacity constr
     \caption{Average distance between payer and receiver for different technologies and shares of the total production.}
     \label{fig:locality}
 \end{figure}
+
+
+\section{Conclusion}
+
+In this work we presented a new cost-allocation scheme based on peer-to-peer dispatch allocations from asset to consumer. Starting from an optimized long-term investment model, we were able to decompose separate cost terms into contributions of single consumers. For three typical classes of assets, namely generators, transmission lines and storage units, we showed how operational prices and shadow prices must be weighted with the dispatch allocation in order to allocate all system costs. Further we highlighted the impact of constraints with a non-zero constant on the right hand side, such as lower and upper capacity expansion limits, which alter the locational marginal price and therefore distort the cost allocations. In the case of upper capacity expansion limits, this leads to an additional charge for consumers which have to compensate for \eg land use restrictions. For lower capacity investment bounds, the cost have to be subsidized by the overall system operator or the government, as those cannot be allocated to consumers. .       
 
 \clearpage
 \appendix
