@@ -86,8 +86,9 @@ for var in cost:
 
     if 'branch' in var:
         normed = r/r.sum()
-        n.plot(bus_sizes=0, line_widths=normed['Line'],
-               link_widths=normed['Link'], ax=ax,
+        n.plot(bus_sizes=0, ax=ax,
+               line_widths=normed['Line'] * 80,
+               link_widths=normed['Link'] * 80,
                boundaries=regions.total_bounds[[0,2,1,3]], geomap=res)
     else:
         n.plot(bus_sizes=r.sum(1)/p.sum().sum(), ax=ax, **nplot_kwargs)

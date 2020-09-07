@@ -48,7 +48,7 @@ n.plot(bus_sizes=oneports/oneports.sum() * bus_scale,
        boundaries=regions.total_bounds[[0,2,1,3]],
        )
 regions.plot(ax=ax, transform=ccrs.PlateCarree(), aspect='equal',
-             color='white', lw=0.3, edgecolor='grey')
+             color='white', lw=0.2, edgecolor='grey')
 
 
 fig.legend(
@@ -75,8 +75,8 @@ legend = fig.legend(handles, labels,
 fig.add_artist(legend)
 
 # legend transmission capacitues
+reference_caps = [100e6, 50e6]
 handles, labels = [], []
-reference_caps = [10e6, 5e6]
 handles = [Line2D([0], [0], color='grey', linewidth=s * branch_scale / branch_sum)
            for s in reference_caps]
 labels = ['%iM €'%(s / 1e6) for s in reference_caps]

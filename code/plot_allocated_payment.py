@@ -43,7 +43,7 @@ elif sink == 'highest-lmp':
 payment = (xr.open_dataset(snakemake.input.costs)
            .sel(sink=sink, drop=True)
            .fillna(0)
-           .mean('snapshot')
+           .sum('snapshot')
            .rename(source='bus', source_carrier='carrier')
            .set_index(branch=['component', 'branch_i']))
 
@@ -71,8 +71,8 @@ bus_colors = pd.concat([capex_colors, opex_colors, emission_color])
 
 # %%
 
-bus_scale = 1e-6
-branch_scale = 3e-3
+bus_scale = 2e-10
+branch_scale = 4e-7
 
 fig, ax = plt.subplots(figsize=(4.5,4.5), subplot_kw={'projection': ccrs.EqualEarth()})
 n.plot(line_widths=branch_widths['Line'] * branch_scale,
@@ -102,12 +102,12 @@ fig.legend(
 
 
 # legend generator capacities
-reference_caps = [100e3, 10e3]
+reference_caps = [500e6, 100e6]
 scale = 1 / bus_scale / projected_area_factor(ax)**2
 handles = make_legend_circles_for(reference_caps, scale=scale,
                                   facecolor="w", edgecolor='grey',
                                   alpha=.5)
-labels = ["%ik €"%(s / 1e3) for s in reference_caps]
+labels = ["%iM €"%(s / 1e6) for s in reference_caps]
 handler_map = make_handler_map_to_scale_circles_as_in(ax)
 legend = fig.legend(handles, labels,
                 loc="upper left", bbox_to_anchor=(1., 0.4),
@@ -117,10 +117,10 @@ fig.add_artist(legend)
 
 # legend transmission capacitues
 handles, labels = [], []
-reference_caps = [5,-2]
-handles = [Line2D([0], [0], color=c, linewidth=abs(s)*1e3*branch_scale)
+reference_caps = [20,-10]
+handles = [Line2D([0], [0], color=c, linewidth=abs(s)*1e6*branch_scale)
            for s, c in zip(reference_caps, ['cadetblue', 'indianred'])]
-labels = ['%ik €'%s for s in reference_caps]
+labels = ['%iM €'%s for s in reference_caps]
 
 legend = fig.legend(handles, labels,
                     loc="lower left", bbox_to_anchor=(1, .1),
