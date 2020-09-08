@@ -14,6 +14,7 @@ rule all:
         expand('figures/{nname}/average_price.png', **config['analysis']),
         expand('figures/{nname}/average_demand.png', **config['analysis']),
         expand('figures/{nname}/subsidy.png', **config['analysis']),
+        expand('figures/{nname}/capex_timeseries.png', **config['analysis']),
         expand('figures/{nname}/power_mix_{method}_{power}.png', **config['analysis']),
         expand('figures/{nname}/bars_{method}_{power}.png', **config['analysis']),
         expand('figures/{nname}/locality_{method}_{power}.png', **config['analysis']),
@@ -23,6 +24,7 @@ rule all:
         expand('figures/{nname}/maps_scarcity_price_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/{method}_{power}_to_{sink}.png', **config['analysis']),
         expand('tables/{nname}_{method}_{power}', **config['analysis']),
+
 
 
 rule test:
@@ -229,6 +231,15 @@ rule plot_allocated_payment:
         'figures/{nname}/{method}_{power}_to_{sink}.png'
     script: 
         'code/plot_allocated_payment.py'
+
+rule plot_capex_timeseries:
+    input:
+        network = 'resources/{nname}.nc',
+    output:
+        'figures/{nname}/capex_timeseries.png'
+    script: 
+        'code/plot_timeseries.py'
+
 
 
 rule write_tables:

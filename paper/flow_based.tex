@@ -691,7 +691,7 @@ In \cref{fig:total_cost} we show the total of all ``allocatable'' costs $\cost'$
 
 
 The largest proportion of the payments is associated with CAPEX for generators, transmission system and storage units in decreasing order. 
-It turns out that  mostly areas with high CAPEX allocation are the ones with low average LMP. In particular, this counts for the coastal regions where strong offshore and onshore investments are taken, see \cref{fig:capex_price}. Particular regions inside the country also pay comparably high share to CAPEX, however these are allocated to non-local assets. We further observe that CAPEX for OCGT is allocated very evenly among all consumers. Again, these payments benefit primarily regions nearby strong wind capacities in the North.  
+It turns out that  mostly areas with high CAPEX allocation are the ones with low average LMP. In particular, this counts for the coastal regions where strong offshore and onshore investments are taken, see \cref{fig:capex_price}. Several regions inside the country also pay comparably high share to CAPEX, however these are allocated to non-local assets. We further observe that CAPEX for OCGT is allocated very evenly among all consumers. Again, these payments benefit primarily regions nearby strong wind capacities in the North.  
 
 Together with the emission cost $\emissioncost$, the total OPEX $\opex$ amount around 16 billion \euro. As to expect, 99.97\% are dedicated to OCGT alone. For a detailed regional distribution of payments per MWh and the resulting revenues for generator, see \cref{fig:opex_price,fig:emission_cost}. Compared to the CAPEX allocation for OCGT, the OPEX distributes in a more local manner. This results from the fact that during ``standard'' demand peaks, it is rather local OCGT generators which serve as backup generators. In the average power mix per region, see \cref{fig:power_mix}, we observe that regions with strong OCGT capacities predominately have high shares of OCGT power. The OPEX allocations for renewables play with 0.2 \euro/MWh in average an inferior role. 
 
@@ -733,7 +733,7 @@ The last cost term in \cref{fig:total_cost}, is  caused by lower capacity constr
 
 \section{Conclusion}
 
-In this work we presented a new cost-allocation scheme based on peer-to-peer dispatch allocations from asset to consumer. Starting from an optimized long-term investment model, we were able to decompose separate cost terms into contributions of single consumers. For three typical classes of assets, namely generators, transmission lines and storage units, we showed how operational prices and shadow prices must be weighted with the dispatch allocation in order to allocate all system costs. Further we highlighted the impact of constraints with a non-zero constant on the right hand side, such as lower and upper capacity expansion limits, which alter the locational marginal price and therefore distort the cost allocations. In the case of upper capacity expansion limits, this leads to an additional charge for consumers which have to compensate for \eg land use restrictions. For lower capacity investment bounds, the cost have to be subsidized by the overall system operator or the government, as those cannot be allocated to consumers. .       
+In this work we presented a new cost-allocation scheme based on peer-to-peer dispatch allocations from asset to consumer. Starting from an optimized long-term investment model, we were able to decompose single cost terms into contributions of single consumers. For three typical classes of assets, namely generators, transmission lines and storage units, we showed how operational prices and shadow prices must be weighted with the dispatch allocation in order to allocate all system costs. Further we highlighted the impact of additional design constraints, that is constraints with a non-zero constant on the right hand side, such as lower and upper capacity expansion limits. These alter the locational marginal price and therefore distort the cost allocations. In the case of upper capacity expansion limits, this leads to an additional charge for consumers which have to compensate for \eg land use restrictions. For lower capacity investment bounds, the cost have to be subsidized by the overall system operator or the government, as those cannot be allocated.
 
 \clearpage
 \appendix
@@ -1163,17 +1163,27 @@ The following figures contain more detailed information about the peer-to-peer c
     \label{fig:emission_cost}
 \end{figure}
 
-\begin{figure}
-    \includegraphics[width=\linewidth]{de50bf/maps_scarcity_price_ptpf_net/branch_scarcity_cost_total}
-    \caption{Average \textbf{allocated transmission scarcity cost} per consumed MWh. This scarcity cost results from the upper transmission expansion limit of 25\%.}
-    \label{fig:branch_scarcity_price}
-\end{figure}
 
 \begin{figure}
     \includegraphics[width=\linewidth]{de50bf/power_mix_ptpf_net}
     \caption{Average power mix per region.}
     \label{fig:power_mix}
 \end{figure}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{de50bf/maps_scarcity_price_ptpf_net/branch_scarcity_cost_total}
+    \caption{Average \textbf{allocated transmission scarcity cost} per consumed MWh. This scarcity cost results from the upper transmission expansion limit of 25\%.}
+    \label{fig:branch_scarcity_price}
+\end{figure}
+
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{de50bf/subsidy}
+    \caption{Total costs for subsidy $\subsidycost$ resulting from lower capacity expansion bounds (brownfield constraints).}
+    \label{fig:subsidy}
+\end{figure}
+
+
 
 \begin{figure*}
     \centering
