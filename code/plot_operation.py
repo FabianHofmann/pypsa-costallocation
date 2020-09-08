@@ -29,9 +29,9 @@ fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
 prod = ntl.power_production(n, sn, per_carrier=True).to_pandas().stack()
 
 n.plot(flow=sn, line_widths=0.01, link_widths=.01, bus_sizes=prod/1e5, ax=ax,
-       boundaries=regions.total_bounds[[0,2,1,3]], geomap='10m')
+       boundaries=regions.total_bounds[[0,2,1,3]], geomap='10m', link_colors='rosybrown')
 regions.plot(column=n.loads_t.p.loc[sn], ax=ax, legend=True,
-             transform=ccrs.PlateCarree(), aspect='equal', cmap='Purples',
+             transform=ccrs.PlateCarree(), aspect='equal', cmap='Greens',
              alpha=0.5, legend_kwds={'alpha':.5, 'label': 'Load [MW]'}, vmin=0)
 
 fig.canvas.draw()
