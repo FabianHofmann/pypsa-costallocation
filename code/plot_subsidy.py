@@ -51,16 +51,6 @@ regions.plot(ax=ax, transform=ccrs.PlateCarree(), aspect='equal',
              color='white', lw=0.2, edgecolor='grey')
 
 
-# legend = ax.legend(
-#     *ntl.plot.handles_labels_for(n.carriers.set_index('nice_name').color),
-#     loc="upper center",
-#     ncol=2,
-#     bbox_to_anchor=(.5, 0),
-#     title='Carrier',
-#     frameon=False
-# )
-# ax.add_artist(legend)
-
 # legend generator capacities
 reference_caps = [50e6, 10e6]
 scale = oneports.sum() / bus_scale / projected_area_factor(ax)**2

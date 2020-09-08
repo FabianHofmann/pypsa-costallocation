@@ -15,6 +15,7 @@ rule all:
         expand('figures/{nname}/average_demand.png', **config['analysis']),
         expand('figures/{nname}/subsidy.png', **config['analysis']),
         expand('figures/{nname}/capex_duration_curve.png', **config['analysis']),
+        expand('figures/{nname}/operation_high_expenditure.png', **config['analysis']),
         expand('figures/{nname}/power_mix_{method}_{power}.png', **config['analysis']),
         expand('figures/{nname}/bars_{method}_{power}.png', **config['analysis']),
         expand('figures/{nname}/locality_{method}_{power}.png', **config['analysis']),
@@ -240,6 +241,15 @@ rule plot_capex_duration_curve:
     script: 
         'code/plot_duration_curve.py'
 
+
+rule plot_operation_high_expenditure:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+    output:
+        'figures/{nname}/operation_high_expenditure.png'
+    script: 
+        'code/plot_operation.py'
 
 
 rule write_tables:

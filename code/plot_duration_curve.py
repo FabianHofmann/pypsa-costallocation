@@ -8,24 +8,23 @@ Created on Tue Sep  8 10:34:01 2020
 import pypsa
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 
 
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
-    snakemake = mock_snakemake('plot_capex_timeseries', nname='de50bf')
+    snakemake = mock_snakemake('plot_capex_duration_curve', nname='de50bf')
 
 
 n = pypsa.Network(snakemake.input.network)
 
-months = mdates.MonthLocator()  # every month
 
+c = 'Generator'
+gen = (n.pnl(c).p * n.pnl(c).mu_upper).groupby(n.df(c).carrier, axis=1).sum()
 
-gen = ((n.generators_t.p * n.generators_t.mu_upper)
-       .groupby(n.generators.carrier, axis=1).sum())
-
-sto = ((n.storage_units_t.p * n.storage_units_t.mu_upper)
-       .groupby(n.storage_units.carrier, axis=1).sum())
+c = 'StorageUnit'
+mu = (n.pnl(c).mu_state_of_charge / n.df(c).efficiency_dispatch
+          + n.pnl(c).mu_upper_p_dispatch + n.pnl(c).mu_lower_p_dispatch)
+sto = (n.pnl(c).p_dispatch * mu).groupby(n.df(c).carrier, axis=1).sum().clip(lower=0)
 
 capex = pd.concat([gen, sto], axis=1)
 # %%
