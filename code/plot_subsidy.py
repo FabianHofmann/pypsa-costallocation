@@ -51,15 +51,15 @@ regions.plot(ax=ax, transform=ccrs.PlateCarree(), aspect='equal',
              color='white', lw=0.2, edgecolor='grey')
 
 
-legend = ax.legend(
-    *ntl.plot.handles_labels_for(n.carriers.set_index('nice_name').color),
-    loc="upper center",
-    ncol=2,
-    bbox_to_anchor=(.5, 0),
-    title='Carrier',
-    frameon=False
-)
-ax.add_artist(legend)
+# legend = ax.legend(
+#     *ntl.plot.handles_labels_for(n.carriers.set_index('nice_name').color),
+#     loc="upper center",
+#     ncol=2,
+#     bbox_to_anchor=(.5, 0),
+#     title='Carrier',
+#     frameon=False
+# )
+# ax.add_artist(legend)
 
 # legend generator capacities
 reference_caps = [50e6, 10e6]
@@ -70,7 +70,7 @@ handles = make_legend_circles_for(reference_caps, scale=scale,
 labels = ["%iM €"%(s / 1e6) for s in reference_caps]
 handler_map = make_handler_map_to_scale_circles_as_in(ax)
 legend = ax.legend(handles, labels,
-                loc="lower center", bbox_to_anchor=(0.3, 1.0),
+                loc="upper center", bbox_to_anchor=(0.3, 0),
                 frameon=False,
                 handler_map=handler_map)
 ax.add_artist(legend)
@@ -83,7 +83,7 @@ handles = [Line2D([0], [0], color='grey', linewidth=s * branch_scale / branch_su
 labels = ['%iM €'%(s / 1e6) for s in reference_caps]
 
 legend = ax.legend(handles, labels,
-                    loc="lower center", bbox_to_anchor=(.7, 1.0),
+                    loc="upper center", bbox_to_anchor=(.7, 0),
                     frameon=False,
                     )
 ax.artists.append(legend)
