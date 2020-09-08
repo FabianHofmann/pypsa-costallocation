@@ -35,9 +35,9 @@ branch_sum = line_widths.sum() + link_widths.sum()
 
 bus_scale = 2
 branch_scale = 100
-
+# %%
 fig, ax = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
-                        figsize=(5, 5))
+                        figsize=(5, 6))
 ax.spines['geo'].set_visible(False)
 
 n.plot(bus_sizes=oneports/oneports.sum() * bus_scale,
@@ -51,14 +51,15 @@ regions.plot(ax=ax, transform=ccrs.PlateCarree(), aspect='equal',
              color='white', lw=0.2, edgecolor='grey')
 
 
-fig.legend(
+legend = ax.legend(
     *ntl.plot.handles_labels_for(n.carriers.set_index('nice_name').color),
-    loc="upper left",
-    bbox_to_anchor=(1, 1),
+    loc="upper center",
+    ncol=2,
+    bbox_to_anchor=(.5, 0),
     title='Carrier',
-    frameon=False,
+    frameon=False
 )
-
+ax.add_artist(legend)
 
 # legend generator capacities
 reference_caps = [50e6, 10e6]
@@ -68,24 +69,24 @@ handles = make_legend_circles_for(reference_caps, scale=scale,
                                   alpha=.5)
 labels = ["%iM €"%(s / 1e6) for s in reference_caps]
 handler_map = make_handler_map_to_scale_circles_as_in(ax)
-legend = fig.legend(handles, labels,
-                loc="upper left", bbox_to_anchor=(1., 0.4),
+legend = ax.legend(handles, labels,
+                loc="lower center", bbox_to_anchor=(0.3, 1.0),
                 frameon=False,
                 handler_map=handler_map)
-fig.add_artist(legend)
+ax.add_artist(legend)
 
 # legend transmission capacitues
 reference_caps = [100e6, 50e6]
 handles, labels = [], []
 handles = [Line2D([0], [0], color='grey', linewidth=s * branch_scale / branch_sum)
-           for s in reference_caps]
+            for s in reference_caps]
 labels = ['%iM €'%(s / 1e6) for s in reference_caps]
 
-legend = fig.legend(handles, labels,
-                    loc="lower left", bbox_to_anchor=(1, .1),
+legend = ax.legend(handles, labels,
+                    loc="lower center", bbox_to_anchor=(.7, 1.0),
                     frameon=False,
                     )
-fig.artists.append(legend)
+ax.artists.append(legend)
 
 
 fig.canvas.draw()
