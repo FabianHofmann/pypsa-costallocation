@@ -16,7 +16,7 @@ from helpers import combine_oneports, scfmt
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
     snakemake = mock_snakemake('plot_locality', nname='test-de10bf',
-                               method='ptpf', power='net', expenditure='all')
+                               method='ptpf', power='net', expenditure='capex')
 
 
 n = pypsa.Network(snakemake.input.network)
@@ -38,7 +38,8 @@ if 'capex' in snakemake.output[0]:
 elif 'opex' in snakemake.output[0]:
     df = df.one_port_operational_cost
 else:
-    df = df.to_array().sum('variable').to_pandas().T
+    df = df.to_array().sum('variable')
+df = df.to_pandas().T
 
 cumshare = (df/df.sum()).sum(level=0).cumsum().mul(100) # in %
 cumshare = cumshare[cumshare.iloc[20].sort_values(ascending=False).index]
