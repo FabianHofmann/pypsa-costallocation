@@ -686,19 +686,8 @@ The total annualized cost of the power system roughly sums up to 42 billion \eur
 
 \Cref{fig:average_price} displays the average electricity price $\lmp$ per region. We observe a relatively strong gradient from south (at roughly 92 \euro/MWh) to north (80 \euro/MWh). Regions with with little pre-installed capacity and capacity expansion, especially for renewables, tend to have higher prices. The node with the lowest LMP in the upper North-West, stands out through high pre-installed offshore capacities. \\
  
-The costs are allocated according to type \ref{net}\ref{ap}, DC-lines are incorporated into the PTDF in \cref{eq:power_flow_equation} using the method described in \cite{hofmann_flow_2020-1}.
-In \cref{fig:total_cost} we show the total of all ``allocatable'' costs $\cost'$. Due to the design constraints, \cref{sec:design_constraints}, and the role of storage units, \cref{sec:storages}, these are different from the original cost terms $\cost$. The figure also includes costs for scarcity $\scarcitycost$ and subsidy  $\subsidycost$. Note that the sum of all contributions in \cref{fig:total_cost} equals the total cost $\totalcost$.  
-
-
-The largest proportion of the payments is associated with CAPEX for generators, transmission system and storage units in decreasing order. 
-It turns out that  mostly areas with high CAPEX allocation are the ones with low average LMP. In particular, this counts for the coastal regions where strong offshore and onshore investments are taken, see \cref{fig:capex_price}. Several regions inside the country also pay comparably high share to CAPEX, however these are allocated to non-local assets. We further observe that CAPEX for OCGT is allocated very evenly among all consumers. Again, these payments benefit primarily regions nearby strong wind capacities in the North.  
-
-Together with the emission cost $\emissioncost$, the total OPEX $\opex$ amount around 16 billion \euro. As to expect, 99.97\% are dedicated to OCGT alone. For a detailed regional distribution of payments per MWh and the resulting revenues for generator, see \cref{fig:opex_price,fig:emission_cost}. Compared to the CAPEX allocation for OCGT, the OPEX distributes in a more local manner. This results from the fact that during ``standard'' demand peaks, it is rather local OCGT generators which serve as backup generators. In the average power mix per region, see \cref{fig:power_mix}, we observe that regions with strong OCGT capacities predominately have high shares of OCGT power. The OPEX allocations for renewables play with 0.2 \euro/MWh in average an inferior role. 
-
-The negative segment in \cref{fig:total_cost} is associated with the scarcity costs $\scarcitycost$, caused by land use constraints for renewables and the transmission expansion limit. These sum up approximately to 7.5 b\euro. Note again, that according to \cref{eq:scarcitycost} this term is negative and is part of the allocated CAPEX payments. It translates to the cost that consumers pay ``too much'' for assets limited in their capacity expansion. In the real world this money would be used to pay for augmented land costs or civic participation in the dedicated areas. In \cref{fig:scarcity_price} we give a detailed insight of how the scarcity cost manifest in the average price $\left<\lmp\right>_t$. The scarcity for wind and solar are relatively low and impact the average price by around 2\euro/MWh. They mostly affect regions with strong investments and those in close vicinity. Remarkably, the scarcity cost per MWh for run-of-river power plants amounts up to 16\euro. This high impact is due to the steady power potential from run-off water and the strong limitation of capacity expansion. However, as these power plants in particular are already amortized and scarcity cost should be reconsidered and removed from a final cost allocation.    
-The scarcity cost for the transmission system, resulting from the limited transmission volume expansion of 25\% mostly influence regions in the middle of Germany, where in average 8\euro/MWh account for transmission scarcity, see \cref{fig:branch_scarcity_price}. This illustrates the strong impact that the line volume constraint has on the optimization. Regions in the North are not touched by the constraint. 
-
-The last cost term in \cref{fig:total_cost}, is  caused by lower capacity constraints for pre-existing assets. These violate the optimal design and are not compensated through the nodal payments $\demand \, \lmp$. 
+The costs are allocated according to type \ref{net}\ref{ap}. For allocating flows on  DC-lines we use the method described in \cite{hofmann_flow_2020-1}.
+In \cref{fig:total_cost} we show the total of all ``allocatable'' costs $\cost'$. Due to the design constraints, \cref{sec:design_constraints}, and storage units, \cref{sec:storages}, these are different from the original cost terms $\cost$. The figure also includes costs for scarcity $\scarcitycost$ and subsidy  $\subsidycost$. Note that the sum of all contributions in \cref{fig:total_cost} equals the total cost $\totalcost$.  
 
 \begin{figure}
     \centering
@@ -706,6 +695,18 @@ The last cost term in \cref{fig:total_cost}, is  caused by lower capacity constr
     \caption{Total allocated payments of the system. }
     \label{fig:total_cost}
 \end{figure}
+
+
+The largest proportion of the payments is associated with CAPEX for generators, transmission system and storage units in decreasing order. 
+Taking the different technologies into account, we observe a fundamental difference between the controllable OCGT  and the variable renewable resources: As shows in detail in \cref{fig:capex_duration_curve}, more than half of all investments in OCGT is determined in one specific hour. At this time (morning, end of February), the system hits the highest mismatch between low renewable power potential and high demand. The necessity for backup generators manifests in high allocation of CAPEX and consequently high LMP. With a few exceptions in the South West and East, all consumers receive power from OCGT at this time, thus all pay high amounts for the needed backup infrastructure (operational state of the system is in detailed shown in \cref{fig:operation_high_expenditure}). Note that this is the most extreme event, which ensures backup infrastructure for other inferior extreme events where backup power is needed. The total CAPEX allocation for OCGT infrastructure is depicted in \cref{fig:ocgt_capex} which correlates with out findings from the extreme event. \\
+Contrary to this, CAPEX for renewable infrastructure are allocated evenly throughout several thousands of hours. As for onshore and offshore wind farms, the produced power deeply penetrates the network, see \cref{fig:power_mix}, thus it is not only local, but also remote consumers which cover the CAPEX, see \cref{fig:capex_price}. This in turn benefits local consumers, which profit from the cheap power which explains why these regions end up with a low average LMP.
+
+Together with the emission cost $\emissioncost$, the total OPEX $\opex$ amount around 16 billion \euro. As to expect, 99.97\% are dedicated to OCGT alone. For a detailed regional distribution of payments per MWh and the resulting revenues for generator, see \cref{fig:opex_price,fig:emission_cost}. Compared to the CAPEX allocation for OCGT, the OPEX distributes in a more local manner. This results from the fact that during ``standard'' demand peaks, it is rather local OCGT generators which serve as backup generators. In the average power mix per region, see \cref{fig:power_mix}, we observe that regions with strong OCGT capacities predominately have high shares of OCGT power. The OPEX allocations for renewables play with 0.2 \euro/MWh in average an inferior role. 
+
+The negative segment in \cref{fig:total_cost} is associated with the scarcity costs $\scarcitycost$, caused by land use constraints for renewables and the transmission expansion limit. These sum up approximately to 7.5 b\euro. Note again, that according to \cref{eq:scarcitycost} this term is negative and is part of the allocated CAPEX payments. It translates to the cost that consumers pay ``too much'' for assets limited in their capacity expansion. In the real world this money would be used to pay for augmented land costs or civic participation in the dedicated areas. In \cref{fig:scarcity_price} we give a detailed insight of how the scarcity cost manifest in the average price $\left<\lmp\right>_t$. The scarcity for wind and solar are relatively low and impact the average price by around 2\euro/MWh. They mostly affect regions with strong investments and those in close vicinity. Remarkably, the scarcity cost per MWh for run-of-river power plants amounts up to 16\euro. This high impact is due to the steady power potential from run-off water and the strong limitation of capacity expansion. However, as these power plants in particular are already amortized and scarcity cost should be reconsidered and removed from a final cost allocation.    
+The scarcity cost for the transmission system, resulting from the limited transmission volume expansion of 25\% mostly influence regions in the middle of Germany, where in average 8\euro/MWh account for transmission scarcity, see \cref{fig:branch_scarcity_price}. This illustrates the strong impact that the line volume constraint has on the optimization. Regions in the North are not touched by the constraint. 
+
+The last cost term in \cref{fig:total_cost}, is  caused by lower capacity constraints for pre-existing assets. These violate the optimal design and are not compensated through the nodal payments $\demand \, \lmp$. 
 
 
 
@@ -1152,47 +1153,48 @@ The following figures contain more detailed information about the peer-to-peer c
 
 \begin{figure}
     \includegraphics[width=\linewidth]{de50bf/maps_price_ptpf_net/one_port_operational_cost_total}
-    \caption{Average \textbf{OPEX allocation} per consumed MWh, $\sum_t \allocateopex/\sum_t \demand$.}
+    \caption{Average \textbf{OPEX allocation} per consumed MWh, $\sum_t \allocateopex/\sum_t \demand$. The effective prices for OPEX are indicated by the color of the region, the size of the circles are set proportional to the revenue per regional generators and storages. As OCGT is the only allowed fossil based technology, the drawn allocation is proportional to OPEX allocation of OCGT generators.}
     \label{fig:opex_price}
 \end{figure}
 
 
 \begin{figure}
     \includegraphics[width=\linewidth]{de50bf/maps_price_ptpf_net/co2_cost_total}
-    \caption{Average \textbf{allocated emission cost}, $\sum_t \allocateemissioncost$, per consumed MWh.}
+    \caption{Average \textbf{allocated emission cost}, $\sum_t \allocateemissioncost$, per consumed MWh. The effective prices are indicated by the color of the region, the size of the circles are set proportional to the revenue per regional generators.}
     \label{fig:emission_cost}
 \end{figure}
 
 
 \begin{figure}
     \includegraphics[width=\linewidth]{de50bf/power_mix_ptpf_net}
-    \caption{Average power mix per region.}
+    \caption{Average power mix per region calculated by Average Participation \ref{ap}. Coastal regions are mainly supplied by local offshore and onshore wind farms. Their strong power injections additionally penetrate the network up to the southern border. In the middle and South, the supply is dominated by a combination of OCGT and solar power.}
     \label{fig:power_mix}
 \end{figure}
 
 \begin{figure}
+    \vspace{2cm}
     \includegraphics[width=\linewidth]{de50bf/subsidy}
-    \caption{Total costs for subsidy $\subsidycost$ resulting from lower capacity expansion bounds (brownfield constraints).}
+    \caption{Total costs for subsidy $\subsidycost$ resulting from lower capacity expansion bounds (brownfield constraints). The figure shows the built infrastructure that does not gain back its CAPEX from its market revenue, but is only build due to lower capacity limits.}
     \label{fig:subsidy}
 \end{figure}
 
 
 \begin{figure*}
     \includegraphics[width=\linewidth]{de50bf/capex_duration_curve}
-    \caption{Duration curve of the CAPEX allocation for production and storage technologies. Hours are sorted such that the total amount of allocated expenditure per hour decreases. With 2.7 bn~\euro\, the first value pushes investments extraordinary high. Due to low renewable potentials, it is dominated by CAPEX for OCGT, to which 92\% of the payments are allocated. This hour alone occasions about the half of all OCGT CAPEX. \Cref{capex_duration} gives a detailed picture of the operational state at this time-step. The following 7000 time-steps are dominated by revenues for onshore wind and reveal a rather even distribution. In hours of low CAPEX allocation (after the second drop) spendings for OCGT start to increase again. These time-steps however play a minor role.}
-    \label{fig:capex_duration}
+    \caption{Duration curve of the CAPEX allocation for production and storage technologies. Hours are sorted by the total amount of allocated expenditure. With 2.7 bn~\euro\, the first value pushes investments extraordinarily high. Due to low renewable potentials, it is dominated by CAPEX for OCGT which receives 92\% of the payments. This hour alone occasions about the half of all OCGT CAPEX. \Cref{fig:capex_duration} gives a detailed picture of the operational state at this time-step. The following 7000 time-steps are dominated by revenues for onshore wind and reveal a rather even distribution. In hours of low CAPEX allocation (after the second drop) spendings for OCGT start to increase again. These time-steps however play a minor role.}
+    \label{fig:capex_duration_curve}
 \end{figure*}
 
 \begin{figure}
     \includegraphics[width=\linewidth]{de50bf/operation_high_expenditure}
-    \caption{Production, flow and consumption in the system at the hour with the highest expenditures. The size of the circles are proportional to the power production at a node. Size of arrows are proportional to the flow on the transmission line. The depicted hour corresponds to the first value in the duration curve in \cref{fig:capex_duration}.}
+    \caption{Production, flow and consumption in the system at the hour with the highest allocated expenditures. The size of the circles are proportional to the power production at a node. Size of arrows are proportional to the flow on the transmission line. The depicted hour corresponds to the first value in the duration curve in \cref{fig:capex_duration}.}
     \label{fig:operation_high_expenditure}
 \end{figure}
 
 
 \begin{figure}
     \includegraphics[width=\linewidth]{de50bf/maps_scarcity_price_ptpf_net/branch_scarcity_cost_total}
-    \caption{Average \textbf{allocated transmission scarcity cost} per consumed MWh. This scarcity cost results from the upper transmission expansion limit of 25\%.}
+    \caption{Average \textbf{allocated transmission scarcity cost} per consumed MWh, $\sum_t \scarcitycost_{n \rightarrow \ell, t} / \sum_t \demand $. This scarcity cost results from the upper transmission expansion limit of 25\%. The costs are indicated by the regional color.  The lines are drawn in proportion to revenue dedicated to scarcity cost. }
     \label{fig:branch_scarcity_price}
 \end{figure}
 
@@ -1221,7 +1223,7 @@ The following figures contain more detailed information about the peer-to-peer c
         \subcaption{Run-of-River}
         \label{fig:ror_generator_scarcity_cost}
     \end{subfigure}
-    \caption{Average electricity price for \textbf{allocated scarcity cost}, $\sum_t \allocatescarcitycost$, due to technology resource limits, for offshore wind, onshore wind,  solar, run-of-river. Average Allocated Scarcity Cost per MWh within the regions are indicated by the color, the revenue per production asset is given by the size of the circles at the corresponding bus.}
+    \caption{Average \textbf{allocated scarcity cost} per consumed MWh, $\sum_t \allocatescarcitycost / \sum_t \demand$. These cost result from land use restricitions for offshore wind, onshore wind,  solar, run-of-river. The cost per MWh are indicated by the color of a region. The revenue per production asset is given by the size of the circle at the corresponding bus.}
     \label{fig:scarcity_price}
 \end{figure*}
 

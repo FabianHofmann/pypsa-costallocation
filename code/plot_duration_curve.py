@@ -8,6 +8,7 @@ Created on Tue Sep  8 10:34:01 2020
 import pypsa
 import pandas as pd
 import matplotlib.pyplot as plt
+import config
 
 
 if 'snakemake' not in globals():
@@ -53,7 +54,7 @@ ax2.legend(handles[::-1], n.carriers.nice_name[duration.columns][::-1],
            ncol=3, frameon=False)
 
 
-ax1.set_ylabel('CAPEX [€]')
+ax1.set_ylabel('Allocated CAPEX [€]')
 ax2.set_xlabel('time [h]')
 ax1.set_yscale('log')
 ax1.set_ylim(bottom=10)
