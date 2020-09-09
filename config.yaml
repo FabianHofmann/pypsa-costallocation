@@ -4,11 +4,13 @@ analysis:
     method: ['ptpf']
     power: ['net']
     sink: ['highest-lmp', 'lowest-lmp']
+    expenditure: ['all', 'capex', 'opex']
 test:
     nname: ['test-de10gf']
     method: ['ptpf']
     power: ['net']
     sink: ['highest-lmp', 'lowest-lmp']
+    expenditure: ['all', 'capex', 'opex']
 
 alloc_to_load_only: true
 

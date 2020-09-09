@@ -31,7 +31,14 @@ cost = (combine_oneports(xr.open_dataset(snakemake.input.costs).sum('snapshot'))
         .assign(dist=distance))
 
 df = (cost.stack(distance=['source', 'sink']).sortby('dist')
-      .set_index(distance='dist').to_array().sum('variable').to_pandas().T)
+      .set_index(distance='dist'))
+
+if 'capex' in snakemake.output[0]:
+    df = df.one_port_investment_cost
+if 'opex' in snakemake.output[0]:
+    df = df.one_port_operational_cost
+else:
+    df = df.to_array().sum('variable').to_pandas().T
 
 cumshare = (df/df.sum()).sum(level=0).cumsum().mul(100) # in %
 cumshare = cumshare[cumshare.iloc[20].sort_values(ascending=False).index]

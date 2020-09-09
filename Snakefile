@@ -5,6 +5,7 @@ wildcard_constraints:
     clusters="\d+",
     field="(bf|gf)",
     method="(ptpf|ebe)",
+    expenditure="(all|capex|opex)",
 
 
 rule all:
@@ -18,7 +19,7 @@ rule all:
         expand('figures/{nname}/operation_high_expenditure.png', **config['analysis']),
         expand('figures/{nname}/power_mix_{method}_{power}.png', **config['analysis']),
         expand('figures/{nname}/bars_{method}_{power}.png', **config['analysis']),
-        expand('figures/{nname}/locality_{method}_{power}.png', **config['analysis']),
+        expand('figures/{nname}/locality_{expenditure}_{method}_{power}.png', **config['analysis']),
         expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/maps_price_{method}_{power}', **config['analysis']),
         expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['analysis']),
@@ -35,9 +36,11 @@ rule test:
         expand('figures/{nname}/average_price.png', **config['test']),
         expand('figures/{nname}/average_demand.png', **config['test']),
         expand('figures/{nname}/subsidy.png', **config['test']),
+        expand('figures/{nname}/capex_duration_curve.png', **config['test']),
+        expand('figures/{nname}/operation_high_expenditure.png', **config['test']),
         expand('figures/{nname}/power_mix_{method}_{power}.png', **config['test']),
         expand('figures/{nname}/bars_{method}_{power}.png', **config['test']),
-        expand('figures/{nname}/locality_{method}_{power}.png', **config['test']),
+        expand('figures/{nname}/locality_{expenditure}_{method}_{power}.png', **config['test']),
         expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['test']),
         expand('figures/{nname}/maps_price_{method}_{power}', **config['test']),
         expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['test']),
@@ -211,7 +214,7 @@ rule plot_locality:
     input:
         network = 'resources/{nname}.nc',
         costs = 'resources/costs_{nname}_{method}_{power}.nc'
-    output: 'figures/{nname}/locality_{method}_{power}.png'
+    output: 'figures/{nname}/locality_{expenditure}_{method}_{power}.png'
     script: 'code/plot_locality.py'
 
 
