@@ -40,7 +40,7 @@
 
 
 % general symbols
-\newcommand{\state}{s_{i,t}}
+\newcommand{\state}[1][i]{s_{#1,t}}
 \newcommand{\capacity}{S_{i}}
 \newcommand{\costfactor}{\gamma^\circ_{i,t}}
 \newcommand{\capacityupper}{\bar{S}}
@@ -48,7 +48,7 @@
 \newcommand{\muuppernom}{\bar{\mu}^\text{nom}_{i}}
 \newcommand{\mulowernom}{\ubar{\mu}^\text{nom}_{i}}
 
-\newcommand{\kk}{k~\euro\,}
+\newcommand{\kk}{k\euro~}
 
 %generation
 \newcommand{\generation}{g_{s,t}}
@@ -112,7 +112,7 @@
 % other
 \newcommand{\lagrangian}{\mathcal{L}}
 \newcommand{\lmp}[1][n]{\lambda_{#1,t}}
-\newcommand{\averagelmp}{\left<\lmp\right>_t}
+\newcommand{\averagelmp}{\bar{\lambda}_n}
 \newcommand{\demand}[1][n]{d_{#1,t}}
 \newcommand{\nodaldemand}[1][n]{d_{#1,t}}
 \newcommand{\demandshare}[1][n]{\omega_{#1,a,t}}
@@ -165,9 +165,9 @@
 \newcommand{\allocatestate}[1][i, n]{A_{#1,t}}
 
 \newcommand{\allocatecost}[1][n \rightarrow i]{\cost_{#1, t}}
-\newcommand{\allocatecapexgeneration}[1][n \rightarrow s]{\capexgeneration_{#1,t}}
-\newcommand{\allocatecapexflow}[1][n \rightarrow \ell]{\capexflow_{#1,t}}
-\newcommand{\allocatecapexstorage}[1][n \rightarrow r]{\capexstorage_{#1,t}}
+\newcommand{\allocatecapexgeneration}[1][n \rightarrow s,t]{\capexgeneration_{#1}}
+\newcommand{\allocatecapexflow}[1][n \rightarrow \ell,t]{\capexflow_{#1}}
+\newcommand{\allocatecapexstorage}[1][n \rightarrow r, t]{\capexstorage_{#1}}
 \newcommand{\allocateopex}[1][n \rightarrow s]{\opex_{#1,t}}
 \newcommand{\allocateemissioncost}[1][n \rightarrow s]{\emissioncost_{#1,t}}
 \newcommand{\allocatescarcitycost}[1][n \rightarrow i]{\scarcitycost_{#1,t}}
@@ -222,7 +222,7 @@
 Today's power systems are subject to a deep and ongoing transformation. The needed shift to from controllable to weather-driven power generation, the constant improvement and innovation of technology require rigorous system planning and international cooperation. The core of the problem manifests in the costs. Firstly, these should be as small as possible while meeting ecological and sociological standards. Secondly, they must be distributed in a fair and transparent manner. Cost-driving aspects or market players should be detected and addressed appropriately. 
 In this context, power system modelling has increasingly gained attention during the last years. Many studies show how cost-efficiency and renewable energy are brought together. However, the question of how and, more importantly, upon what grounds costs are distributed was often left open. \\
 This study fills this gap. On the basis of an optimized network the operational state of each time step and corresponding characteristics are are in detailed considered to allocate all system costs. The presented approach builds upon two basic concepts: Firstly, the revenue of an network asset at the cost-optimum exactly matches its operational and capital expenditures, also known as the zero-profit condition. Secondly, \textit{flow tracing}, following Bialek's Average Participation, assigns the operation of single network assets to consumers in an plausible manner. 
-The following shows how combining these allow for an transparent allocation of all operational (OPEX) and capital expenditures (CAPEX) to the end consumers. 
+The following shows how combining these allow for an transparent allocation of all operational (OPEX) and capital expenditures (CAPEX) to the consumers in the network. 
 
 
 
@@ -291,8 +291,6 @@ adds to $\totalcost$. Here, $\emission$ denotes the emission factor in tonne-CO$
 \begin{align}
 \generation - \capacitygeneration  &\le 0 \resultsin{\muuppergeneration} \Forall{s,t} 
 \label[constraint]{eq:upper_generation_capacity_constraint}
-% - \generation &\le 0 \resultsin{\mulowergeneration} \Forall{s,t} 
-% \label[constraint]{eq:lower_generation_capacity_constraint}
 \end{align}
 The constraint yields a shadow-price of $\muuppergeneration$ in literature often denoted as the Quality of Supply. It can be interpreted as the the price per MW that \cref{eq:upper_generation_capacity_constraint} imposes to the system. If $\muuppergeneration$  is bigger than zero, the constraint is binding, which pushes investments in $\capacitygeneration$. As shown in detail in \cref{sec:zero_profit_generation}, over the whole time span, the CAPEX for generator $s$ is payed back by the production $\generation$ times the shadow price $\muuppergeneration$, 
 \begin{align}
@@ -518,9 +516,9 @@ where $K$ is any non-zero constant and $\capacity$ denotes the nominal capacitie
     \cost_i - \remainingcost^\circ_i &= \sum_t \costfactor \, \state \\
     &= \sum_{n,t} \allocatecost
 \end{align}
-% The total allocatable cost associated to cost term $\cost$ is then given by 
+% We define the allocated costs associated to cost term $\cost$ is then given by 
 % \begin{align}
-%     \cost[\circ '] = \sum_i  \cost_i - \remainingcost_i
+%     \bar{\cost} = \sum_i  \cost_i - \remainingcost_i
 %     \label{altered_cost}
 % \end{align}
 According to the nature of \cref{eq:design_constraint} and the corresponding $\remainingcost_i$, it is either larger, equal or lower than $\cost$. Whereas \cref{eq:payment} still holds true, the total of payments do not return the total system cost $\totalcost$ anymore. The total mismatch $\remainingcost$ is given by 
@@ -531,8 +529,9 @@ In the following we highlight two often used classes of designs constraints in t
 
 \end{subequations}
 
-\subsubsection{Capacity Expansion Limit}
+\subsubsection*{Capacity Expansion Limit}
 
+\begin{subequations}
 In more realistic setups, generators, lines or other assets can only be built up to a certain limit. This might be due to land use restrictions or social acceptance considerations. %In the following give a general solution how the cost allocation may handle this.  
 When constraining the capacity $\capacity$ to an upper limit $\capacityupper$, in the form of 
 \begin{align}
@@ -548,10 +547,12 @@ This rent may account for different possible realms, as for example the increase
 \begin{align}
     \allocatescarcitycost = \dfrac{\muuppernom}{c_i + \muuppernom} \, \allocatecost \Forall{i}
 \end{align}
+\end{subequations}
 
 
-\subsubsection{Brownfield Constraints}
+\subsubsection*{Brownfield Constraints}
 
+\begin{subequations}
 In order to take already built infrastructure into account, the capacity $\capacity$ can be constrained to a minimum required capacity $\capacitylower$. This introduces a constraint of the form 
 \begin{align}
     \capacitylower - \capacity  \le 0 \resultsin{\mulowernom} \hpad \forall{i \in I}
@@ -564,54 +565,58 @@ In that case, asset $i$ does not collect enough revenue from $\allocatecost$ in 
     \Forall{i}
 \end{align}
 has to be subsidized by governments or communities. It is rather futile wanting to allocate these cost to consumers as assets may not gain any revenue for their operational state, \ie where $\cost = \subsidycost_i $. 
+\end{subequations}
 
 \subsection{Numerical Example}
 \label{sec:numerical_example}
 % 
-Consider a two bus system, depicted in \cref{fig:example_network}, with one transmission line and one generator per bus. Generator~1 (at bus~1) has a cheap operational price of 50 \euro/\megawatthour, generator~2 (at bus~2) has a expensive operational price of 200~\euro/\megawatthour. For both, capital investments amount 500~\euro/MW and the maximal capacity is limited to $\capacitygenerationupper$~=~100~MW. The transmission line has a capital price of 100~\euro/MW and no upper capacity limit. With a demand of 60~MW at bus~1 and 90~MW at bus~2, the optimization expands the cheaper generator at bus~1 to its full limit of 100~MW. The 40~MW excess power, not consumed at bus~1, flows to bus~2 where the generator is built with only 50~MW. \\
-%  
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\linewidth]{example_network.png}
+    \caption{Illustrative example of a 2~bus network with one optimized time step. Fixed prices and constraining values are given in the left box for each bus and the transmission line. Optimized values are given in the right boxes. Generator~1 at bus~1 has a cheaper operational price $o$, capital prices are the same for both. As both generator capacities are constraint to 100~MW, the optimization also deploys the generator at bus~2. }
+    \label{fig:example_network}
+\end{figure*}
 \begin{figure*}[h!]
     \begin{subfigure}[c]{.495\linewidth}
     % NOTE: Net EBE and Net AP lead to the same result here. Due to time limits just take the ebe figures
-    \includegraphics[width=\linewidth]{example_allocation_bus1_net_ebe.png}
+    \includegraphics[width=\linewidth]{example_allocation_bus1_net_ptpf.png}
     \vspace{-40pt}
     \subcaption{}
     \label{fig:example_allocation_bus1}
     \end{subfigure}
     \begin{subfigure}[c]{.495\linewidth}
-    \includegraphics[width=\linewidth]{example_allocation_bus2_net_ebe.png}
+    \includegraphics[width=\linewidth]{example_allocation_bus2_net_ptpf.png}
     \vspace{-40pt}
     \subcaption{}
     \label{fig:example_allocation_bus2}
     \end{subfigure}
-    \caption{Power allocations of net power injections using the AP scheme, type \ref{net}\ref{ap}, in the example network, \cref{fig:example_network}. Consumers at for bus~1, figure (a), are, with 60~MW, totally supplied by the local generator and do not consume any imported power from bus 2. In contrast consumer at bus~2, figure (b), retrieve 40~MW from generator 1, induce a flow of 40~MW on the transmission line and consume 50~MW from the local generator.}
+    \caption{Power allocations $\allocatestate$ in the example network \cref{fig:example_network} using Average Participation. Consumers at for bus~1, figure (a), are, with 60~MW, totally supplied by the local generator and do not consume any imported power from bus 2. In contrast consumer at bus~2, figure (b), retrieve 40~MW from generator 1, induce a flow of 40~MW on the transmission line and consume 50~MW from the local generator.}
     \label{fig:example_allocation}
 \end{figure*}
+
+
+Consider a two bus system, depicted in \cref{fig:example_network}, with one transmission line and one generator per bus. Generator~1 (at bus~1) has a cheap operational price of 50 \euro/\megawatthour, generator~2 (at bus~2) has a expensive operational price of 200~\euro/\megawatthour. For both, capital investments amount 500~\euro/MW and the maximal capacity is limited to $\capacitygenerationupper$~=~100~MW. The transmission line has a capital price of 100~\euro/MW and no upper capacity limit. With a demand of 60~MW at bus~1 and 90~MW at bus~2, the optimization expands the cheaper generator at bus~1 to its full limit of 100~MW. The 40~MW excess power, not consumed at bus~1, flows to bus~2 where the generator is built with only 50~MW. \\
+%  
+% 
+% 
+% 
+\Cref{fig:example_allocation} shows the allocation $\allocatestate$ for $n$~=~1 and $n$~=~2 separately. The ``sum'' of the two figures give to the actual dispatch and flow. The resulting P2P payments are given in \cref{fig:example_payoff}.  
+
+The left graph \cref{fig:example_allocation_bus1} shows that $d_1$ is with 60~MW totally supplied by the local production. Consequently consumers at bus~1 pay 3k~\euro~OPEX, which is the operational price of 50~\euro\, times the 60~MW. Further they pay 33k~\euro~ for the CAPEX at generator~1. Note that 3k~\euro~ of these account for the scarcity imposed buy the upper expansion limit $\capacitygenerationupper$. The rest makes up 60\% of the total CAPEX spent at generator~1, exactly the share of power allocated to $d_1$. Consumers at bus~1 don't pay any transmission CAPEX as no flow is associated with there demand. \\
+The right graph \cref{fig:example_allocation_bus2} shows the power allocations to $d_2$. We see that 50~MW are self-supplied whereas the remaining 40~MW are imported from generator~1. Thus, consumers pay for the local OPEX and CAPEX as well as the proportional share of expenditures at bus~1 and the transmission system. As the capacity at generator~2 does not hit the expansion limit $\capacitygenerationupper$, no scarcity cost are assigned to it. The allocated $\allocatecapexgeneration[2\rightarrow 2]$  compensates  the full investment of generator~2. Again, 2\kk of the 22\kk which are allocated to investment in generator~1 are associated with the scarcity cost for generator~1. The payed congestion revenue of 4\kk is exactly the CAPEX of the transmission line.   
 % 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\linewidth]{example_payoff_net_ebe.png}
-    \caption{Full P2P cost allocation on the basis of power allocations shown in \cref{fig:example_allocation}. Consumers compensate OPEX and CAPEX of the generators they retrieve from, see \cref{fig:example_allocation}. As bus~1 is totally self-supplying, all it payment is assigned to the local generator.  As bus~2 imports power from bus~1 and thus induces a flow on line~1, it not only compensates local expenditures but also OPEX and CAPEX at bus~1 and CAPEX for the transmission.}
+    \includegraphics[width=\linewidth]{example_payoff_net_ptpf.png}
+    \caption{Full P2P cost allocation $\allocatecost$ on the optimized example network in \cref{fig:example_network}. Consumers compensate OPEX and CAPEX of the generators they retrieve from (compare with \cref{fig:example_allocation}). As bus~1 is totally self-supplying, all it payment is assigned to the local generator.  As bus~2 imports power from bus~1 and thus induces a flow on line~1, it not only compensates local expenditures but also OPEX and CAPEX at bus~1 and CAPEX for the transmission.}
     \label{fig:example_payoff}
 \end{figure}    
 % 
-% 
-% 
-\Cref{fig:example_allocation} shows the allocated transactions on the basis of allocation \ref{net}\ref{ap} for both buses 1~\&~2 separately. Note, the ``sum'' of the two figures give to the actual dispatch. The resulting P2P payments are given in \cref{fig:example_payoff}.  
-
-The left graph \cref{fig:example_allocation_bus1} shows that $d_1$ is with 60~MW totally supplied by the local production. Consequently consumers at bus~1 pay 3k~\euro~OPEX, which is the operational price of 50~\euro\, times the 60~MW. Further they pay 33k~\euro~ for the CAPEX at generator~1. Note that 3k~\euro~ of these account for the scarcity imposed buy the upper expansion limit $\capacitygenerationupper$. The rest makes up 60\% of the total CAPEX spent at generator~1, exactly the share of power allocated to $d_1$. Consumers at bus~1 don't pay any transmission CAPEX as no flow is associated with there demand. \\
-The right graph \cref{fig:example_allocation_bus2} shows the power allocations to $d_2$. We see that 50~MW are self-supplied whereas the remaining 40~MW are imported from bus~1. Thus, consumers have the pay for the local OPEX and CAPEX as well as the proportional share of expenditures at bus~1 and the transmission system. As the capacity at generator~2 does not hit the expansion limit $\capacitygenerationupper$, no scarcity cost are assigned to it. The allocated CAPEX $\allocatecapexgeneration[2\rightarrow 2]$  compensates  the actual CAPEX of generator~2. Again. in the case of generator~1, 2\kk of the 22\kk CAPEX allocation are associated with the scarcity cost for generator~1. The payed congestion revenue of 4\kk is exactly the CAPEX of the transmission line, which directly reflects the zero-profit condition.   
-% 
 The sum of all values in the payoff matrix in \cref{fig:example_payoff} yield $\totalcost - \scarcitycost$, the total system cost minus the scarcity cost (which in turn is negative).
-The sum of a column  yields the total revenue per the asset $i$. These values match their overall spending plus the cost of scarcity. The sum a row returns the total payment of consumers at bus $n$. For example the sum of payments of consumers at bus~1 is 36k~\euro. This is exactly the electricity price of 600~\euro/MW times the consumption of 60~MW, $\lambda_1 d_1$. \\
+The sum of a column  yields the total revenue per the asset $i$. These values match their overall spending plus the cost of scarcity. The sum a row returns the nodal payments $C_n = \lambda_n \, d_n$. For example the sum of payments of consumers at bus~1 is 36\kk. This is exactly the electricity price of 600~\euro/MW times the consumption of 60~MW, $\lambda_1 d_1$. \\
 % 
 
 The fact that OPEX and CAPEX allocations are proportional to each other results from optimizing one time step only. This coherence breaks for larger optimization problems with multiple time steps. Then CAPEX allocation takes effect only for time steps in which one or more of the capacity constraints  \cref{eq:upper_generation_capacity_constraint,eq:lower_flow_capacity_constraint,eq:upper_flow_capacity_constraint} become binding.  \\
-% The example shows that allocating net power injection leads to intuitive and transparent  cost allocations. 
-
-% In contrast the to equivalent allocation of gross power production, netting out injections for each bus leads to less P2P payments. The resulting payment given in \cref{fig:example_payoff_net_ebe} builds on the allocated power flow shown \cref{fig:example_allocation_net_ebe} in \cref{sec:example_plots}. As bus~2 does not produce excess power, none of its power production is assigned to bus~1 and thus no payment of bus~1 to bus~2 allocated. Neither has bus~1 to pay fee to the transmission system as it only exports power. So, consumers at bus~1 pay to its local generator. Bus~2 in contrast bear all CAPEX for the transmission system as well as CAPEX and OPEX for generators at bus~1. 
-% % 
-% Again the cumulative payments per bus meet the nodal spending $\lmp \, \demand$. The cumulative revenues per generator and transmission line meet the all CAPEX and OPEX. Note this gives the same result as when allocating net injection with the Average Participation \ref{net}\ref{ap}.
 
 
 
@@ -637,28 +642,33 @@ We follow a brownfield approach where transmission lines can be expanded startin
 \end{figure}
 We impose a effective carbon price of 120 \euro\, per tonne-CO$_{2}$ which, for OCGT, adds an effective price of 55 \euro/\megawatthour (assuming a gross emission of 180~kg/MWh and an efficiency of 39\%). All cost assumptions on operational costs $o_i$ and annualized capital cost $c_i$ are summarized in detail in \cref{tab:cost_assumptions}. 
 
-The optimized network is shown in  \cref{fig:network}. On the left we find the lower capacity bounds for renewable generators and transmission infrastructure, on the right the capacity expansion for generation, storage and transmission are displayed. The optimization expands solar capacities in the south, onshore and offshore wind in the upper north and most west. Open-Cycle Gas Turbines (OCGT) are build within the broad middle of the network. Transmission lines are amplified in along the North-South axis, including one large DC link, associated with the German S\"ud-Link, leading from the coastal region to the South-West. 
+The optimized network is shown in  \cref{fig:network}. On the left we find the lower capacity bounds for renewable generators and transmission infrastructure, on the right the capacity expansion for generation, storage and transmission are displayed. The optimization expands solar capacities in the south, onshore and offshore wind in the upper north and most west. Open-Cycle Gas Turbines (OCGT) are build within the broad middle of the network. Transmission lines are amplified in along the north-south axis, including one large DC link, associated with the German S\"ud-Link, leading from the coastal region to the southwest. 
 The total annualized cost of the power system roughly sums up to 42 billion \euro.
 % 
 
-\Cref{fig:average_price} displays the average electricity price $\lmp$ per region. We observe a relatively strong gradient from south (at roughly 92 \euro/MWh) to north (80 \euro/MWh). Regions with with little pre-installed capacity and capacity expansion, especially for renewables, tend to have higher prices. The node with the lowest LMP in the upper North-West, stands out through high pre-installed offshore capacities. \\
+\Cref{fig:average_price} displays the load-weighted average electricity price $\averagelmp$ per region, defined by 
+\begin{align}
+    \averagelmp = \dfrac{\sum_{t} \lmp \demand}{\sum_t \demand}    
+\end{align}
+We observe a relatively strong gradient from south (at roughly 92 \euro/MWh) to north (80 \euro/MWh). Regions with with little pre-installed capacity and capacity expansion, especially for renewables, tend to have higher prices. The node with the lowest LMP in the upper northwest, stands out through high pre-installed offshore capacities. \\
  
-The costs are allocated according to type \ref{net}\ref{ap}. For allocating flows on  DC-lines we use the method described in \cite{hofmann_flow_2020-1}.
-In \cref{fig:total_cost} we show the total of all ``allocatable'' costs $\cost[\circ ']$. Due to the design constraints, \cref{sec:design_constraints}, and storage units, \cref{sec:storages}, these are different from the original cost terms $\cost$. The figure also includes costs for scarcity $\scarcitycost$ and subsidy  $\subsidycost$. Note that the sum of all contributions in \cref{fig:total_cost} equals the total cost $\totalcost$.  
+% The costs are allocated according to type \ref{net}\ref{ap}. For allocating flows on  DC-lines we use the method described in \cite{hofmann_flow_2020-1}.
+In \cref{fig:total_cost} we show the total of all allocated costs. The allocated cost to capital expenditures is given by $\cost - \remainingcost^\circ$. The difference $\remainingcost$ consists of scarcity rents $\scarcitycost$ and subsidies $\subsidycost$. Note that the sum of all contributions in \cref{fig:total_cost} equals the total cost $\totalcost$.  
+In the following, we address each of the displayed cost terms and its corresponding allocations separately.   
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.75\linewidth]{de50bf/total_costs}
+    \includegraphics[width=0.85\linewidth]{de50bf/total_costs}
     \caption{Total allocated payments of the system. }
     \label{fig:total_cost}
 \end{figure}
 
 
 The largest proportion of the payments is associated with CAPEX for generators, transmission system and storage units in decreasing order. 
-Taking different technologies into account, we observe a fundamental difference between the controllable OCGT  and the variable renewable resources: As shown in detail in \cref{fig:capex_duration_curve}, more than half of all investments in OCGT is determined in one specific hour. At this time (morning, end of February), the system hits the highest mismatch between low renewable power potential and high demand. The necessity for backup generators manifests in high allocation of CAPEX and consequently high LMP. With a few exceptions in the South West and East, all consumers receive power from OCGT at this time, thus all pay high amounts for the needed backup infrastructure (operational state of the system is in detailed shown in \cref{fig:operation_high_expenditure}). Note that this is the most extreme event, which ensures backup infrastructure for other inferior extreme events. The total CAPEX allocation for OCGT infrastructure is depicted in \cref{fig:ocgt_capex}. This  correlates with our findings of the extreme event. \\
-Contrary to this, CAPEX for renewable infrastructure are allocated evenly throughout several thousands of hours. As for onshore and offshore wind farms, the produced power deeply penetrates the network, see \cref{fig:power_mix}, thus it is not only local, but also remote consumers which cover the CAPEX, see \cref{fig:capex_price}. This in turn benefits local consumers, which profit from the cheap power which explains why these regions end up with a low average LMP.\\
+Taking different technologies into account, we observe a fundamental difference between the controllable OCGT  and the variable renewable resources: As shown in detail in \cref{fig:capex_duration_curve}, more than half of all investments in OCGT is determined in one specific hour. At this time (morning, end of February), the system hits the highest mismatch between low renewable power potentials and high demands. The necessity for backup generators manifests in high allocation of CAPEX for OCGT and consequently high LMP. With a few exceptions in the South West and East, all consumers receive power from OCGT at this time, thus all pay high amounts for the needed backup infrastructure (operational state of the system is in detailed shown in \cref{fig:operation_high_expenditure}). Note that this is the most extreme event, which ensures backup infrastructure for other inferior extreme events. The total CAPEX allocation for OCGT infrastructure is depicted in \cref{fig:ocgt_capex}. This  correlates with our findings of the extreme event. \\
+Contrary to this, CAPEX for renewable infrastructure are allocated evenly throughout several thousands of hours. As for onshore and offshore wind farms, the produced power deeply penetrates the network, see \cref{fig:power_mix}, thus it is not only local, but also remote consumers which cover the CAPEX, see \cref{fig:capex_price}. This in turn benefits local consumers, which profit from the cheap operational prices of local wind farms. This explains why these regions end up with a low average LMP.\\
 
-Together with the emission cost $\emissioncost$, the total OPEX $\opex$ amount around 16 billion \euro. As to expect, 99.97\% are dedicated to OCGT alone, as these have by far the highest operational price. For a detailed regional distribution of payments per MWh and the resulting revenues for generator, see \cref{fig:opex_price,fig:emission_cost}. For OCGT, the spatial allocation of the OPEX clearly differs from  the CAPEX allocation. This results from the fact that during ordinary demand peaks, it is rather local OCGT generators which serve as backup generators. In the average power mix per region, see \cref{fig:power_mix}, we observe that regions with strong OCGT capacities predominately have high shares of OCGT power. The OPEX allocations for renewables play with 0.2 \euro/MWh in average an inferior role. \\
+Together with the emission cost $\emissioncost$, the total OPEX $\opex$ amount around 16 billion \euro. As to expect, 99.97\% are dedicated to OCGT alone, as these have by far the highest operational price. For a detailed regional distribution of payments per MWh and the resulting revenues for generator, see \cref{fig:opex_price,fig:emission_cost}. Since during ordinary demand peaks, it is rather local OCGT generators which serve as backup generators, thus the OPEX allocation of OCGT clearly differs from the CAPEX allocation. In the average power mix per region, see \cref{fig:power_mix}, we observe that regions with strong OCGT capacities predominately have high shares of OCGT power. The average operational price for renewables is extremely low (0.2 \euro/MWh), thus they play an inferior role in the OPEX allocation. \\
 
 \begin{figure*}
     \centering
@@ -701,6 +711,10 @@ In contrast the regions with the highest LMP, spends most its money to local OCG
 
 In this work we presented a new cost-allocation scheme based on peer-to-peer dispatch allocations from asset to consumer. Starting from an optimized long-term investment model, we were able to decompose single cost terms into contributions of single consumers. For three typical classes of assets, namely generators, transmission lines and storage units, we showed how operational prices and shadow prices must be weighted with the dispatch allocation in order to allocate all system costs. Further we highlighted the impact of additional design constraints, that is constraints with a non-zero constant on the right hand side, such as lower and upper capacity expansion limits. These alter the locational marginal price and therefore distort the cost allocations. In the case of upper capacity expansion limits, this leads to an additional charge for consumers which have to compensate for \eg land use restrictions. For lower capacity investment bounds, the cost have to be subsidized by the overall system operator or the government, as those cannot be allocated.
 \dots
+
+
+% ----------------------- APPENDIX -------------------------------------
+
 \clearpage
 \appendix
 
@@ -729,31 +743,16 @@ The Lagrangian for the investment model can be condensed to the following expres
 
 \begin{align}
 \notag
- \lagrangian\left(\state, \capacity, \lmp, \mu_j \right) =& 
- \;\;\; \sum_{i,t} o_i \state + \sum_{i} c_i \capacity  \\
+& \lagrangian\left(\state, \capacity, \lmp, \mu_j \right) = \\ 
 \notag
-&+  \sum_{n,t} \lmp \left( \demand - \sum_i \incidenceasset \, \state \right) \\
-&+ \sum_j \mu_j \, h_j \left(\state, \capacity \right)
+& \qquad + \sum_{i,t} o_i \state + \sum_{i} c_i \capacity  \\
+\notag
+&\qquad +  \sum_{n,t} \lmp \left( \demand - \nodalgeneration + \sum_\ell \incidence \, \flow \right) \\
+&\qquad + \sum_j \mu_j \, h_j \left(\state, \capacity \right)
 \label{eq:full_lagrangian}
 \end{align}
-where $h_j \left(\state, \capacity \right)$ denotes all inequality constraints attached to $\state$ and $\capacity$.
-% \begin{align}
-% \notag
-% & \lagrangian\left(\generation, \flow, \capacitygeneration, \capacityflow, \boldsymbol{\lambda}, \boldsymbol{\mu} \right)   =   \\  
-% \notag
-% & \;\;\; \sum_{n,s} \capitalpricegeneration \capacitygeneration + \sum_{n, s, t} \operationalpricegeneration \generation + \sum_{\ell} \capitalpriceflow \, \capacityflow  \\
-% \notag
-% &+ \sum_{n,t} \lmp \left(\sum_\ell \incidence \, \flow  - \sum_s \incidencegenerator\, \generation +  \demand  \right)  \\ 
-% \notag
-% &+ \sum_{\ell,c,t} \cycleprice \, \cycle \, \reactance \, \flow  \\
-% \notag
-% &+ \sum_{n,s,t} \muuppergeneration \left( \generation - \generationpotential \capacitygeneration \right)  - \sum_{n,s,t} \mulowergeneration \generation  \\
-% &+ \sum_{\ell,t} \muupperflow \left( \flow - \capacityflow \right) - \sum_{\ell,t} \mulowerflow \left( \flow + \capacityflow \right)     
-% \label{eq:full_lagrangian}
-% \end{align}
-% 
-% where $\boldsymbol{\lambda} = \left\lbrace \lmp, \cycleprice \right\rbrace $ and $\boldsymbol{\mu} = \left\lbrace \muuppergeneration, \mulowergeneration, \muupperflow, \mulowerflow \right\rbrace $ denote the set of related KKT variables. 
-% 
+where $h_j \left(\state, \capacity \right)$ denotes all inequality constraints attached to $\state$ and $\capacity$. Note that according to \cref{eq:nodalgeneration} $\nodalgeneration$ is a composition of $\state$ and $\flow = \state[\ell] \forall \ell \in L$.
+
 In order to impose the Kirchhoff Voltage Law (KVL) for the linearized AC flow, the term 
 \begin{align}
     \sum_{\ell,c,t} \cycleprice \, \cycle \, \reactance \, \flow 
@@ -769,6 +768,11 @@ The global maximum of the Lagrangian requires stationarity with respect to all v
 
 \subsection{Zero Profit Generation}
 \label{sec:zero_profit_generation}
+For each generator the optimization defines a lower capacity constraint, given by 
+\begin{align}
+    - \generation &\le 0 \resultsin{\mulowergeneration} \Forall{s,t} 
+    \label[constraint]{eq:lower_generation_capacity_constraint}
+\end{align} 
 \Cref{eq:upper_generation_capacity_constraint,eq:lower_generation_capacity_constraint}, which yield the KKT variables $\muuppergeneration$ and $\mulowergeneration$, imply the complementary slackness,
 \begin{align}
 \muuppergeneration \left( \generation - \generationpotential \, \capacitygeneration \right)  &= 0  \Forall{n,s,t} 
@@ -927,125 +931,10 @@ As shown in ... the constraint can be translated in a dual price which shift the
 
 
 
-% \subsection{Brownfield Optimization and Capacity Restrictions}
-
-% Constraining the capacities $\capacitygeneration$  for a subset $S$ of generators to lower or upper limits in the form of
-% \begin{align}
-%     \capacitygenerationlower - \capacitygeneration \le 0 \resultsin{\mulowergenerationnom} \hpad \forall{s \in S} \label{eq:capacityexpansionminimum}\\
-%     \capacitygeneration - \capacitygenerationupper \le 0 \resultsin{\muuppergenerationnom} \hpad \forall{s \in S}
-% \label{eq:capacityexpansionmaximum}
-% \end{align}
-% alters the objective value as soon as one of those become bounding. 
-% The complementary slackness for both are 
-% \begin{align}
-%     \muuppergenerationnom \left( \capacitygeneration - \capacitygenerationupper \right) =0 \Forall{s \in S} \\
-%     \mulowergenerationnom \left( \capacitygeneration - \capacitygenerationlower \right) =0 \Forall{s \in S}
-% \end{align}
-
-
-% The CAPEX paybacks for generators and transmission lines
-% \cref{eq:capital_price_generation_sum,eq:capital_price_flow_sum} change to 
-% \begin{align}
-% \pdv{\lagrangian}{\capacitygeneration}  = 0 \,\, \rightarrow \,\, \\
-% \capitalpricegeneration =  \sum_t \muuppergeneration \, \generationpotential + \mulowergenerationnom - \muuppergenerationnom \Forall{s \in S}
-% \label{eq:capex_generation_duality_bf}
-% \end{align}
-% for generators. Multiplying \cref{eq:capex_generation_duality_bf} by $ \capacitygeneration$ leads us to 
-% \begin{align}
-%  \capexgeneration_s - \remainingcost_s=  \sum_t \muuppergeneration \, \generation \Forall{n,s \in S}
-%  \label{eq:capex_generation_duality_bf2}
-% \end{align}
-% where we define the cost resulting from the capacity expansion limits as
-% \begin{align}
-%     \remainingcost_s = \left(\mulowergenerationnom - \muuppergenerationnom \right) \capacitygeneration
-%     \Forall{s}
-% \end{align}
-% As $\mulowergenerationnom \ge 0$ and $\muuppergenerationnom \ge 0$, the latter can be a net positive or net negative cost term.
-
-% Multiplying \cref{eq:opex_duality}, which is still valid, with $\generation$ and inserting \cref{eq:capex_generation_duality_bf2} will bring us to the zero profit rule for generators with capacity expansion limits, 
-% \begin{align}
-%     \capexgeneration_s + \opexgeneration_s  - \remainingcost_s = \sum_t \lmp \incidencegenerator \generation \Forall{s \in S}
-% \end{align}
-% We see that the revenue of generator $s$ will not exactly pay back its full CAPEX and OPEX. The exogenous constraint shifts the zero-profit equations such that some of the expenditures for $s \in S$ cannot directly be allocated to consumers. In order to take this effect into account for the cost allocation, we update the shadow price $\muuppergeneration$ in \cref{tab:cost_allocation_map}, to 
-
-% \begin{align}
-%     \muuppergeneration \rightarrow \dfrac{\capitalpricegeneration}{\capitalpricegeneration - \mulowergenerationnom + \muuppergenerationnom}\, \muuppergeneration
-% \end{align}
-% By doing so we ensure that the allocated CAPEX sum up to the actual CAPEX at generator $s$, thus 
-% \begin{align}
-%     \capexgeneration_s = \sum_{n,t} \allocatecapexgeneration \Forall{s \in S}
-% \end{align}
 
 
 
-% Doing likewise with a subset $L$ of transmission lines,
-% \begin{align}
-% \capacityflow \ge \capacityflowLower \resultsin{\mulowerflownom} \hpad \forall{\ell \in \textit{L}} \\
-% \capacityflow \le \capacityflowUpper \resultsin{\muupperflownom} \hpad \forall{\ell \in \textit{L}}
-% \end{align}
-% results in a shifted zero-profit rule for transmission line in the form 
-% \begin{align}
-%     \capitalpriceflow \, \capacityflow - \remainingcost_\ell = \sum_{n,t}\allocatecapexflow \Forall{\ell \in L}
-% \end{align}
-% where $\remainingcost_\ell$ is given by 
-% \begin{align}
-%     \remainingcost_\ell = \left(\mulowerflownom - \muupperflownom \right) \, \capacityflow
-%     \Forall{\ell \in L}
-% \end{align}
-
-% % \begin{align}
-% %     \muupperflownom \left( \capacityflow - \capacityflowUpper \right) =0 \\
-% %     \mulowerflownom \left( \capacityflow - \capacityflowLower \right) =0 \\
-% % \end{align}
-
-% % \begin{align}
-% %     \pdv{\lagrangian}{\capacityflow}  = 0 \,\, \rightarrow \,\, \\
-% %     \capitalpriceflow =  \sum_t \left( \muupperflow - \mulowerflow \right)  + \mulowerflownom - \muupperflownom \Forall{n,s}
-% %     \label{eq:capex_flow_duality_bf}
-% %     \end{align}
-% %     for transmission lines.
-% % Multiplying \cref{eq:capex_generation_duality_bf} by the amount of expansion $\left( \capacitygeneration - \capacitygenerationlower \right) $
-% % \begin{align}
-% %   \capitalpricegeneration \, \capacitygeneration^{exp} =  \sum_t \muuppergeneration \, \left( \generation - \generationpotential \, \capacitygenerationlower \right) + \muuppergenerationnom \left( \capacitygenerationupper - \capacitygenerationlower \right) \Forall{n,s}
-% % \end{align}
-
-
-
-
-
-
-\section{Allocation Schemes}
-\subsection{Allocating Gross Injections with EBE}
-\label{sec:gross_ebe}
-
-The allocation of gross generation to demands $\demand$ is straightforwardly obtained by a proportional distribution of the generation, \ie
-
-\begin{align}
-    \allocategeneration = \dfrac{\generation}{\sum_s \generation} \demand 
-\end{align}
-
-
-\subsection{Allocating Net Injections with EBE}
-\label{sec:net_ebe}
-
-Allocating net power injections using the EBE methods leads to the same result as the Marginal Participation (MP) \cite{rudnick_marginal_1995}  algorithm when allocating to consumers only, see \cite{hofmann_flow_2020-1} for further insight. We calculate it by setting 
-\begin{align}
-\allocatepeer &=  \delta_{m,n}\,\selfconsumption[m] + \gamma_t \, \netconsumption  \, \netproduction[m]
-\label{eq:mp_slack}
-\end{align}
-where 
-\begin{itemize}
-%  \item $\injection = \left( \nodalgeneration - \nodaldemand \right) $ denotes the nodal injection
-\item $\netproduction = \text{min}\left( \nodalgeneration - \nodaldemand , 0 \right) $ denotes the nodal net production 
-\item $\netconsumption = \text{min}\left( \nodaldemand  - \nodalgeneration, 0 \right)$ denotes the nodal net consumption
-\item $\selfconsumption = \text{min}\left( \netproduction, \netconsumption \right)$ the denotes  nodal self-consumption. That is the power generated and at the same time consumed at node $n$ and 
-\item $\gamma_t = \left( \sum_n \netproduction\right) ^{-1} = \left( \sum_n \netconsumption\right) ^{-1}$ is the inverse of the total injected/extracted power at time $t$.
-\end{itemize}
-
-The allocation $\allocategeneration$ from generator $s$ to $n$, is given by multiplying $\allocatepeer$ with the nodal share $\generation / \nodalgeneration$.
-
-
-\subsection{Allocating Net Power using AP}
+\section{Power Allocation}
 \label{sec:net_ap}
 
 \newcommand{\incidenceM}{K}
@@ -1068,19 +957,6 @@ where $\DirectedIncidence^-$ is the negative part of the directed Incidence matr
 \allocatepeer = \InverseAPInjection_{m,n,t} \, \netproduction[m] \, \netconsumption
 \end{align}
 
-\subsection{Allocating Gross Power using AP}
-\label{sec:gross_ap}
-
-We use the same allocation as in \cref{sec:net_ap} but replace the net nodal production $\netproduction$ by the gross nodal production $\nodalgeneration$ which leads to  
-\begin{align}
-\InverseAPInjection_t = \left( \diag{g} + \DirectedIncidence^- \diag{\flowM} \, \incidenceM \right)_t^{-1} 
-\end{align}
-The distributed slack is for time step $t$ is then given by
-\begin{align}
-\allocategeneration[s \rightarrow m] = \InverseAPInjection_{m,n} \, \generation \, \demand
-\end{align}
-
-% 
 \section{Working Example}
 The following figures contain more detailed information about the peer-to-peer cost allocation. The cost or prices payed by consumers are indicated by the region color. The dedicated revenue is displayed in proportion to the size of cycles (for assets attached to buses) or to the thickness of transmission branches.    
 \begin{figure*}
@@ -1132,7 +1008,7 @@ The following figures contain more detailed information about the peer-to-peer c
 
 \begin{figure}
     \includegraphics[width=\linewidth]{de50bf/power_mix_ptpf_net}
-    \caption{Average power mix per region calculated by Average Participation \ref{ap}. Coastal regions are mainly supplied by local offshore and onshore wind farms. Their strong power injections additionally penetrate the network up to the southern border. In the middle and South, the supply is dominated by a combination of OCGT and solar power.}
+    \caption{Average power mix per region calculated by Average Participation. Coastal regions are mainly supplied by local offshore and onshore wind farms. Their strong power injections additionally penetrate the network up to the southern border. In the middle and South, the supply is dominated by a combination of OCGT and solar power.}
     \label{fig:power_mix}
 \end{figure}
 
