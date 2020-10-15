@@ -198,9 +198,6 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbsy10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/eurosym/feymr10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
 INPUT /var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map
-INPUT /home/fabian/papers/costallocation/paper/../figures/price_decomposition.png
-INPUT ../figures/price_decomposition.png
-INPUT ../figures/price_decomposition.png
 INPUT /home/fabian/papers/costallocation/paper/../figures/example/example_allocation_bus1_net_ebe.png
 INPUT ../figures/example/example_allocation_bus1_net_ebe.png
 INPUT ../figures/example/example_allocation_bus1_net_ebe.png
