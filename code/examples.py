@@ -16,13 +16,12 @@ import seaborn as sns
 from netallocation.plot import injection_plot_kwargs
 from helpers import adjust_shadowprice
 from config import to_static_symbol, color, to_total_symbol
-# plt.rc('tex', preamble=r'\Large')
+
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
 path = '../figures/example'
-
-net = False
+net = True
 power = 'net' if net else 'gross'
 method = 'ptpf'
 
@@ -45,7 +44,6 @@ n.madd('Generator', [0, 1], bus=[n0, n1], p_nom_extendable=True,
 n.madd('Line', ['1'], s_nom_extendable=True, x=0.01, bus0=[n0], bus1=[n1],
        capital_cost=c_l)
 n.lopf(pyomo=False, keep_shadowprices=True, solver_name='gurobi')
-# n.generators_t.mu_upper = adjust_shadowprice(n.generators_t.mu_upper, n, 'Generator')
 
 sn = 'now'
 
@@ -57,20 +55,21 @@ g0, g1 = n.generators_t.p.loc['now']
 f = n.lines_t.p0.loc['now'].item()
 l0, l1 = n.buses_t.marginal_price.loc['now']
 
-kwargs = {q: 0} if method == 'ebe' else {}
-ds = ntl.allocate_flow(n, method=method, aggregated=net, **kwargs)
+ds = ntl.allocate_flow(n, method=method, aggregated=net)
 ds = ntl.convert.peer_to_peer(ds, n)
-dc = ntl.cost.nodal_demand_cost(n).rename(bus='payer')
-ca = ntl.allocate_cost(n, method=ds, q=0)
+ds = ntl.convert.virtual_patterns(ds, n, q=0)
+
+ca = ntl.allocate_cost(n, method=ds)
+ca = ca.rename(one_port_operational_cost='generator_operational_cost',
+          one_port_investment_cost = 'generator_investment_cost')
 ca_sum = ca.sum([d for d in ca.dims if d not in ['payer', 'snapshot']])
-ca_df = ca_sum.sel(snapshot=sn, drop=True).to_dataframe()
-dc_df = dc.sel(snapshot=sn, drop=True).to_dataframe()
+C = ca_sum.sel(snapshot=sn, drop=True).to_dataframe()
 
 # %%
 fig, ax = plt.subplots(figsize=(12,4))
 
 n.plot(flow=ntl.network_flow(n, sn).to_series()/50, margin=0.3, ax=ax,
-       geomap=False, bus_sizes = ca_df.stack().clip(lower=0)/5e6, bus_colors=color)
+       geomap=False, bus_sizes = C.stack().clip(lower=0)/5e6, bus_colors=color)
 bbox = dict(facecolor='w', alpha=.15, boxstyle='round', pad=0.5)
 textkwargs = dict(size=13, va="top", bbox=bbox, zorder=8)
 wpad = 0.04
@@ -107,7 +106,7 @@ ax.text(n.buses.x.mean()+dx-wpad, n.buses.y.mean()+dy, line_fix, ha='right',
 ax.text(n.buses.x.mean()+dx, n.buses.y.mean()+dy, line_opt, ha='left',
         **textkwargs)
 
-ax.legend(*handles_labels_for(color[ca_df.columns].rename(to_static_symbol)),
+ax.legend(*handles_labels_for(color[C.columns].rename(to_static_symbol)),
           ncol=3, loc='lower right', frameon=True, fontsize='large')
 ntl.plot.annotate_bus_names(n, ax, shift=0, bbox='fancy')
 fig.tight_layout()
@@ -118,11 +117,11 @@ fig.savefig(f'{path}/example_network.png', bbox_inches='tight')
 
 to_indices = pd.Series(dict(payer='n', receiver_nodal_cost='s',
                             receiver_transmission_cost='$\ell$'))
-fig, axes = plt.subplots(1, 3, figsize=(5,2.5), sharey=True,
+fig, axes = plt.subplots(1, 3, figsize=(4.5,2.5), sharey=True,
                           gridspec_kw={'width_ratios':[0.4,.4,.2]})
 payoff = ca.sum(['snapshot', 'receiver_carrier'])\
-           .assign_coords(receiver_transmission_cost=['1'])
-payoff = payoff.rename(to_indices)
+           .assign_coords(receiver_transmission_cost=['1'])\
+           .rename(to_indices).transpose(..., 'n')
 vmax = payoff.to_array().max()
 for i, v in enumerate(payoff):
     ax = axes[i]
@@ -134,7 +133,8 @@ for i, v in enumerate(payoff):
     if i:
         ax.set_ylabel('')
     ax.set_title(to_total_symbol[v])
-fig.tight_layout(w_pad=0)
+    ax.tick_params(left=False, bottom=False)
+fig.tight_layout(w_pad=.4)
 fig.savefig(f'{path}/example_payoff_{power}_{method}.png', bbox_inches='tight')
 
 # %% sub flows
@@ -171,9 +171,6 @@ for bus in n.buses.index:
     fig.tight_layout(h_pad=0, w_pad=0)
     fig.savefig(f'{path}/example_allocation_bus{bus}_{power}_{method}.png',
                 bbox_inches='tight')
-
-# fig.tight_layout(h_pad=-2)
-# fig.savefig(f'{path}/example_allocation{tag}.png', bbox_inches='tight')
 
 
 

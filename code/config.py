@@ -22,17 +22,21 @@ sink_dims_r = dict(sink='bus', sink_carrier='carrier')
 source_carrier = ['source_carrier', 'source_carrier_gen', 'source_carrier_sus']
 
 
-symbol = dict(generator_investment_cost = '\mathcal{C}^{G}',
-              storage_investment_cost = '\mathcal{C}^{E}',
-              branch_investment_cost = '\mathcal{C}^{F}',
+symbol = dict(generator_investment_cost = '\mathcal{I}^{G}',
+              storage_investment_cost = '\mathcal{I}^{E}',
+              branch_investment_cost = '\mathcal{I}^{F}',
+              one_port_investment_cost = '\mathcal{I}',
+              #
+              generator_operational_cost = '\mathcal{O}^{G}',
               one_port_operational_cost = '\mathcal{O}',
-              one_port_investment_cost = '\mathcal{C}',
+              #
+              remaining_cost = '\mathcal{R}',
               branch_scarcity_cost = '\mathcal{R}^{F scarcity}',
               one_port_scarcity_cost = '\mathcal{G scarcity}',
-              co2_cost = '\mathcal{E}',
-              remaining_cost = '\mathcal{R}',
               scarcity_cost = '\mathcal{R}^{scarcity}',
               subsidy_cost = '\mathcal{R}^{subsidy}',
+              #
+              co2_cost = '\mathcal{E}',
               lmp = '\lambda',
               demand = 'd')
 
@@ -58,6 +62,7 @@ to_explanation = {'one_port_operational_cost': 'OPEX',
                   'nodal_demand_cost': 'Nodal Payment'}
 
 color = pd.Series({'one_port_operational_cost': 'darkkhaki',
+                   'generator_operational_cost': 'darkkhaki',
                    'one_port_investment_cost': 'palevioletred',
                    'co2_cost': 'tomato',
                    'generator_investment_cost': 'palevioletred',
