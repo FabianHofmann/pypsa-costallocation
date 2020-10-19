@@ -221,17 +221,18 @@
 
 Today's power systems are subject to a deep and ongoing transformation. The needed shift to from controllable to weather-driven power generation, the constant improvement and innovation of technology require rigorous system planning and international cooperation \cite{pfenninger_energy_2014,schlachtberger_benefits_2017}. The core of the problem manifests in the costs. Firstly, these should be as small as possible while meeting ecological and sociological standards. Secondly, they must be distributed in a fair and transparent manner. Cost-driving aspects or market players should be detected and addressed appropriately. 
 In this context, power system modelling has increasingly gained attention during the last years \cite{bazmi_sustainable_2011,pfenninger_energy_2014,pereira_generation_2017}. Many studies show how cost-efficiency and renewable energy are brought together. However, the question of how and, more importantly, upon what grounds costs are distributed was often left open. \\
-This study fills this gap. On the basis of an optimized network the operational state of each time step and corresponding characteristics are are in detailed considered to allocate all system costs. The presented approach builds upon two basic concepts: Firstly, the revenue of an network asset at the cost-optimum exactly matches its operational and capital expenditures, also known as the zero-profit condition. Secondly, \textit{flow tracing}, following Bialek's Average Participation (AP), assigns the operation of single network assets to consumers in an plausible manner. 
+This study fills this gap. On the basis of an optimized network the operational state of each time step and corresponding characteristics are in detailed considered to allocate all system costs. The presented approach builds upon two basic concepts: Firstly, the revenue of an network asset at the cost-optimum exactly matches its operational and capital expenditures, also known as the zero-profit condition. Secondly, \textit{flow tracing}, following Bialek's Average Participation (AP), assigns the operation of single network assets to consumers in an plausible manner. 
 Combining these two relation allows for an transparent allocation of all operational (OPEX) and capital expenditures (CAPEX) to the consumers in the network. \\
-Cost allocation based on flow allocation was already discussed and performed in various works. Shahidehpour et al. give a deep insight into allocating congestion cost and transmission investments to market participants \cite{shahidehpour_market_2002} based on different allocation techniques. Based on Generation Shift Factors, \ie the marginal contribution of generators to a flow on line, the Locational Marginal Price (LMP) can be represented as a superposition of LMP at the reference bus, the price for congestion and a price for losses. \cite{meng_investigation_2007} expands this relation for contributions based on the AP scheme, which allows for an accurate estimation of the LMP, however does not reflect the exact LMP of an optimized network. A similar approach was taken in \cite{tranberg_flow-based_2018} where electricity prices of a non-optimal power dispatch were allocated using flow tracing. 
+Flow-based cost allocation was already discussed and performed in various works \cite{galiana_transmission_2003,shahidehpour_market_2002,meng_investigation_2007,tranberg_flow-based_2018,nikoukar_transmission_2012,arabali_pricing_2012,wu_locational_2005}. Shahidehpour et al. give a deep insight into allocating congestion cost and transmission investments to market participants \cite{shahidehpour_market_2002} with different allocation techniques. Based on Generation Shift Factors, \ie the marginal contribution of generators to a flow on line, the Locational Marginal Price (LMP) can be represented as a superposition of LMP at the reference bus, the price for congestion and a price for losses. The approach in \cite{meng_investigation_2007} expands this relation for contributions based on the AP scheme, which allows for an accurate estimation of the LMP, however does not reflect the exact LMP of an optimized network. A similar approach was taken in \cite{tranberg_flow-based_2018} where electricity prices of a non-optimal power dispatch were allocated using flow tracing. 
 
 
-
+The following work brings advantages of all the mentioned studies together. It reassures localized cost allocations while fully aligning payments to the nodal pricing scheme based on the LMP. The work serves to facilitate transparency and cost-benefit analysis in network plannings such as the Ten Year Network Development Plan \cite{entso-e_completing_2020} or the German Netzentwicklungsplan (NEP) \cite{bundesnetzagentur_netzentwicklungsplan_2020}. Further, it builds a basis of a usage based transmission cost allocation. The first section which presents the full method splits into: deriving the zero-profit condition for different kind of assets (\cref{sec:zero_profit_rule});  presenting the AP allocation scheme and resulting allocation from assets to consumers (\cref{sec:dispatch_allocations}); presenting the cost allocation and the impact of additional constraints (\cref{sec:general_scheme,sec:design_constraints}); a numerical example (\cref{sec:numerical_example}). The second part in \cref{sec:application_case} applies the cost allocation to a optimized German power system with high shares of renewable power sources and evaluates the allocated costs.  
 
 
 \section{Flow-based Cost Allocation}
 
 \subsection{Zero-Profit Rule}
+\label{sec:zero_profit_rule}
 
 In long-term operation and investment planning models, the total costs $\totalcost$ of a power system is the sum of multiple cost terms $\cost$. Typically, these include operational expenditures for generators $\opexgeneration$, expenditures for emissions $\emissioncost$,  capital investments for the transmission system $\capexflow$ and so on, \ie
 \begin{align}
@@ -375,7 +376,7 @@ where $\muupperstoragedispatch$ and $\mulowerstoragedispatch$ are the shadow pri
 
 
 \subsection{Allocation of Power Dispatch}
-\label{sec:localizing_allocations}
+\label{sec:dispatch_allocations}
 \begin{subequations}
     
 After representing the cost terms $\cost$ for OPEX and CAPEX by a cost-weighted sum of the operational state $\state$, we now show how the operational state in turn is allocated to consumers. This builds the second crucial ingredient of the cost allocation. 
@@ -417,7 +418,7 @@ Inserting \cref{eq:nodalgeneration} into \cref{eq:power_flow_equation} and expan
  \label{eq:allocate_flow}
 \end{align}
 Complementary to \cref{eq:allocate_production}, this allocation indicates the power flow on line $\ell$ and time $t$ which is ending up at node $n$ and therefore consumed by $\demand$.  
-Note that the assignment of line flows to consumers is different from the traced flow returned by the AP scheme, as we're only taking the peer-to-peer relation $\allocatepeer$ and, for reasons to be yet to come, from there calculate the power flow .    
+Note that the assignment of line flows to consumers is different from the traced flow returned by the AP scheme. As pointed out in \cite{galiana_transmission_2003} the AP scheme, does not obey the Kirchhoff Voltage Law but only the Kirchhoff Current Law. As we show later and in \cref{sec:proof_equivalence} a consideration of both is needed in order to align the allocated costs with the Locational Marginal Prices.    
 
 With \cref{eq:allocate_production,eq:allocate_flow} a full set of allocations between the operational state $\state$ of asset $i \in I$ is derived. Naturally, the sum over all receiving nodes reproduces the operational state $\state$ of asset $i$, 
 \begin{align}
@@ -446,8 +447,8 @@ The cost allocation entails a further important property. When summing over all 
     \payment = \sum_{\circ, i} \allocatecost  = \lmp\, \demand  \Forall{n,t}
     \label{eq:payment}
 \end{align}
-In a cost-optimal setup with minimized $\totalcost$, the Locational Marginal Price (LMP) describes the change of costs for an incremental increase of electricity demand $\demand$ at node $n$ and time $t$. Mathematically this translates to the derivative of the total system cost $\totalcost$ with respect to the local demand $\demand$, $\lmp = \partial \totalcost /\partial \demand$. At the optimum the LMP is given by a shadow price of the nodal balance constraint (see \cref{sec:lmp} for details). 
-\Cref{eq:payment} which is in detailed proved in ... connects the cost allocation to a nodal pricing scheme implied by the LMP. 
+In a cost-optimal setup with minimized $\totalcost$, the Locational Marginal Price (LMP) describes the change of costs for an incremental increase of electricity demand $\demand$ at node $n$ and time $t$ \cite{schweppe_spot_1988}. Mathematically this translates to the derivative of the total system cost $\totalcost$ with respect to the local demand $\demand$, $\lmp = \partial \totalcost /\partial \demand$. At the optimum the LMP is given by a shadow price of the nodal balance constraint (see \cref{sec:lmp} for details). 
+\Cref{eq:payment} which is in detailed proved in \cref{sec:proof_equivalence} connects the cost allocation to a nodal pricing scheme implied by the LMP. 
 
 \end{subequations}
 
@@ -605,6 +606,7 @@ The fact that OPEX and CAPEX allocations are proportional to each other results 
 
 
 \section{Application Case}
+\label{sec:application_case}
 % 
 \begin{figure*}[t]
     \centering
@@ -911,6 +913,7 @@ Note that it would be possible to incorporate this redistribution into the cost 
 
 
 \subsection{Proof: Equivalence of local and imported prices}
+\label{sec:proof_equivalence}
 
 We start with \cref{eq:flow_duality} which we recall here, 
 \begin{align}
@@ -951,9 +954,9 @@ The second term in \cref{eq:flow_duality2} vanishes as the basis cycles $\cycle$
     \demand \lmp =& \sum_{m} \allocatepeer \lmp[m] \\
     +& \sum_\ell \allocateflow \left(\muupperflow - \mulowerflow\right) \Forall{n,t}
 \end{align}
-This relation shows that for any P2P allocations $\allocatepeer$ the combined price of the imported power is always be the same as the locational price. This holds only true if the flow allocation $\allocateflow$ follow the power flow laws, \ie are defined as in \cref{eq:allocate_flow,eq:allocate_flow2}. 
+This relation shows that for any P2P allocations $\allocatepeer$ the combined price of the imported power is always be the same as the locational price. The representation matches the findings in \cite{wu_locational_2005}. However, the latter builds its formulation on a evenly distributed slack, which translated to a peer-to-peer allocation $\allocatepeer$ corresponding to the non-local Equivalent Bilateral Exchanges \cite{galiana_transmission_2003}. However, the representation here holds only true any $\allocatepeer$ if the corresponding flow allocation $\allocateflow$ follow the power flow laws, \ie are defined as in \cref{eq:allocate_flow,eq:allocate_flow2}. 
 
-Naturally, the power production of the supplying node $m$ decomposes into contributions of assets, following the definition in \cref{eq:allocate_production}. At the same time, the LMP at $m$ decomposes into asset related prices, using \cref{eq:opex_duality,eq:stationarity_storagedispatch}. This finally reproduces the allocations of \cref{tab:cost_allocation_map} and results in 
+Naturally, the power production of the supplying node $m$ decomposes into contributions of assets, following the definition in \cref{eq:allocate_production}. At the same time, the LMP at $m$ decomposes into asset related prices (\cref{eq:opex_duality,eq:stationarity_storagedispatch}). This finally reproduces the allocations of \cref{tab:cost_allocation_map} and results in 
 \begin{align}
     \demand \, \lmp =  \sum_{\circ, i} \allocatecost 
 \end{align}
