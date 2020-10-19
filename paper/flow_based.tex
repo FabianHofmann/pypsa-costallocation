@@ -219,10 +219,11 @@
 
 \section{Introduction}
 
-Today's power systems are subject to a deep and ongoing transformation. The needed shift to from controllable to weather-driven power generation, the constant improvement and innovation of technology require rigorous system planning and international cooperation. The core of the problem manifests in the costs. Firstly, these should be as small as possible while meeting ecological and sociological standards. Secondly, they must be distributed in a fair and transparent manner. Cost-driving aspects or market players should be detected and addressed appropriately. 
-In this context, power system modelling has increasingly gained attention during the last years. Many studies show how cost-efficiency and renewable energy are brought together. However, the question of how and, more importantly, upon what grounds costs are distributed was often left open. \\
-This study fills this gap. On the basis of an optimized network the operational state of each time step and corresponding characteristics are are in detailed considered to allocate all system costs. The presented approach builds upon two basic concepts: Firstly, the revenue of an network asset at the cost-optimum exactly matches its operational and capital expenditures, also known as the zero-profit condition. Secondly, \textit{flow tracing}, following Bialek's Average Participation, assigns the operation of single network assets to consumers in an plausible manner. 
-The following shows how combining these allow for an transparent allocation of all operational (OPEX) and capital expenditures (CAPEX) to the consumers in the network. 
+Today's power systems are subject to a deep and ongoing transformation. The needed shift to from controllable to weather-driven power generation, the constant improvement and innovation of technology require rigorous system planning and international cooperation \cite{pfenninger_energy_2014,schlachtberger_benefits_2017}. The core of the problem manifests in the costs. Firstly, these should be as small as possible while meeting ecological and sociological standards. Secondly, they must be distributed in a fair and transparent manner. Cost-driving aspects or market players should be detected and addressed appropriately. 
+In this context, power system modelling has increasingly gained attention during the last years \cite{bazmi_sustainable_2011,pfenninger_energy_2014,pereira_generation_2017}. Many studies show how cost-efficiency and renewable energy are brought together. However, the question of how and, more importantly, upon what grounds costs are distributed was often left open. \\
+This study fills this gap. On the basis of an optimized network the operational state of each time step and corresponding characteristics are are in detailed considered to allocate all system costs. The presented approach builds upon two basic concepts: Firstly, the revenue of an network asset at the cost-optimum exactly matches its operational and capital expenditures, also known as the zero-profit condition. Secondly, \textit{flow tracing}, following Bialek's Average Participation (AP), assigns the operation of single network assets to consumers in an plausible manner. 
+Combining these two relation allows for an transparent allocation of all operational (OPEX) and capital expenditures (CAPEX) to the consumers in the network. \\
+Cost allocation based on flow allocation was already discussed and performed in various works. Shahidehpour et al. give a deep insight into allocating congestion cost and transmission investments to market participants \cite{shahidehpour_market_2002} based on different allocation techniques. Based on Generation Shift Factors, \ie the marginal contribution of generators to a flow on line, the Locational Marginal Price (LMP) can be represented as a superposition of LMP at the reference bus, the price for congestion and a price for losses. \cite{meng_investigation_2007} expands this relation for contributions based on the AP scheme, which allows for an accurate estimation of the LMP, however does not reflect the exact LMP of an optimized network. A similar approach was taken in \cite{tranberg_flow-based_2018} where electricity prices of a non-optimal power dispatch were allocated using flow tracing. 
 
 
 
@@ -368,33 +369,16 @@ Using the result of \cite{brown_decreasing_2020} the CAPEX can be related to the
     &- \sum_t \lmp \incidencestorage  \storagecharge \Forall{r} 
     \label{eq:no_profit_capex_storage}
 \end{align}
-where $\muupperstoragedispatch$ and $\mulowerstoragedispatch$ are the shadow prices of the upper and lower dispatch capacity bound and $\mustateofcharge$ is the shadow price of the energy balance constraint. 
-% When applying the cost allocation scheme \cref{eq:general_scheme}, it stands to reason to assume that $\partial \storagecharge / \partial \demand \cdot \demand \Leftrightarrow 0$, implying that the when a storage charges power, it does not supply any demand. At these times, it the storage is a effective consumer retrieving power from producing assets. 
-% This leaves us with 
-% \begin{align}
-    %      \allocatecapexstorage = \left(\muupperstoragedispatch - \mulowerstoragedispatch  + (\efficiencydispatch )^{-1} \mustateofcharge \right) \allocatestoragedispatch
-% \end{align}
-% where the dispatch allocation only assigns discharge power to demand $\demand$, thus
-% \begin{align}
-%     \allocatestoragedispatch \Leftrightarrow \pdv{\storagedispatch}{\demand} \demand
-% \end{align}
-% Note that this relation will break \cref{eq:cost_payback} as the payments to $r$ surpass the CAPEX by an amount $\remainingcost^E_r$. 
-% % \begin{align}
-    % %     \capexstorage_r + \remainingcost^E_r = \sum_n \allocatecapexstorage
-% % \end{align} 
-% It is crucial to note that storage units perform a redistribution of money, and therefore distort the cost allocation. So, a certain share of what is allocated to the CAPEX of a storage is in another time step spent by the same storage in order to buy power from other assets. This effect scales with the amount of installed storage capacity.
+where $\muupperstoragedispatch$ and $\mulowerstoragedispatch$ are the shadow prices of the upper and lower dispatch capacity bound and $\mustateofcharge$ is the shadow price of the energy balance constraint. Following the considerations in \cref{sec:zero_profit_storage_units} we restrict to the revenue from dispatched power, \ie the first term in \cref{eq:no_profit_capex_storage}, for the cost allocation.   
 
-% We shortly annotate that it is possible to incorporate this redistribution into the cost allocation, by replacing the demand $\demand$ with the power charge $\storagecharge$ in \cref{eq:general_scheme}. Then, the derived payments that a storage unit $r$ has to pay to asset $i$ is given by $\cost_{r \rightarrow i}$. The sum of those payments due to $r$ will the sum up to $\remainingcost^E_r$. 
 \end{subequations}
-
-
 
 
 \subsection{Allocation of Power Dispatch}
 \label{sec:localizing_allocations}
 \begin{subequations}
     
-After showing that cost terms $\cost$ for OPEX and CAPEX can be represented by cost-weighted sum of the operational state $\state$, we now demonstrate how the operational state in turn is allocated to consumers. This builds the second crucial ingredient of the cost allocation. 
+After representing the cost terms $\cost$ for OPEX and CAPEX by a cost-weighted sum of the operational state $\state$, we now show how the operational state in turn is allocated to consumers. This builds the second crucial ingredient of the cost allocation. 
 
 Dispatch and flow in a system can be considered as a superposition of individual contributions of nodes and assets. In order to artificially quantify these contribution, the literature provides various methods, named flow allocation schemes. Each of these follow a specific set of assumptions which result in peer-to-peer allocations $A_{m \rightarrow n}$. That is a measure for the power supplied at node $m$ and consumed at node $n$. 
 
@@ -429,7 +413,7 @@ Yet, we didn't touch the allocation from transporting assets $i \in L$ to consum
 Usually, $\ptdf$ is given by the Power Transfer Distribution Factors (PTDF) which indicate the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $m$. For transport models or networks with High Voltage Directed Current (HVDC) lines, these can calculated or extended using the formulation presented in \cite{hofmann_flow_2020-1}.
 Inserting \cref{eq:nodalgeneration} into \cref{eq:power_flow_equation} and expanding the sum yields 
 \begin{align}
-    \allocateflow = \sum_m \ptdf[m] \left( \allocatepeer  - \delta_{n,m} \demand \right) \Forall{\ell \in L, n, t}
+    \allocateflow = \sum_m \ptdf[m] \left( \allocatepeer  - \delta_{n m} \demand \right) \Forall{\ell \in L, n, t}
  \label{eq:allocate_flow}
 \end{align}
 Complementary to \cref{eq:allocate_production}, this allocation indicates the power flow on line $\ell$ and time $t$ which is ending up at node $n$ and therefore consumed by $\demand$.  
@@ -705,12 +689,19 @@ In \cref{fig:direct-allocation} we compare the total cost allocation of the regi
 In contrast the regions with the highest LMP, spends most its money to local OCGT operations, emission cost and the transmission system. Its payments to  onshore and offshore wind infrastructure are low despite a third of its supply comes from wind power. Instead, a lot of its payments are assigned to the transmission infrastructure. Hence, the wind power supply at this region is not restricted by exhausted wind power resources but by bottlenecks in the transmission system.  
 
  
+\section{Limitations and possible Extensions}
+
+The presented cost allocation is based on the linear power flow approximation. Yet, the method is equally applicable to a system with an Optimal Power Flow (OPF), \ie full AC power flows. Here the AP scheme traces active power flows and their losses as done in \cite{meng_investigation_2007}. This introduces an additional cost term $\remainingcost^\text{Loss}$ compensated by the consumers and mirroring in the LMP. 
+
+The used optimization does not consider security constrains of the transmission system, this can however be incorporated by introducing by following security constrained optimal power flow (SCOPF) as done in \cite{nikoukar_transmission_2012}. 
+
+In the presented work, we restricted the application to long term investment models. However, the cost allocation can be applied to short term planning models with fixed capacities as well. The revenue from the capacity limits then builds basis for future investments.  
 
 
 \section{Conclusion}
 
-In this work we presented a new cost-allocation scheme based on peer-to-peer dispatch allocations from asset to consumer. Starting from an optimized long-term investment model, we were able to decompose single cost terms into contributions of single consumers. For three typical classes of assets, namely generators, transmission lines and storage units, we showed how operational prices and shadow prices must be weighted with the dispatch allocation in order to allocate all system costs. Further we highlighted the impact of additional design constraints, that is constraints with a non-zero constant on the right hand side, such as lower and upper capacity expansion limits. These alter the locational marginal price and therefore distort the cost allocations. In the case of upper capacity expansion limits, this leads to an additional charge for consumers which have to compensate for \eg land use restrictions. For lower capacity investment bounds, the cost have to be subsidized by the overall system operator or the government, as those cannot be allocated.
-\dots
+We presented a new cost-allocation scheme based on peer-to-peer dispatch allocations from assets to consumers. Within a ling-term equilibrium OPEX and CAPEX of each asset are payed back by the operation based revenue. Using flow allocation, we are able to allocate the operation and therefore the assigned costs of assets to consumers in the network. For three typical classes of assets, namely generators, transmission lines and storage units, we showed how operational prices and shadow prices must be weighted with the dispatch allocation in order to allocate all system costs. Further we highlighted the impact of minimum capacity requirements and maximum installation potentials. These alter the revenues per asset and therefore the cost allocations. For lower capacity requirements, the cost have to be subsidized by the overall system operator or the government, as those cannot be allocated. Contrary, upper capacity expansion limits lead to an additional charge for consumers which have to compensate for \eg land use restrictions.  
+
 
 
 % ----------------------- APPENDIX -------------------------------------
@@ -775,9 +766,9 @@ For each generator the optimization defines a lower capacity constraint, given b
 \end{align} 
 \Cref{eq:upper_generation_capacity_constraint,eq:lower_generation_capacity_constraint}, which yield the KKT variables $\muuppergeneration$ and $\mulowergeneration$, imply the complementary slackness,
 \begin{align}
-\muuppergeneration \left( \generation - \generationpotential \, \capacitygeneration \right)  &= 0  \Forall{n,s,t} 
+\muuppergeneration \left( \generation - \generationpotential \, \capacitygeneration \right)  &= 0  \Forall{s,t} 
 \label{eq:complementary_slackness_upper_generation} \\
-\mulowergeneration  \, \generation &= 0 \Forall{n,s,t}
+\mulowergeneration  \, \generation &= 0 \Forall{s,t}
 \label{eq:complementary_slackness_lower_generation} 
 \end{align}
 
@@ -785,24 +776,24 @@ For each generator the optimization defines a lower capacity constraint, given b
 The stationarity of the generation capacity variable leads to 
 \begin{align}
 \pdv{\lagrangian}{\capacitygeneration}  = 0 \,\, \rightarrow \,\, 
-\capitalpricegeneration =  \sum_t \muuppergeneration \, \generationpotential  \Forall{n,s}
+\capitalpricegeneration =  \sum_t \muuppergeneration \, \generationpotential  \Forall{s}
 \label{eq:capex_generation_duality}
 \end{align}
 and the stationarity of the generation to 
 \begin{align}
 \pdv{\lagrangian}{\generation} &= 0 \,\, \rightarrow \,\,  
-\operationalpricegeneration =  \incidencegenerator \, \lmp - \muuppergeneration + \mulowergeneration \Forall{n,s} \label{eq:opex_duality}
+\operationalpricegeneration =  \sum_n \incidencegenerator \, \lmp - \muuppergeneration + \mulowergeneration \Forall{s} \label{eq:opex_duality}
 \end{align}
 
 
 Multiplying both sides of \cref{eq:capex_generation_duality} with $\capacitygeneration$ and using \cref{eq:complementary_slackness_upper_generation} leads to 
 \begin{align}
- \capitalpricegeneration \, \capacitygeneration  = \sum_t \muuppergeneration \, \generation 
+ \capitalpricegeneration \, \capacitygeneration  = \sum_t \muuppergeneration \, \generation \Forall{s} 
  \label{eq:capital_price_generation_sum}
 \end{align}
 The zero-profit rule for generators is obtained by multiplying \cref{eq:opex_duality} with $\generation$ and using \cref{eq:complementary_slackness_lower_generation,eq:capital_price_generation_sum} which results in 
 \begin{align}
-  \capitalpricegeneration \, \capacitygeneration + \sum_t \operationalpricegeneration \generation = \sum_t \lmp \incidencegenerator \generation
+  \capitalpricegeneration \, \capacitygeneration + \sum_t \operationalpricegeneration \generation = \sum_{n,t} \lmp \incidencegenerator \generation \Forall{s}
 \end{align}
 It states that over the whole time span, all OPEX and CAPEX for generator $s$ (left hand side) are payed back by its revenue (right hand side).
 
@@ -822,24 +813,24 @@ The stationarity of the transmission capacity to
 \begin{align}
 \pdv{\lagrangian}{\capacityflow} = 0 \,\, \rightarrow \,\, 
 \capitalpriceflow =  \sum_t \left( \muupperflow - \mulowerflow \right) \Forall{\ell}
-\label{eq:capexFlow_duality}
+\label{eq:capacity_flow_duality}
 \end{align}
 and the stationarity with respect to the flow to
 \begin{align}
     0 &= \pdv{\lagrangian}{\flow}  \\ 
-    0 &= - \sum_n \incidence \lmp  + \cycleprice \cycle \reactance  - \muupperflow + \mulowerflow \Forall{n,s} \label{eq:opex_flow_duality}
+    0 &= - \sum_n \incidence \lmp  + \sum_c \cycleprice \cycle \reactance  - \muupperflow + \mulowerflow \Forall{\ell, t} \label{eq:flow_duality}
 \end{align}
     
     
-When multiplying \cref{eq:capexFlow_duality} with $\capacityflow$ and using the complementary slackness \cref{eq:complementary_slackness_upper_flow,eq:complementary_slackness_lower_flow} we obtain 
+When multiplying \cref{eq:capacity_flow_duality} with $\capacityflow$ and using the complementary slackness \cref{eq:complementary_slackness_upper_flow,eq:complementary_slackness_lower_flow} we obtain 
 \begin{align}
- \capitalpriceflow \, \capacityflow = \sum_t \left( \muupperflow - \mulowerflow \right)  \, \flow
+ \capitalpriceflow \, \capacityflow = \sum_t \left( \muupperflow - \mulowerflow \right)  \, \flow \Forall{\ell} 
  \label{eq:capital_price_flow_sum}
 \end{align}
-Again we can use this to formulate the zero-profit rule for transmission lines. We multiply \cref{eq:opex_flow_duality} with $\flow$, which finally leads us to 
+Again we can use this to formulate the zero-profit rule for transmission lines. We multiply \cref{eq:flow_duality} with $\flow$, which finally leads us to 
 \begin{align}
-\capitalpriceflow \, \capacityflow = - \sum_n \incidence\, \lmp\, \flow + \cycleprice\, \cycle\, \reactance\, \flow 
-\end{align}
+\capitalpriceflow \, \capacityflow = - \sum_n \incidence\, \lmp\, \flow + \sum_c \cycleprice\, \cycle\, \reactance\, \flow 
+\Forall{\ell} \end{align}
 % Watch out Incidence = - ordinary Incidence !!
 It states that the congestion revenue of a line (first term right hand side) reduced by the cost for cycle constraint exactly matches its CAPEX. 
 
@@ -849,9 +840,9 @@ It states that the congestion revenue of a line (first term right hand side) red
 
 For an simplified storage model, the upper capacity $\capacitystorage$ limits the discharging dispatch $\storagedispatch$, the storing power $\storagecharge$ and state of charge $\storagesoc$ of a storage unit $r$ by 
 \begin{align}
-    \storagedispatch - \capacitystorage &\le 0 \Forall{r,t} \resultsin{\muupperstoragedispatch} \\
-    \storagecharge - \capacitystorage &\le 0 \Forall{r,t} \resultsin{\muupperstoragecharge} \\
-    \storagesoc - h_r \, \capacitystorage &\le 0 \Forall{r,t} \resultsin{\muupperstoragesoc}
+    \storagedispatch - \capacitystorage &\le 0  \resultsin{\muupperstoragedispatch} \Forall{r,t} \\
+    \storagecharge - \capacitystorage &\le 0  \resultsin{\muupperstoragecharge} \Forall{r,t} \\
+    \storagesoc - h_r \, \capacitystorage &\le 0  \resultsin{\muupperstoragesoc} \Forall{r,t}
 \end{align}
 where we assume a fixed ratio between dispatch and storage capacity of $h_r$. 
 % From stationarity we obtain 
@@ -871,13 +862,14 @@ The state of charge must be consistent throughout every time step according to w
 
 We use the result of Appendix B.3 in \cite{brown_decreasing_2020} which shows that a storage recovers its capital (and operational) costs from aligning dispatch and charging to the LMP, thus 
 \begin{align}
-    \sum_t \operationalpricestorage \, \storagedispatch + \capitalpricestorage \, \capacitystorage = \sum_t \lmp \incidencestorage \left(\storagedispatch - \storagecharge \right) 
+    \notag
+    \sum_t \operationalpricestorage \, \storagedispatch + \capitalpricestorage \, \capacitystorage = \sum_t \lmp \incidencestorage &\left(\storagedispatch - \storagecharge \right) \Forall{r,t}
 \end{align}
 The stationarity of the dispatched power leads us to  
 \begin{align}
     \notag
     \pdv{\lagrangian}{\storagedispatch} &= 0 \\
-    \operationalpricestorage -  \lmp \, \incidencestorage - \mulowerstoragedispatch + \muupperstoragedispatch + (\efficiencydispatch )^{-1} \mustateofcharge &= 0  
+    \operationalpricestorage - \sum_n \lmp \, \incidencestorage - \mulowerstoragedispatch + \muupperstoragedispatch + (\efficiencydispatch )^{-1} \mustateofcharge &= 0 \;  \forall r,t
     \label{eq:stationarity_storagedispatch}
 \end{align}
 which we  can use to define the revenue which compensates the CAPEX at $r$, 
@@ -885,6 +877,7 @@ which we  can use to define the revenue which compensates the CAPEX at $r$,
     \notag
     \capitalpricestorage \, \capacitystorage = \sum_t \left(\muupperstoragedispatch - \mulowerstoragedispatch  + (\efficiencydispatch )^{-1} \mustateofcharge \right) \storagedispatch \\
     - \sum_t \lmp \incidencestorage  \storagecharge \Forall{r} 
+    \label{eq:no_profit_capex_storage2}
 \end{align}
 
 % With this constraint we can derive the following stationarities:
@@ -908,30 +901,62 @@ which we  can use to define the revenue which compensates the CAPEX at $r$,
 % \end{align}
 
 
-
-\subsection{Emission Constraint}
-
-Imposing an additional CO$_2$ constraint limiting the total emission to K,  
+When applying the cost allocation scheme \cref{eq:general_scheme}, it stands to reason to assume that when a storage charges power, it does not supply any demand. Thus consumers only pay storage units in times the storage dispatches power. Hence, we restrict the allocatable revenue per storage unit to the first term in \cref{eq:no_profit_capex_storage,eq:no_profit_capex_storage2}. This allocates then the CAPEX of $r$ plus the costs $\remainingcost^E_r$ it needs to buy the charging power, 
 \begin{align}
-\sum_{n,s,t} \emission \, \generation \le \text{K} \resultsin{\emissionprice} 
-\label[constraint]{eq:co2_constraint}
-\end{align}
-with $\emission$ being the emission factor in tonne-CO$_2$ per \megawatthour, returns an effective CO$_2$ price $\emissionprice$ in \euro/tonne-CO$_2$. 
-% The CO$_2$ price shifts the right hand side of the non-profit relation for generators \cref{eq:non_profit_generator} to
-% 
-% \begin{align}
-% \capitalpricegeneration \, \capacitygeneration + \sum_{t} \operationalpricegeneration \, \generation &= \sum_{t} \left( \lmp - \emission \, \emissionprice \right)  \, \generation \Forall{n,s} 
-% \label{eq:non_profit_generator_emission}
-% \end{align}
-% This shows nicely the duality for exchanging the CO$_2$ \cref{eq:co2_constraint} for a shifted OPEX which includes the CO$_2$ costs
-As shown in ... the constraint can be translated in a dual price which shift the operational price per generator
+        \capexstorage_r + \remainingcost^E_r = \sum_t \left(\muupperstoragedispatch - \mulowerstoragedispatch  + (\efficiencydispatch )^{-1} \mustateofcharge \right) \storagedispatch 
+\end{align} 
+In charging times the total of remaining costs $\remainingcost^E_r$ is spent to power from other assets. These costs scale with the amount of installed storage capacity.
+Note that it would be possible to incorporate this redistribution into the cost allocation, by replacing the demand $\demand$ with the power charge $\storagecharge$ in \cref{eq:general_scheme}. Then, the derived payments that a storage unit $r$ has to pay to asset $i$ is given by $\cost_{r \rightarrow i}$. The sum of those payments due to $r$ will the sum up to $\remainingcost^E_r$. 
+
+
+
+\subsection{Proof: Equivalence of local and imported prices}
+
+We start with \cref{eq:flow_duality} which we recall here, 
 \begin{align}
-\operationalpricegeneration \rightarrow \operationalpricegeneration + \emission \, \emissionprice \label[relation]{eq:shift_opex_by_emission_cost}
+    \notag
+    0 = &- \sum_m \incidence[m] \lmp[m]  + \sum_c  \cycleprice \cycle \reactance  \\
+    &- \muupperflow + \mulowerflow \Forall{\ell,t} 
 \end{align}
+It states that the price difference between two adjacent buses minus the price for the KVL, is the revenue per line $\ell$, $\left(- \muupperflow + \mulowerflow\right)$. We multiply the equation by the flow allocation $\allocateflow$ and obtain 
+\begin{align}
+    \notag
+    0 =& - \allocateflow \sum_m \incidence[m] \lmp[m]  \\
+    \notag
+    &+ \allocateflow \sum_c  \cycleprice \cycle \reactance  \\
+    &- \allocateflow \left(\muupperflow - \mulowerflow\right) \Forall{\ell,t} 
+    \label{eq:flow_duality2}
+\end{align}  
+The allocation $\allocateflow$ defined in \cref{eq:allocate_flow}follows the linear power flow laws. We slightly reformulate the expression to
+\begin{align}
+    \allocateflow = \sum_{m'} \ptdf[m'] \left( \allocatepeer[m' \rightarrow n]  - \delta_{n m'} \demand \right) \Forall{\ell, n, t}
+    \label{eq:allocate_flow2}
+\end{align}
+and insert it into \cref{eq:flow_duality2}. When taking the sum over all lines $L$, the first term yields  
+\begin{align}
+    \notag
+    &- \sum_{\ell, m'} \ptdf[m'] \left( \allocatepeer[m' \rightarrow n]  - \delta_{n m'} \demand \right) \sum_m \incidence[m] \lmp[m] \\
+    \notag
+    =& - \sum_{\ell, m', m} \ptdf[m'] \left( \allocatepeer[m' \rightarrow n]  - \delta_{n m'} \demand \right) \incidence[m] \lmp[m] \\
+    \notag
+    =& - \sum_{m', m} \delta_{m m'} \left( \allocatepeer[m' \rightarrow n]  - \delta_{n m'} \demand \right) \lmp[m] \\
+    \notag
+    =& - \sum_{m} \left( \allocatepeer - \delta_{n m} \demand \right) \lmp[m] \\
+    =& - \sum_{m} \allocatepeer \lmp[m] + \demand \lmp 
+\end{align}
+where in the third step we used the relation $\sum_\ell \ptdf \incidence[m] = \delta_{n m}$.
+The second term in \cref{eq:flow_duality2} vanishes as the basis cycles $\cycle$ are the kernel of the PTDF, $\sum_{\ell} \cycle \ptdf  = 0 \; \forall c,n$. Thus, we end up with 
+\begin{align}
+    \notag
+    \demand \lmp =& \sum_{m} \allocatepeer \lmp[m] \\
+    +& \sum_\ell \allocateflow \left(\muupperflow - \mulowerflow\right) \Forall{n,t}
+\end{align}
+This relation shows that for any P2P allocations $\allocatepeer$ the combined price of the imported power is always be the same as the locational price. This holds only true if the flow allocation $\allocateflow$ follow the power flow laws, \ie are defined as in \cref{eq:allocate_flow,eq:allocate_flow2}. 
 
-
-
-
+Naturally, the power production of the supplying node $m$ decomposes into contributions of assets, following the definition in \cref{eq:allocate_production}. At the same time, the LMP at $m$ decomposes into asset related prices, using \cref{eq:opex_duality,eq:stationarity_storagedispatch}. This finally reproduces the allocations of \cref{tab:cost_allocation_map} and results in 
+\begin{align}
+    \demand \, \lmp =  \sum_{\circ, i} \allocatecost 
+\end{align}
 
 
 \section{Power Allocation}
@@ -952,7 +977,7 @@ Allocating net injections using the AP method is derived from \cite{achayuthakan
 \begin{align}
 \InverseAPInjection_t = \left( \diag{\injectionM^+} + \DirectedIncidence^- \diag{\flowM} \, \incidenceM \right)_t^{-1} 
 \end{align}
-where $\DirectedIncidence^-$ is the negative part of the directed Incidence matrix $\DirectedIncidence_{n,\ell} = \text{sign}\left( \flow \right)  \incidence$. Then the distributed slack for time step $t$ is given by
+where $\DirectedIncidence^-$ is the negative part of the directed Incidence matrix $\DirectedIncidence_{n,\ell} = \text{sign}\left( f_\ell \right)  \incidence$. Then the P2P allocation for time step $t$ is given by
 \begin{align}
 \allocatepeer = \InverseAPInjection_{m,n,t} \, \netproduction[m] \, \netconsumption
 \end{align}

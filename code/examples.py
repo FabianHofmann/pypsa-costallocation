@@ -52,8 +52,11 @@ F = n.lines.s_nom_opt.item()
 Gupper = n.generators.p_nom_max.unique().item()
 
 g0, g1 = n.generators_t.p.loc['now']
+mug0, mug1 = n.generators_t.mu_upper.loc['now']
 f = n.lines_t.p0.loc['now'].item()
+mul = n.lines_t.mu_upper.loc['now'].item()
 l0, l1 = n.buses_t.marginal_price.loc['now']
+
 
 ds = ntl.allocate_flow(n, method=method, aggregated=net)
 ds = ntl.convert.peer_to_peer(ds, n)
@@ -78,7 +81,7 @@ wpad = 0.04
 bus0_fix = (r'Fixed:\vspace{5pt} \\ o = %i €/MWh\\ c = %i €/MW\\ d = %i MW'
             r'\\ $\bar{\textrm{G}}$ = %i MW')%(o0, c0, d0, Gupper)
 bus0_opt = (r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW\\ $\lambda$ = %i €'
-            )%(g0, G0, l0)
+            r'\\ $\bar{\mu}$ = %i €')%(g0, G0, l0, mug0)
 
 dy = .3
 ax.text(n.buses.x[0]-wpad, n.buses.y[0]+dy, bus0_fix, ha='right', **textkwargs)
@@ -88,7 +91,7 @@ ax.text(n.buses.x[0], n.buses.y[0]+dy, bus0_opt, ha='left', **textkwargs)
 bus1_fix = (r'Fixed:\vspace{5pt} \\ o = %i €/MWh\\ c = %i €/MW\\ d = %i MW'
             r'\\ $\bar{\textrm{G}}$ = %i MW')%(o1, c1, d1, Gupper)
 bus1_opt = (r'Optimized:\vspace{5pt} \\ g = %i MW\\ G = %i MW\\ $\lambda$ = %i €'
-            )%(g1, G1, l1)
+            r'\\ $\bar{\mu}$ = %i €')%(g1, G1, l1, mug1)
 
 dy = - .15
 dx = .1
@@ -97,7 +100,8 @@ ax.text(n.buses.x[1]+dx+wpad, n.buses.y[1]+dy, bus1_opt, ha='left', **textkwargs
 
 # line box
 line_fix = r'Fixed:\vspace{5pt} \\ c = %i €/MW'%(c_l)
-line_opt = r'Optimized:\vspace{5pt} \\ f = %i MW\\ F = %i MW'%(f,F)
+line_opt = (r'Optimized:\vspace{5pt} \\ f = %i MW\\ F = %i MW'
+            r'\\ $\bar{\mu}$ = %i €')%(f,F,mul)
 
 dy = 0.25
 dx = 0.05
@@ -152,18 +156,19 @@ for bus in n.buses.index:
 
     n.plot(flow=subflow*5e-2, bus_sizes=p2p*3e-4, ax=ax, geomap=False,
            bus_colors=bcolor, line_colors=fcolor)
-    ntl.plot.annotate_bus_names(n, ax, shift=0, bbox='fancy')
+    bbox2 = dict(facecolor='lightgrey', alpha=0.5, edgecolor='None', boxstyle='circle')
+    ntl.plot.annotate_bus_names(n, ax, shift=0, bbox=bbox2)
 
     for b in n.buses.index:
         bbox.update({'facecolor': bcolor, 'edgecolor': 'None', 'pad':.5, 'alpha':1})
-        A = r'$A_{%s \rightarrow %s} = %i$'%(b, bus, p2p[b])
+        A = r'$A_{%s \rightarrow %s} = %i$ MW'%(b, bus, p2p[b])
         ax.text(*n.buses.loc[b, ['x', 'y']] + [0, 0.2], A, zorder=8, color='white',
                 ha='center', va='bottom', bbox=bbox)
 
     source = p2p.drop(bus).index.item()
 
     bbox.update({'facecolor': fcolor})
-    A = r'$A_{1,%s} = %+i$'%(bus, round(subflow.item()))
+    A = r'$A_{1,%s} = %+i$ MW'%(bus, round(subflow.item()))
     ax.text(*n.buses[['x', 'y']].mean() + [0, 0.2], A, zorder=8,
             ha='center', va='center', color='white',
             bbox=bbox)
