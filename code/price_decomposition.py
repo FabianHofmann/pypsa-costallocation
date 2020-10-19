@@ -58,3 +58,6 @@ ax.set_yticklabels([])
 
 fig.tight_layout()
 fig.savefig('../figures/price_decomposition.png', bbox_inches='tight')
+
+ax.set_ylabel('Total System Cost')
+fig.savefig('../figures/cost_decomposition.png', bbox_inches='tight')

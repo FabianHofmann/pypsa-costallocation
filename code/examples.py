@@ -169,6 +169,7 @@ for bus in n.buses.index:
 
     bbox.update({'facecolor': fcolor})
     A = r'$A_{1,%s} = %+i$ MW'%(bus, round(subflow.item()))
+    A = A.replace('+', '')
     ax.text(*n.buses[['x', 'y']].mean() + [0, 0.2], A, zorder=8,
             ha='center', va='center', color='white',
             bbox=bbox)
