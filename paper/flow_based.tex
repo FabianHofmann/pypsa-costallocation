@@ -188,9 +188,18 @@
     \maketitle
     
     \begin{abstract}
-        Maximizing the welfare of all market participants within a power system is a common approach in energy system modelling. It leads to perfectly scheduled operations and investments while securing all power demands. \dots 
-        This work introduces a peer-to-peer cost allocation for welfare-maximized systems   \dots
-        This opens the possibility to transparently integrate transmission constraints and investment costs in national and international development plans.
+        Cost minimization is a common approach in energy system modelling. In long-term studies, it leads to perfectly scheduled operations and investments while securing all power demands. System needs reports from regional, national and international agencies increasingly rely on cost minization techniques. However, cost impact to single regions and thefore the question of who profits to what extent from an investment is often neglected. 
+        This work introduces a peer-to-peer cost allocation for cost-minimized system models. It is based on two basic principal. The first being that in a long-term equilibrium the expenses occasioned by a network asset can be expressed as a function of its operation. The second is that using flow allocation techniques, the operationel state can be allocated to consumers. 
+        The cost allocation reflects the behaviour of the optimized Locational Marginal Prices while allocating costs in a plausible and spatially constraint manner. It is showcased by means of an optimized German power system with an carbon tax of 120 \euro\, per tonne CO$_2$. 
+        % Applying it to an optimized German with a carbon tax of 120 \euro\, per tonne CO$_2$, network shows that transmission and backup investments capacity drive the prices for regions remote from   
+        % This opens the possibility to transparently integrate transmission constraints and investment costs in system development plans and possibly into the power market. 
+        \vtop{%
+         \vskip0pt
+          \hbox{%
+          \includegraphics[width=\linewidth]{graphical_abstract.png}
+          }%
+        }
+        
     \end{abstract}
  
 \end{@twocolumnfalse}
@@ -199,11 +208,13 @@
 
 \subsection*{Highlights}
 \begin{itemize}
-    \item In long-term investment models every network asset gains back its variable and investment cost from its operation based revenue
+    \item In long-term equilibria a network asset gains back its variable and investment cost from its operation based revenue
     \item Flow tracing is used as a basis to allocate the operation of assets to consumers. 
-    \item Using operational and shadow prices, the allocations assign all system costs in an P2P manner.
+    \item Allocated flows have to be reshaped such that the Kirchhoff Current Law and the Kirchhoff Voltage Law are respected. 
+    \item Using operational and shadow prices from constraints, all costs are assigned in an P2P manner.
     \item The P2P cost assignments are locally constraint while being in alignment with the nodal pricing scheme of a welfare-maximized system.    
-    \item Applying to a German future scenario shows how higher electricity costs arise for buses relying on investments in transmission and local backup generation  
+    % \item Upper and lower capacity expansion limits modify the revenue per asset, which however correctly reflects in the cost allocation
+    \item In a low-carbon scenario for Germany regions with high renewable potentials profit from investment compensated by remote buses.   
 \end{itemize}
 
 
@@ -244,17 +255,19 @@ The first section which presents the full method splits into the presentation of
 \subsection{Zero-Profit Rule}
 \label{sec:zero_profit_rule}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\linewidth]{cost_decomposition.png}
+    \caption{Schematic decomposition of the total system cost $\totalcost$ in an long-term investment model.}
+    \label{fig:cost_decomposition}
+\end{figure}
+    
 In long-term operation and investment planning models, the total costs $\totalcost$ of a power system is the sum of multiple cost terms $\cost$. Typically, these include operational expenditures for generators $\opexgeneration$, expenditures for emissions $\emissioncost$,  capital investments for the transmission system $\capexflow$ and so on, \ie
 \begin{align}
 \totalcost &= \sum_\circ \cost = \opexgeneration + \emissioncost +  \capexflow + ...
 \label{eq:total_cost}
 \end{align}
-\begin{figure}[h]
-\centering
-\includegraphics[width=.8\linewidth]{cost_decomposition.png}
-\caption{Schematic decomposition of the total system cost $\totalcost$ in an long-term investment model.}
-\label{fig:cost_decomposition}
-\end{figure}
+
 In turn, each of the terms $\cost$ consists of the costs associated to an asset $i$ in the system, 
 \begin{align}
     \cost = \sum_{i} \cost_{i}
@@ -645,19 +658,33 @@ In \cref{fig:direct-allocation} we compare the total cost allocation of the regi
 
 In contrast the regions with the highest LMP, spends most its money to local OCGT operations, emission cost and the transmission system. Its payments to  onshore and offshore wind infrastructure are low despite a third of its supply comes from wind power. Instead, a lot of its payments are assigned to the transmission infrastructure. Hence, the wind power supply at this region is not restricted by exhausted wind power resources but by bottlenecks in the transmission system.  
 
- 
+\section{Limitations}
+The presented cost allocation is based on the linear power flow approximation. Yet, the method is equally applicable to a system with an Optimal Power Flow (OPF), \ie full AC power flows. However, the AP scheme might not the right choice as the Kirchhoff Voltage Law cannot not be considered subsequently as done here. Rather, the Z-Bus flow allocation presented in \cite{conejo_z-bus_2007} might be a better choice as it considers by default the two circuit laws. Allocating on the basis of the full power flow introduces an additional cost term $\remainingcost^\text{Loss}$ accounting for the transmission loss which is compensated by the consumers and mirrors in the LMP. 
+
+The used optimization does not consider security constrains of the transmission system, this can however be incorporated by introducing by following security constrained optimal power flow (SCOPF) as done in \cite{nikoukar_transmission_2012}. 
+
+In the presented work, we restricted the application to long term investment models with perfect foresight. However, the cost allocation can as well be applied to short term planning models with fixed capacities. The revenue from the capacity limits then builds basis for amortization and future investments.
+
+The optimization assumed a fix demand time series. As shown in \cref{fig:capex_duration_curve} this leads to high if not unrealistic LMP. Introducing a value of loss load as proposed in \cite{schroder_value_2015}  would screen away these and lead to more evenly distributed allocations. 
+
 
 \section{Conclusion and Outlook}
 
-We presented a new cost-allocation scheme based on peer-to-peer dispatch allocations from assets to consumers. Within a ling-term equilibrium OPEX and CAPEX of each asset are payed back by the operation based revenue. Using flow allocation, we are able to allocate the operation and therefore the assigned costs of assets to consumers in the network. For three typical classes of assets, namely generators, transmission lines and storage units, we showed how operational prices and shadow prices must be weighted with the dispatch allocation in order to allocate all system costs. Further we highlighted the impact of minimum capacity requirements and maximum installation potentials. These alter the revenues per asset and therefore the cost allocations. For lower capacity requirements, the cost have to be subsidized by the overall system operator or the government, as those cannot be allocated. Contrary, upper capacity expansion limits lead to an additional charge for consumers which have to compensate for \eg land use restrictions.  
-Applied to a optimized German power system with an imposed price of 120 \euro\, per tonne CO$_2$ equivalent, the cost allocation shows how 
+A new cost-allocation scheme based on peer-to-peer dispatch allocations from assets to consumers was presented. Within a long-term equilibrium OPEX and CAPEX of each asset are payed back by the operation based revenue. Using flow allocation, we are able to allocate the operation and therefore the assigned costs of assets to consumers in the network. For three typical classes of assets, namely generators, transmission lines and storage units, we showed how operational prices and shadow prices must be weighted with the dispatch allocation in order to allocate all system costs. Further we highlighted the impact of minimum capacity requirements and maximum installation potentials. These alter the revenues per asset and therefore the cost allocations. For lower capacity requirements, the cost have to be subsidized by the overall system operator or the government, as those cannot be allocated. Contrary, upper capacity expansion limits lead to an additional charge for consumers which have to compensate for \eg land use restrictions.  
+Applied to a optimized German power system with an imposed price of 120 \euro\, per tonne CO$_2$ equivalent, the cost allocation shows how buses remote from wind farms pay higher prices due to increased reliance in transmission and backup capacity. On the other hand, buses with high renewable installation spend most payments to local assets. 
 
-The presented cost allocation is based on the linear power flow approximation. Yet, the method is equally applicable to a system with an Optimal Power Flow (OPF), \ie full AC power flows. However, the AP scheme might not the right choice as the Kirchhoff Voltage Law cannot not be considered subsequently as done here in the linear case. Rather, the Z-Bus flow allocation presented in \cite{conejo_z-bus_2007} might be a better choice as it considers by default the two circuit laws. The full power flow introduces an additional cost term $\remainingcost^\text{Loss}$ accounting for the transmission loss which is compensated by the consumers and mirrors in the LMP. 
 
-% The used optimization does not consider security constrains of the transmission system, this can however be incorporated by introducing by following security constrained optimal power flow (SCOPF) as done in \cite{nikoukar_transmission_2012}. 
+\subsubsection*{Reproducibility}
 
-In the presented work, we restricted the application to long term investment models with perfect foresight. However, the cost allocation can as well be applied to short term planning models with fixed capacities. The revenue from the capacity limits then builds basis for future investments.
+All figures and number of the plot can be reproduced by using the \textit{snakemake} workflow in [].
 
+\subsection*{Funding}
+This research was funded by the by the German Federal Ministry for Economics Affairs and Energy in
+the frame of the NetAllok project \cite{bundesministerium_fur_wirtschaft_und_energie_verbundvorhaben_nodate}.
+
+\subsubsection*{Acknowledgement}
+
+Special thanks to Tom Brown for fruitful discussions and well-placed inputs.  
 
 
 

@@ -114,6 +114,13 @@ rule allocate_network:
         power_mix = 'resources/power_mix_{nname}_{method}_{power}.nc'
     script: 'code/allocate_network.py'
 
+rule plot_graphical_abstract:
+    input:
+        network = 'resources/de50bf.nc',
+        regions = 'resources/de50bf_regions.geojson',
+    output: 'figures/graphical_abstract.png'
+    script: 'code/graphical_abstract.py'
+
 
 rule plot_network:
     input:
