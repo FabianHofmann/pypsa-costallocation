@@ -34,7 +34,7 @@ sn = n.snapshots[451]
 bus = 'DE0 10'
 flowscale = 2e-2
 busscale = 1e-5
-bbox = dict(facecolor='w', alpha=.4, boxstyle='round', pad=0.5)
+bbox = dict(facecolor='w', alpha=1, boxstyle='round', pad=0.5, linewidth=0.5)
 
 A = ntl.allocate_flow(n, sn)
 P = A.peer_to_peer.sel(sink=bus).to_series()
@@ -61,22 +61,24 @@ n.plot(line_colors=gamma_line, line_cmap=cmap, line_widths=line_widths,
        geomap=False, ax=ax1, boundaries=bounds)
 bbox.update({'edgecolor': 'darkgreen'})
 ax1.set_title('Price intensity per\n network asset', bbox=bbox, color='darkgreen')
-ax1.text(x2 , (y1+y2)/2, r'$+$', size=20, color='grey')
+ax1.text(x2 , (y1+y2)/2, r'$+$', size=25, color='grey')
 
 
 n.plot(flow=F * flowscale, bus_sizes=P * busscale, bus_colors=c,
        line_colors=line_colors, line_widths=line_widths,
        geomap=False, ax=ax2, boundaries=bounds,)
 bbox.update({'edgecolor': c})
-ax2.set_title('Dispatch \& Flow allocation\nto consumer', bbox=bbox, color=c)
-ax2.text(x2 , (y1+y2)/2, r'$\rightarrow$', size=20, color='grey')
+ax2.set_title('Dispatch \& Flow allocation\nto region', bbox=bbox, color=c)
+ax2.text(x2 , (y1+y2)/2, r'$\rightarrow$', size=25, color='grey')
+regions.loc[[bus]].plot(ax=ax2, aspect='equal', color='lightgrey')
 
 n.plot(flow=F * flowscale, bus_sizes=P * busscale,
        line_colors=gamma_line, line_cmap=cmap, line_widths=line_widths,
        bus_colors=gamma_bus, bus_cmap=cmap,
        geomap=False, ax=ax3, boundaries=bounds)
-bbox.update({'edgecolor': 'k'})
-ax3.set_title('Cost allocation\n to consumer', bbox=bbox, color='k')
+bbox.update({'edgecolor': 'dimgrey'})
+ax3.set_title('Cost allocation\n to region', bbox=bbox, color='k')
+regions.loc[[bus]].plot(ax=ax3, aspect='equal', color='lightgrey')
 
-fig.tight_layout()
-fig.savefig(snakemake.output[0], bbox_inches='tight')
+fig.tight_layout(w_pad=0.5)
+fig.savefig(snakemake.output[0], bbox_inches='tight', dpi=300)

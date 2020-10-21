@@ -3,7 +3,7 @@
 \usepackage[left=1.80cm, right=1.80cm, top=2.00cm, bottom=2.00cm]{geometry}
 \usepackage{amsmath,bm}
 \usepackage[colorlinks]{hyperref}
-\usepackage[natbib=true, sorting=none, backend=biber, bibencoding=utf8]{biblatex}
+\usepackage[natbib=true, sorting=none, backend=biber, bibencoding=utf8, style=numeric-comp]{biblatex}
 \usepackage{eurosym}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{subcaption}
@@ -188,11 +188,9 @@
     \maketitle
     
     \begin{abstract}
-        Cost minimization is a common approach in energy system modelling. In long-term studies, it leads to perfectly scheduled operations and investments while securing all power demands. System needs reports from regional, national and international agencies increasingly rely on cost minization techniques. However, cost impact to single regions and thefore the question of who profits to what extent from an investment is often neglected. 
-        This work introduces a peer-to-peer cost allocation for cost-minimized system models. It is based on two basic principal. The first being that in a long-term equilibrium the expenses occasioned by a network asset can be expressed as a function of its operation. The second is that using flow allocation techniques, the operationel state can be allocated to consumers. 
-        The cost allocation reflects the behaviour of the optimized Locational Marginal Prices while allocating costs in a plausible and spatially constraint manner. It is showcased by means of an optimized German power system with an carbon tax of 120 \euro\, per tonne CO$_2$. 
-        % Applying it to an optimized German with a carbon tax of 120 \euro\, per tonne CO$_2$, network shows that transmission and backup investments capacity drive the prices for regions remote from   
-        % This opens the possibility to transparently integrate transmission constraints and investment costs in system development plans and possibly into the power market. 
+        Cost minimization of power systems leads to perfectly scheduled operations and investments while securing all power demands. 
+        System needs reports from regional, national and international agencies increasingly rely on cost minimization techniques. However, cost impact to single regions and thefore the question of who profits to what extent from an investment is often neglected. The literature provides multiple cost allocation methods dedicated to this problem, yet they hardly suit for large networks and an integration of all costs. 
+        This work introduces a peer-to-peer allocation of all system costs in optimized models. Combining basic relations from economic optimization with flow allocation, its cost assignments locally constraint while still being aligned with the Locational Marginal Prices at the optimum. It is showcased by means of an optimized near-future scenario of the German power system. 
         \vtop{%
          \vskip0pt
           \hbox{%
@@ -212,7 +210,7 @@
     \item Flow tracing is used as a basis to allocate the operation of assets to consumers. 
     \item Allocated flows have to be reshaped such that the Kirchhoff Current Law and the Kirchhoff Voltage Law are respected. 
     \item Using operational and shadow prices from constraints, all costs are assigned in an P2P manner.
-    \item The P2P cost assignments are locally constraint while being in alignment with the nodal pricing scheme of a welfare-maximized system.    
+    \item The cost assignments are locally constraint and in alignment with the nodal pricing scheme.    
     % \item Upper and lower capacity expansion limits modify the revenue per asset, which however correctly reflects in the cost allocation
     \item In a low-carbon scenario for Germany regions with high renewable potentials profit from investment compensated by remote buses.   
 \end{itemize}
@@ -409,7 +407,7 @@ Yet, we didn't touch the allocation of transporting assets $i \in L$ to consumer
  \flow  = \sum_m \ptdf[m]\, \left(\nodalgeneration[m] - \demand[m]\right) \Forall{\ell \in L, t}
  \label{eq:power_flow_equation}  
 \end{align}
-Usually, $\ptdf$ is given by the Power Transfer Distribution Factors (PTDF) which indicate the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $m$. For transport models or networks with High Voltage Directed Current (HVDC) lines, these can retrospectively be calculated or extended using the formulation presented in \cite{hofmann_flow_2020-1}.
+Usually, $\ptdf$ is given by the Power Transfer Distribution Factors (PTDF) which indicate the changes in the flow on line $\ell$ for one unit (typically one MW) of net power production at bus $m$. For transport models or networks with High Voltage Directed Current (HVDC) lines, these can retrospectively be calculated or extended using the formulation presented in \cite{hofmann_flow_2020}.
 Inserting \cref{eq:nodalgeneration} into \cref{eq:power_flow_equation} and expanding the sum yields 
 \begin{align}
     \allocateflow = \sum_m \ptdf[m] \left( \allocatepeer  - \delta_{n m} \demand \right) \Forall{\ell \in L, n, t}

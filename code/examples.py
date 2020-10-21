@@ -153,11 +153,15 @@ for bus in n.buses.index:
     fig, ax = plt.subplots(1, 1, figsize=(5, 2.5))
     subflow = ds.virtual_flow_pattern.sel(snapshot='now', bus=bus).to_series()
     p2p = ds.peer_to_peer.sel(sink=bus, snapshot='now').to_series()
+    if subflow.item() == 0:
+        n.plot(bus_sizes=p2p*3e-4, ax=ax, geomap=False, line_widths=1,
+               bus_colors=bcolor, line_colors=fcolor)
+    else:
+        n.plot(flow=subflow*5e-2, bus_sizes=p2p*3e-4, ax=ax, geomap=False,
+               bus_colors=bcolor, line_colors=fcolor)
 
-    n.plot(flow=subflow*5e-2, bus_sizes=p2p*3e-4, ax=ax, geomap=False,
-           bus_colors=bcolor, line_colors=fcolor)
-    bbox2 = dict(facecolor='lightgrey', alpha=0.5, edgecolor='None', boxstyle='circle')
-    ntl.plot.annotate_bus_names(n, ax, shift=0, bbox=bbox2)
+    bbox2 = dict(facecolor='lightgrey', alpha=1, edgecolor='None', boxstyle='circle')
+    ntl.plot.annotate_bus_names(n, ax, shift=0, bbox=bbox2,)
 
     for b in n.buses.index:
         bbox.update({'facecolor': bcolor, 'edgecolor': 'None', 'pad':.5, 'alpha':1})
@@ -173,7 +177,7 @@ for bus in n.buses.index:
     ax.text(*n.buses[['x', 'y']].mean() + [0, 0.2], A, zorder=8,
             ha='center', va='center', color='white',
             bbox=bbox)
-
+    ax.autoscale()
     fig.tight_layout(h_pad=0, w_pad=0)
     fig.savefig(f'{path}/example_allocation_bus{bus}_{power}_{method}.png',
                 bbox_inches='tight')

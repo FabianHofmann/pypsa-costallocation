@@ -15,5 +15,6 @@
         "socio",
         "stationarities",
         "stationarity"
-    ]
+    ],
+    "restructuredtext.confPath": "${workspaceFolder}/doc"
 }
