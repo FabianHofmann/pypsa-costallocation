@@ -1,0 +1,35 @@
+
+analysis:
+    nname: ['de50bf']
+    method: ['ptpf']
+    power: ['net']
+    sink: ['highest-lmp', 'lowest-lmp']
+    expenditure: ['all', 'capex', 'opex']
+test:
+    nname: ['test-de10gf']
+    method: ['ptpf']
+    power: ['net']
+    sink: ['highest-lmp', 'lowest-lmp']
+    expenditure: ['all', 'capex', 'opex']
+
+alloc_to_load_only: true
+
+# =============================================================================
+# copied from pypsa-eur config
+# =============================================================================
+
+costs:
+  emission_prices: # only used with the option Ep
+    co2: 130. # This must be the same as in the other config files!
+
+solving:
+  solver:
+    name: gurobi
+    threads: 4
+    method: 2 # barrier
+    crossover: 0
+    BarConvTol: 1.e-6
+    FeasibilityTol: 1.e-7
+    AggFill: 0
+    PreDual: 0
+    GURO_PAR_BARDENSETHRESH: 200
