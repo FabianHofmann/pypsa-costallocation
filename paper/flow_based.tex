@@ -189,9 +189,10 @@
     \maketitle
     
     \begin{abstract}
-        Cost minimization of power systems leads to perfectly scheduled operations and investments while securing all power demands. 
-        System needs reports from regional, national and international agencies increasingly rely on cost minimization techniques. However, cost impact to single regions and thefore the question of who profits to what extent from an investment is often neglected. The literature provides multiple cost allocation methods dedicated to this problem, yet they hardly suit for large networks and an integration of all costs. 
-        This work introduces a peer-to-peer allocation of all system costs in optimized models. Combining basic relations from economic optimization with flow allocation, its cost assignments are locally constraint while still being aligned with the Locational Marginal Prices at the optimum. It is showcased by means of an optimized near-future scenario of the German power system. 
+        % Cost minimization of power systems leads to perfectly scheduled operations and investments while securing all power demands. 
+        % System needs reports from regional, national and international agencies increasingly rely on cost minimization techniques. However, cost impact to single regions and thefore the question of who profits to what extent from an investment is often neglected. The literature provides multiple cost allocation methods dedicated to this problem, yet they hardly suit for large networks and an integration of all costs. 
+        % This work introduces a peer-to-peer allocation of all system costs in optimized models. Combining basic relations from economic optimization with flow allocation, its cost assignments are locally constraint while still being aligned with the Locational Marginal Prices at the optimum. It is showcased by means of an optimized near-future scenario of the German power system. 
+        Power system models are a valuable and widely used tool to determine cost-minimal future operation and investment under political or ecological boundary conditions. Yet they are silent about the allocation of costs of single assets, \ie generators, transmission lines etc., to consumers in the network. Existing cost-allocation methods hardly suit large networks and do not take all relevant costs into account. This paper bridges this gap. Based on flow tracing, it introduces a peer-to-peer allocation of all costs in an optimized power system to consumers. The resulting cost allocation is both locally constrained and aligned with locational marginal prices in the optimum. We apply and discuss our approach using a future German scenario.
         \vtop{%
          \vskip0pt
           \hbox{%
@@ -237,16 +238,18 @@
 
 \section{Introduction}
 
-Today's power systems are subject to a deep and ongoing transformation. The shift from controllable to variable, weather-driven power generation as well as the constant improvement and innovation of technology require rigorous system planning and international cooperation \cite{pfenninger_energy_2014,schlachtberger_benefits_2017}. The core of the challenge manifests in the system costs. Firstly, these should be as small as possible while meeting ecological and techno-economic standards. Secondly, they must be distributed in a fair and transparent manner among all agents in the power system. In this respect, it is central to identify the drivers of costs and address them appropriately.  
-To this end, power system models are a valuable and widely used tool \cite{pfenninger_energy_2014,bazmi_sustainable_2011,pereira_generation_2017,brown_sectoral_2019}. However, the question of how and, more importantly, upon what grounds costs are distributed is often left open. \\
-This study bridges this gap. On the basis of an optimized network the operational state of each time step and corresponding characteristics are in detailed considered to allocate all system costs. The approach builds upon two concepts: Firstly, according to the zero-profit condition at the cost-optimum, the revenue of an network asset exactly matches its operational and capital expenditures. Secondly, flow tracing, following Bialek's Average Participation (AP) \cite{bialek_tracing_1996}, is used to assign the operation of single network assets to consumers in an plausible and locally constraint manner. 
-Combining these two relations allows for an transparent allocation of all operational (OPEX) and capital expenditures (CAPEX) to the consumers in the network. \\
-Flow-based cost allocation was already discussed and performed in various works \cite{galiana_transmission_2003,shahidehpour_market_2002,meng_investigation_2007,tranberg_flow-based_2018,nikoukar_transmission_2012,arabali_pricing_2012,wu_locational_2005}. Shahidehpour et al. give a deep insight into allocating congestion cost and transmission investments to market participants \cite{shahidehpour_market_2002} with different allocation techniques. Based on Generation Shift Factors, \ie the marginal contribution of generators to a flow on line, the Locational Marginal Price (LMP) can be represented as a superposition of LMP at the reference bus, the price for congestion and a price for losses. The approach in \cite{meng_investigation_2007} expands this relation for contributions based on the AP scheme, which allows for an accurate estimation of the LMP, however this does not reflect the exact LMP of an optimized network. A similar approach was taken in \cite{tranberg_flow-based_2018} where electricity prices of a non-optimal power dispatch were allocated using flow tracing. 
+Today's power systems are subject to a deep and ongoing transformation. The shift from controllable to variable, weather-driven power generation as well as the constant improvement and innovation of technology require rigorous system planning and international cooperation \cite{pfenninger_energy_2014,schlachtberger_benefits_2017}. The core of the challenge manifests in the total costs of the system. Firstly, these should be as low as possible while meeting ecological and techno-economic standards. Secondly, they must be distributed in a fair and transparent manner among all agents in the power system. It is central to identify the drivers of costs and address them appropriately.  
+In this respect, power system models are a valuable and widely used tool \cite{pfenninger_energy_2014,bazmi_sustainable_2011,pereira_generation_2017,brown_sectoral_2019}. Many studies for countries and regions throughout the world exist that lay out how renewable energy penetration can be expanded at minimum costs. Yet they largely remain silent how and on which grounds these costs are allocated among consumers. 
+
+This paper fills this gap. In an optimized network, the operational state of each time step and corresponding characteristics are in detailed considered to allocate all system costs. We build on two fundamental concepts: first, the zero profit condition that states that, in the optimum, the revenue of each network asset, i.e., generator, transmission line etc., matches its operational and capital expenditures. Second, flow tracing, following Bialek’s Average Participation (AP) approach \cite{bialek_tracing_1996}, that allocates the use of network assets to consumers in a locally constrained fashion. 
+Combining these two concepts allows for an transparent allocation of all operational (OPEX) and capital expenditures (CAPEX) to the consumers in the network. 
+ 
+The literature discussed and applied the concept of flow-based cost allocation in a range of papers \cite{galiana_transmission_2003,shahidehpour_market_2002,meng_investigation_2007,tranberg_flow-based_2018,nikoukar_transmission_2012,arabali_pricing_2012,wu_locational_2005}. Shahidehpour et al. provide a profound insight into allocating congestion cost and transmission investments to market participants \cite{shahidehpour_market_2002} using different allocation techniques. Specifically, they set out that Generation Shift Factors, i.e. the marginal contribution of generators to a flow on line, allow to represent locational marginal prices (LMP) as a superposition of the LMP at the reference bus, the price for congestion, and a price for losses. The approach in \cite{meng_investigation_2007} expands this relation for contributions based on the AP scheme, which allows for an accurate estimation of the LMP, however it does not reflect the exact LMP of an optimized network. A similar approach was used in \cite{tranberg_flow-based_2018} that allocates electricity prices of a non-optimal power dispatch using flow tracing.
 
 
-The following work brings advantages of all the mentioned studies together. It reassures localized cost allocations while fully aligning payments to the nodal pricing scheme based on the LMP. The work serves to facilitate transparency and cost-benefit analysis in network plannings such as the Ten Year Network Development Plan \cite{entso-e_completing_2020} or the German Netzentwicklungsplan (NEP) \cite{bundesnetzagentur_netzentwicklungsplan_2020}. Further, it builds a basis of a usage based transmission cost allocation. 
+In this paper, we bring together the advantages of the studies discussed above. It reassures localized cost allocations while fully aligning payments to the nodal pricing scheme based on the LMP. It serves to facilitate transparency and cost-benefit analysis in network plannings such as the Ten Year Network Development Plan \cite{entso-e_completing_2020} or the German Netzentwicklungsplan (NEP) \cite{bundesnetzagentur_netzentwicklungsplan_2020}. Further, it provides a point of departure for usage-based transmission cost allocation.
 
-The first section which presents the full method splits into the presentation of: the zero-profit condition for different kind of assets (\cref{sec:zero_profit_rule});  the AP allocation scheme and derived allocations from asset to consumer (\cref{sec:dispatch_allocations}); the cost allocation and the impact of additional constraints (\cref{sec:general_scheme,sec:design_constraints}); a numerical example (\cref{sec:numerical_example}). The second part in \cref{sec:application_case} applies the cost allocation to a optimized German power system with a high share of renewable power generation and evaluates the allocated costs.  
+The first section presents the zero-profit condition for different kind of assets (\cref{sec:zero_profit_rule}),  the AP allocation scheme and derived allocations from asset to consumer (\cref{sec:dispatch_allocations}), the cost allocation and the impact of additional constraints (\cref{sec:general_scheme,sec:design_constraints}), a numerical example (\cref{sec:numerical_example}). \Cref{sec:application_case} applies the cost allocation to a optimized German power system with a high share of renewable power generation and evaluates the allocated costs.  
 
 
 \section{Flow-based Cost Allocation}
@@ -633,7 +636,7 @@ Together with the emission cost $\emissioncost$, the total OPEX $\opex$ amount a
     \begin{subfigure}[c]{.6\linewidth}
     \includegraphics[width=\linewidth]{de50bf/ptpf_net_to_highest-lmp}
     \end{subfigure}
-    \caption{Comparison of payments of the node with the \textbf{lowest LMP (left)} and the node with the \textbf{highest LMP (right)}. The region of the paying bus is colored in dark blue. The circles indicate where to which bus and technology combined OPEX and CAPEX payments. Further the thickness of the lines indicates the dedicated amount of payments. The cheap prices in the North...  }
+    \caption{Comparison of payments of the node with the \textbf{lowest LMP (left)} and the node with the \textbf{highest LMP (right)}. The region of the paying bus is colored in dark blue. The circles indicate where to which bus and technology combined OPEX and CAPEX payments. Further the thickness of the lines indicates the dedicated amount of payments. }
     \label{fig:direct-allocation}
 \end{figure*}
 
@@ -678,7 +681,7 @@ Applied to a optimized German power system with an imposed price of 120 \euro\, 
 
 \subsubsection*{Reproducibility}
 
-All figures and data points can be reproduced by using the \textit{snakemake} workflow in \cite{hofmann_pypsa-costallocation_2020}.
+All figures and data points can be reproduced by using the \textit{python} workflow in \cite{hofmann_pypsa-costallocation_2020}.
 
 \subsection*{Funding}
 This research was funded by the by the German Federal Ministry for Economics Affairs and Energy in
@@ -686,7 +689,7 @@ the frame of the NetAllok project \cite{bundesministerium_fur_wirtschaft_und_ene
 
 \subsubsection*{Acknowledgement}
 
-Thanks to Tom Brown for fruitful discussions and well-placed inputs. Thanks to Alexander Zerrahn and Alexander Kies for helpful comments.
+In particular, I thank Tom Brown for very fruitful discussions. I am very grateful to Alexander Zerrahn for reviewing and helping out with important parts. Further, I want to thank Alexander Kies and Markus Schlott who steadily helped with creative thoughts.
 
 
 
