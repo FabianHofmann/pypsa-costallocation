@@ -1,9 +1,9 @@
-\documentclass[11pt,twocolumn]{article}
+\documentclass[preprint,5p,12pt]{elsarticle}
 \usepackage{graphicx}
-\usepackage[left=1.80cm, right=1.80cm, top=2.00cm, bottom=2.00cm]{geometry}
+% \usepackage[left=1.80cm, right=1.80cm, top=2.00cm, bottom=2.00cm]{geometry}
 \usepackage{amsmath,bm}
 \usepackage[colorlinks]{hyperref}
-\usepackage[natbib=true, sorting=none, backend=biber, bibencoding=utf8, style=ieee]{biblatex}
+% \usepackage{biblatex}
 \usepackage{eurosym}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{subcaption}
@@ -13,9 +13,12 @@
 \usepackage[capitalise]{cleveref}
 
 
+\hypersetup{
+    colorlinks = true,
+    linkbordercolor = {white},}
 
-\addbibresource{main.bib}
-\graphicspath{{../figures/}{../figures/example/}}
+% \addbibresource{main.bib}
+\graphicspath{{figures/}{figures/example/}}
 
 \crefname{relation}{Rel.}{Rels.}
 \creflabelformat{relation}{(#2#1#3)}
@@ -178,47 +181,36 @@
 
 \begin{document}
 
+\begin{frontmatter}
+
 
 \title{Tracing prices: A flow-based cost allocation for optimized power systems}
-\author{Fabian Hofmann\\Frankfurt Institute for Advanced Studies (FIAS), 60438 Frankfurt, Germany\\
-Email: hofmann@fias.uni-frankfurt.de}
 
-\date{}
-
-\twocolumn[
-  \begin{@twocolumnfalse}
-
-    \maketitle
-    
-    \begin{abstract}
-        % Cost minimization of power systems leads to perfectly scheduled operations and investments while securing all power demands. 
-        % System needs reports from regional, national and international agencies increasingly rely on cost minimization techniques. However, cost impact to single regions and thefore the question of who profits to what extent from an investment is often neglected. The literature provides multiple cost allocation methods dedicated to this problem, yet they hardly suit for large networks and an integration of all costs. 
-        % This work introduces a peer-to-peer allocation of all system costs in optimized models. Combining basic relations from economic optimization with flow allocation, its cost assignments are locally constraint while still being aligned with the Locational Marginal Prices at the optimum. It is showcased by means of an optimized near-future scenario of the German power system. 
-        Power system models are a valuable and widely used tool to determine cost-minimal future operation and investment under political or ecological boundary conditions. Yet they are silent about the allocation of costs of single assets, as generators or transmission lines, to consumers in the network. Existing cost-allocation methods hardly suit large networks and do not take all relevant costs into account. This paper bridges this gap. Based on flow tracing, it introduces a peer-to-peer or more precisely an asset-to-consumer allocation of all costs in an optimized power system. The resulting cost allocation is both locally constrained and aligned with locational marginal prices in the optimum. The approach is applied and discussed using a future German scenario.
-        \vtop{%
-         \vskip0pt
-          \hbox{%
-          \includegraphics[width=\linewidth]{graphical_abstract.png}
-          }%
-        }
-        
-    \end{abstract}
- 
-\end{@twocolumnfalse}
-]
+\author{Fabian Hofmann\corref{cor1}}
+\ead{hofmann@fias.uni-frankfurt.de}
+\address{Frankfurt Institute for Advanced Studies (FIAS), 60438 Frankfurt, Germany}
 
 
-\subsection*{Highlights}
-\begin{itemize}
-    \item In long-term equilibria a network asset recovers its variable and investment cost from its operation based revenue
-    \item Flow tracing is used as a basis to allocate the operation of assets to consumers. 
-    \item Allocated flows have to be reshaped such that the Kirchhoff Current Law and the Kirchhoff Voltage Law are respected. 
-    \item Using operational and shadow prices from constraints, all costs are assigned in an P2P manner.
-    \item The cost assignments are locally constraint and in alignment with the nodal pricing scheme of the optimum.    
+
+\begin{abstract}
+    Power system models are a valuable and widely used tool to determine cost-minimal future operation and investment under political or ecological boundary conditions. Yet they are silent about the allocation of costs of single assets, as generators or transmission lines, to consumers in the network. Existing cost-allocation methods hardly suit large networks and do not take all relevant costs into account. This paper bridges this gap. Based on flow tracing, it introduces a peer-to-peer or more precisely an asset-to-consumer allocation of all costs in an optimized power system. The resulting cost allocation is both locally constrained and aligned with locational marginal prices in the optimum. The approach is applied and discussed using a future German scenario.
+\end{abstract}
+
+\begin{graphicalabstract}
+    \includegraphics[width=.9\textwidth]{graphical_abstract.png}
+\end{graphicalabstract}
+
+\begin{highlights}
+    \item Expenditures to a network asset are recovered by  its operation based revenue
+    \item Flow tracing is used to allocate the operation of assets to consumers 
+    \item Allocated flows have to be reshaped to meet the Kirchhoff circuit laws
+    \item Using operational and shadow prices, all system costs are assigned in an P2P manner
+    \item Cost assignments are local while aliging with the nodal pricing scheme of the optimum    
     % \item Upper and lower capacity expansion limits modify the revenue per asset, which however correctly reflects in the cost allocation
-    \item In a low-carbon scenario for Germany, regions with high renewable potentials profit from investments compensated by remote buses.   
-\end{itemize}
+    % \item In a low-carbon scenario for Germany, regions with high renewable potentials profit from investments compensated by remote buses.   
+\end{highlights}
 
+\end{frontmatter}
 
 \subsubsection*{Nomenclature}
 
@@ -241,7 +233,7 @@ Email: hofmann@fias.uni-frankfurt.de}
 \section{Introduction}
 
 Today's power systems are subject to a deep and ongoing transformation. The shift from controllable to variable, weather-driven power generation as well as the constant improvement and innovation of technology require rigorous system planning and international cooperation \cite{pfenninger_energy_2014,schlachtberger_benefits_2017}. The core of the challenge manifests in the total costs of the system. Firstly, these should be as low as possible while meeting ecological and techno-economic standards. Secondly, they must be distributed in a fair and transparent manner among all agents in the power system. It is central to identify the drivers of costs and address them appropriately.  
-In this respect, power system models are a valuable and widely used tool \cite{pfenninger_energy_2014,bazmi_sustainable_2011,pereira_generation_2017,brown_sectoral_2019}. Many studies for countries and regions throughout the world exist that lay out how renewable energy penetration can be expanded at minimum costs. Yet they largely remain silent how and on which grounds these costs are allocated among consumers. 
+In this respect, power system models are a valuable and widely used tool \cite{pfenninger_energy_2014,bazmi_sustainable_2011,pereira_generation_2017,brown_sectoral_2019,collins_impacts_2018,kozarcanin_21st_2019}. Many studies for countries and regions throughout the world exist that lay out how renewable energy penetration can be expanded at minimum costs. Yet they largely remain silent how and on which grounds these costs are allocated among consumers. 
 
 This paper fills this gap. In an optimized network, the characteristics of each time step are in detailed considered to allocate all system costs. We build on two fundamental concepts: first, the zero profit condition that states that, in the optimum, the revenue of each network asset, i.e., generator, transmission line etc., matches its operational and capital expenditures. Second, the flow tracing method, following Bialek’s Average Participation (AP) approach \cite{bialek_tracing_1996}, that allocates the use of network assets to consumers in a locally constrained fashion. 
 Combining these two concepts allows for an transparent allocation of all operational (OPEX) and capital expenditures (CAPEX) to the consumers in the network. 
@@ -251,12 +243,13 @@ The literature discussed and applied the concept of flow-based cost allocation i
 
 In this paper, we bring together the advantages of the studies discussed above. Our approach assures localized cost allocations while fully aligning payments to the nodal pricing scheme based on the LMP. It serves to facilitate transparency and cost-benefit analysis in network plannings such as the Ten Year Network Development Plan \cite{entso-e_completing_2020} or the German Netzentwicklungsplan (NEP) \cite{bundesnetzagentur_netzentwicklungsplan_2020}. Further, it provides a point of departure for usage-based transmission cost allocation.
 
-The first section the formulates the operation based revenue for different kind of assets (\cref{sec:zero_profit_rule}),  the AP allocation scheme and derived allocations from asset to consumer (\cref{sec:dispatch_allocations}), the cost allocation and the impact of additional constraints (\cref{sec:general_scheme,sec:design_constraints}), a numerical example (\cref{sec:numerical_example}). \Cref{sec:application_case} applies the cost allocation to a optimized German power system with a high share of renewable power generation and evaluates the allocated costs.  
+The first section presents the zero-profit condition for different kind of assets (\ref{sec:zero_profit_rule}),  the AP allocation scheme and derived allocations from asset to consumer (\ref{sec:dispatch_allocations}), the cost allocation and the impact of additional constraints (\ref{sec:general_scheme,sec:design_constraints}), a numerical example (\ref{sec:numerical_example}). \ref{sec:application_case} applies the cost allocation to a optimized German power system with a high share of renewable power generation and evaluates the allocated costs.  
 
 
-\section{Flow-based Cost Allocation}
 
-\subsection{Operation based revenue}
+\section{Results and Discussion}
+
+\subsection{Operation Based Revenue}
 \label{sec:zero_profit_rule}
 
 \begin{figure}[h]
@@ -306,7 +299,7 @@ For a detailed demonstration, we derive  \cref{eq:cost_decomposition} for genera
         % \bottomrule   
     \end{tabular}
     \end{center}
-    \caption{Representation of different cost terms as a function of the operational state, \ie matching the form in \cref{eq:cost_decomposition}. These include OPEX \& CAPEX for production, transmission and storage assets in the network, as well as a cost term for the total Green House Gas (GHG) emissions. For storage units, an additional cost term adds to $\capexstorage$ (see \cref{sec:zero_profit_storage_units} for details).}
+    \caption{Representation of different cost terms as a function of the operational state, \ie matching the form in \cref{eq:cost_decomposition}. These include OPEX \& CAPEX for production, transmission and storage assets in the network, as well as a cost term for the total Green House Gas (GHG) emissions. For storage units, an additional cost term adds to $\capexstorage$ (see \ref{sec:zero_profit_storage_units} for details).}
     \label{tab:cost_allocation_map}
 \end{table*}
 
@@ -327,7 +320,7 @@ adds to $\totalcost$. Here, $\emission$ denotes the emission factor in tonne-CO$
 \generation - \capacitygeneration  &\le 0 \resultsin{\muuppergeneration} \Forall{s,t} 
 \label[constraint]{eq:upper_generation_capacity_constraint}
 \end{align}
-The constraint yields a shadow-price of $\muuppergeneration$, given by corresponding the Karush–Kuhn–Tucker (KKT) variable, in literature often denoted as the Quality of Supply \cite{schweppe_spot_1988}. It can be interpreted as the price per MW that \cref{eq:upper_generation_capacity_constraint} imposes to the system. If $\muuppergeneration$  is bigger than zero, the constraint is binding, which pushes investments in $\capacitygeneration$. As shown in \cite{brown_decreasing_2020} and in detail in \cref{sec:zero_profit_generation}, over the whole time span, the CAPEX for generator $s$ is recovered by the production $\generation$ times the shadow price $\muuppergeneration$, 
+The constraint yields a shadow-price of $\muuppergeneration$, given by corresponding the Karush–Kuhn–Tucker (KKT) variable, in literature often denoted as the Quality of Supply \cite{schweppe_spot_1988}. It can be interpreted as the price per MW that \cref{eq:upper_generation_capacity_constraint} imposes to the system. If $\muuppergeneration$  is bigger than zero, the constraint is binding, which pushes investments in $\capacitygeneration$. As shown in \cite{brown_decreasing_2020} and in detail in \ref{sec:zero_profit_generation}, over the whole time span, the CAPEX for generator $s$ is recovered by the production $\generation$ times the shadow price $\muuppergeneration$, 
 \begin{align}
  \capexgeneration_s = \capitalpricegeneration \capacitygeneration = \sum_t \muuppergeneration \,  \generation 
  \label{eq:no_profit_capex_generation}
@@ -345,7 +338,7 @@ Let $L \subset I$ be the set of transmission lines in the system, these may incl
 - \flow - \capacityflow &\le 0 \resultsin{\mulowerflow} \Forall{\ell,t} 
 \label[constraint]{eq:lower_flow_capacity_constraint}
 \end{align}
-At the cost-optimum, the two constraints yield the shadow prices $\muupperflow$ and $\mulowerflow$. Again, we use the relation that over the whole time span, the shadow prices weighted by the flow match the investment in line $\ell$ (for details see \cref{sec:zero_profit_flow}) 
+At the cost-optimum, the two constraints yield the shadow prices $\muupperflow$ and $\mulowerflow$. Again, we use the relation that over the whole time span, the shadow prices weighted by the flow match the investment in line $\ell$ (for details see \ref{sec:zero_profit_flow}) 
 \begin{align}
 \capexflow_\ell = \capitalpriceflow \capacityflow = \sum_{t} \left( \muupperflow - \mulowerflow \right)  \flow 
 \label{eq:no_profit_capex_flow}
@@ -360,7 +353,7 @@ The shadow prices $\muupperflow$ and $\mulowerflow$ can be seen as a measure for
 \begin{subequations}
     
 
-Let $R \subset I$ denote all storages in the system. In a simplified storage model, $\capacitystorage$ limits the storage dispatch $\storagedispatch$ and charging $\storagecharge$. Further it limits the maximal storage capacity $\storagesoc$ by a fix ratio $h_r$, denoting the maximum hours at full discharge. The storage $r$ dispatches power with efficiency $\efficiencydispatch$, charges power with efficiency $\efficiencycharge$ and preserves power from one time step $t$ to the next, $t+1$, with an efficiency of $\efficiencysoc$. In \cref{sec:zero_profit_storage_units} we formulate the mathematical details. The OPEX which adds to $\totalcost$ is given by 
+Let $R \subset I$ denote all storages in the system. In a simplified storage model, $\capacitystorage$ limits the storage dispatch $\storagedispatch$ and charging $\storagecharge$. Further it limits the maximal storage capacity $\storagesoc$ by a fix ratio $h_r$, denoting the maximum hours at full discharge. The storage $r$ dispatches power with efficiency $\efficiencydispatch$, charges power with efficiency $\efficiencycharge$ and preserves power from one time step $t$ to the next, $t+1$, with an efficiency of $\efficiencysoc$. In \ref{sec:zero_profit_storage_units} we formulate the mathematical details. The OPEX which adds to $\totalcost$ is given by 
 \begin{align}
     \opexstorage = \sum_r o_r \storagedispatch 
 \end{align}
@@ -373,7 +366,7 @@ Using the result of \cite{brown_decreasing_2020} the CAPEX can be related to the
     &- \sum_t \lmp \incidencestorage  \storagecharge \Forall{r} 
     \label{eq:no_profit_capex_storage}
 \end{align}
-where $\muupperstoragedispatch$ and $\mulowerstoragedispatch$ are the shadow prices of the upper and lower dispatch capacity bound and $\mustateofcharge$ is the shadow price of the energy balance constraint. Following the considerations in \cref{sec:zero_profit_storage_units} we restrict to the revenue from dispatched power, \ie the first term in \cref{eq:no_profit_capex_storage}, for the cost allocation.   
+where $\muupperstoragedispatch$ and $\mulowerstoragedispatch$ are the shadow prices of the upper and lower dispatch capacity bound and $\mustateofcharge$ is the shadow price of the energy balance constraint. Following the considerations in \ref{sec:zero_profit_storage_units} we restrict to the revenue from dispatched power, \ie the first term in \cref{eq:no_profit_capex_storage}, for the cost allocation.   
 
 \end{subequations}
 
@@ -387,7 +380,7 @@ The fact that all asset related costs $\cost_i$ can be represented as a cost-wei
 
 Dispatch and flow in a system can be considered as a superposition of individual contributions of nodes or assets. In order to artificially quantify these contribution, the literature provides various methods, named flow allocation schemes. Each of these follow a specific set of assumptions which lead to peer-to-peer allocations $A_{m \rightarrow n}$. That is a measure for the power produced at node $m$ and consumed at node $n$. 
 
-In the following, we resort to one specific flow allocation scheme Average Participation (AP), also known as flow tracing \cite{bialek_tracing_1996}. The basic idea is to trace the power injection at bus $m$ through the network while following the real power flow on transmission lines and applying the principal of proportional sharing. At each bus, including the starting bus $m$, the traced flow might be mixed with incoming power flows from other buses. As soon as the power is absorbed or flowing out of a bus, the traced flow originating from $m$ splits in the same proportion as the total flow. This assumption leads to regionally confined allocation $A_{m \rightarrow n}$ based on a straightforward principal. A mathematical formulation of the AP scheme is documented in \cref{sec:net_ap}. For a detailed comparison with other schemes we refer to \cite{hofmann_techno-economic_2020}. 
+In the following, we resort to one specific flow allocation scheme Average Participation (AP), also known as flow tracing \cite{bialek_tracing_1996}. The basic idea is to trace the power injection at bus $m$ through the network while following the real power flow on transmission lines and applying the principal of proportional sharing. At each bus, including the starting bus $m$, the traced flow might be mixed with incoming power flows from other buses. As soon as the power is absorbed or flowing out of a bus, the traced flow originating from $m$ splits in the same proportion as the total flow. This assumption leads to regionally confined allocation $A_{m \rightarrow n}$ based on a straightforward principal. A mathematical formulation of the AP scheme is documented in \ref{sec:net_ap}. For a detailed comparison with other schemes we refer to \cite{hofmann_techno-economic_2020}. 
 
 
 The peer-to-peer allocations $\allocatepeer$ fulfill some basic properties. On the one hand it allocates the all power productions at time $t$, \ie when summing over all receiving nodes $n$ the allocations yield the gross power generation $\nodalgeneration[m]$ of producing assets $i \in S \cup R$ (generators and storages) attached to $m$. Mathematically this translates to    
@@ -401,7 +394,7 @@ where $\incidenceasset[m]$ is 1 if asset $i$ is attached to bus $m$ and zero oth
     \demand = \sum_m \allocatepeer 
 \end{align}
 As the standard formulation implies, we assume that only net power production of $m$ is allocated to other buses, \ie $\allocatepeer[m \rightarrow m] = \min\left(\nodalgeneration[m], \demand[m]\right)$. Like this nodal generations which do not exceed the nodal demand are completely allocated to local consumers. 
-The contribution of a single producing asset $i \in S \cup R$ to the nodal allocation $\allocatepeer$ is in proportion to the share $w_{i,t} = \incidenceasset[m] \state / \nodalgeneration[m]$ that asset $i$ contributes to the nodal generation $\nodalgeneration[m]$, leading to 
+The contribution of a single producing asset $i \in S \cup R$ to the nodal allocation $\allocatepeer$ is in proportion to the share $w_{i,t} = \incidenceasset[m] \state /  \nodalgeneration[m]$ that asset $i$ contributes to the nodal generation $\nodalgeneration[m]$, leading to 
 \begin{align}
     \allocatestate = w_{i,t}\, \allocatepeer \Forall{i \in S \cup R, n , t}
     \label{eq:allocate_production}
@@ -409,7 +402,7 @@ The contribution of a single producing asset $i \in S \cup R$ to the nodal alloc
 % 
 This relation states how much of the power produced by asset $i \in S \cup R$ is finally consumed by consumers at $n$. 
 
-Yet, we didn't touch the allocation of transporting assets $i \in L$ to consumers. Note that the traced flow based in the AP scheme obeys the Kirchhoff Current Law but not the Kirchhoff Voltage Law, as already pointed out in \cite{galiana_transmission_2003}. However, as we show later a consideration of both laws is needed in order to align the allocated costs with the optimized locational marginal prices (LMP). To tackle this, let $\ptdf$ denote a linear mapping between the injection $\left(\nodalgeneration[m] - \demand[m]\right)$ and the flow $\flow$, such that  
+Yet, we didn't touch the allocation of transporting assets $i \in L$ to consumers. Note that the traced flow based in the AP scheme obeys the Kirchhoff Current Law but not the Kirchhoff Voltage Law, as already pointed out in \cite{galiana_transmission_2003}. However, as we show later, a consideration of both laws is needed in order to align the allocated costs with the optimized locational marginal prices (LMP). To tackle this, let $\ptdf$ denote a linear mapping between the injection $\left(\nodalgeneration[m] - \demand[m]\right)$ and the flow $\flow$, such that  
 \begin{align}
  \flow  = \sum_m \ptdf[m]\, \left(\nodalgeneration[m] - \demand[m]\right) \Forall{\ell \in L, t}
  \label{eq:power_flow_equation}  
@@ -444,13 +437,13 @@ Using the presented relations, we are able to straightforwardly define the cost 
 \end{align}
 By default, the full costs $\cost_i$ associated with asset $i$ are allocated, \ie $\cost_i = \sum_n \allocatecost$. Likewise all system costs are allocated, $\totalcost = \sum_{\circ, i, n, t} \allocatecost$. 
 
-The cost allocation entails a further important property. In a cost-optimal setup, the LMP describes the change of costs for an incremental increase of electricity demand $\demand$ at node $n$ and time $t$ \cite{schweppe_spot_1988}. Mathematically this translates to the derivative of the total system cost $\totalcost$ with respect to the local demand $\demand$, $\lmp = \partial \totalcost /\partial \demand$. At the optimum this quantity is given by a shadow price of the nodal balance constraint (see \cref{sec:lmp} for details). Now, when summing over all assets $i$ and cost terms $\circ$, the cost allocation yields 
+The cost allocation entails a further important property. In a cost-optimal setup, the LMP describes the change of costs for an incremental increase of electricity demand $\demand$ at node $n$ and time $t$ \cite{schweppe_spot_1988}. Mathematically this translates to the derivative of the total system cost $\totalcost$ with respect to the local demand $\demand$, $\lmp = \partial \totalcost /\partial \demand$. At the optimum this quantity is given by a shadow price of the nodal balance constraint (see \ref{sec:lmp} for details). Now, when summing over all assets $i$ and cost terms $\circ$, the cost allocation yields 
 \begin{align}
     \payment = \sum_{\circ, i} \allocatecost  = \lmp\, \demand  \Forall{n,t}
     \label{eq:payment}
 \end{align} 
 which we refer to as the nodal payment or payment.  
-This relation which is in detailed proven in \cref{sec:proof_equivalence} shows that the cost allocation is embedded in the optimized nodal pricing scheme, \ie the nodal payment exactly matches the payment determined by the LMP $\lmp$.
+This relation which is in detailed proven in \ref{sec:proof_equivalence} shows that the cost allocation is embedded in the optimized nodal pricing scheme, \ie the nodal payment exactly matches the payment determined by the LMP $\lmp$.
 
 \end{subequations}
 
@@ -579,7 +572,7 @@ The fact that OPEX and CAPEX allocations are proportional to each other results 
 
 
 
-\section{Application Case}
+\subsection{Application Case}
 \label{sec:application_case}
 % 
 \begin{figure*}[t]
@@ -662,7 +655,7 @@ The last cost term $\subsidycost$ in \cref{fig:total_cost}, is caused by lower c
 
 Finally, \cref{fig:locality} draws the cumulative share of P2P cost assignments of a function of the distance between producer and consumer. The data is shown for all technologies separately. The later the curve reaches 100\% the deeper the price of a technologies penetrates into the network. Offshore wind has the strongest price influence to remote buses. Only 10-30\% of its expenses are compensated by local consumers and the rest is assigned to remote buses, especially those with high demand (compare \cref{fig:average_demand}). The contrast between Hydrogen Storage and Battery sticks out. Whereas Battery costs are hardly assigned to other buses, almost 50\% of the Hydrogen Storage costs are payed by remote buses. It underlines the fundamental functionality of the two technologies. Hydrogen storage are located at buses with high wind generation and balance out their long-term excess and deficit energy. The dispatched power follows a similar way through the network as the wind power. The battery on the other hand pairs with local solar production and its locally constraint dispatch and flow.     
 
-\section{Limitations}
+\subsection{Limitations}
 The presented cost allocation is based on the linear power flow approximation. Yet, the method is equally applicable to a system with an Optimal Power Flow (OPF), \ie full AC power flows. Yet for this case, the AP scheme is not the correct choice as the misalignment from the Kirchhoff Voltage Law cannot not be corrected subsequently. Rather, the Z-Bus flow allocation presented in \cite{conejo_z-bus_2007} might suit better as it naturally respects both circuit laws. Allocating on the basis of the full power flow introduces an additional cost term $\remainingcost^\text{Loss}$ accounting for the transmission loss which is compensated by the consumers and mirrors in the LMP. 
 
 The used optimization does not take security constrains of the transmission system into account. These may be incorporated following the approach in \cite{nikoukar_transmission_2012}. 
@@ -672,24 +665,41 @@ We restricted the application to long-term investment models with perfect foresi
 The optimization assumes a fix demand time series. As shown in \cref{fig:capex_duration_curve} this leads to high if not unrealistic LMP. Introducing a value of loss load as proposed in \cite{schroder_value_2015}  would screen away these and lead to more evenly distributed allocations. 
 
 
-\section{Conclusion}
+\subsection{Conclusion}
 
 A new cost-allocation scheme based on peer-to-peer dispatch allocations from assets to consumers was presented. Within a long-term equilibrium OPEX and CAPEX of each asset are payed back by the operation based revenue. Using flow allocation, we are able to allocate the operation and therefore the assigned costs of assets to consumers in the network. For three typical classes of assets, namely generators, transmission lines and storage units, we showed how operational prices and shadow prices must be weighted with the dispatch allocation in order to allocate all system costs. Further we highlighted the impact of minimum capacity requirements and maximum installation potentials. These alter the revenues per asset and therefore the cost allocations. For lower capacity requirements, assets may not recover all the expenses from the revenue. In this case the cost difference has to be subsidized or simply be ignored, in case the asset is already amortized. Contrary, upper capacity expansion limits lead to an additional charge for consumers which have to compensate for an additional scarcity rent of the assets.  
 Applied to a optimized German power system with an imposed price of 120 \euro\, per tonne CO$_2$ equivalent. The cost allocation shows low electricity prices for consumers in a renewable German system are achieved on a transparent basis. The cost allocation shows how buses remote from wind farms pay higher prices due to increased reliance in transmission and backup capacity. On the other hand, buses with high renewable installation spend most payments to local assets. 
 
+\section*{Experimental Procedures}
 
-\subsubsection*{Reproducibility and Expansion}
+% \subsection*{Resource Availability}
 
-All figures and data points can be reproduced by using the \textit{python} workflow in \cite{hofmann_pypsa-costallocation_2020}. The automated workflow allows for higher spatial resolution of the network (scalable up to a the full ENTSO-E Transmission System Map) and optionally taking the total European power system into account.  
+\subsection*{Lead Contact}
+Requests for further information, resources and materials should be directed to Fabian Hofmann (hofmann@fias.uni-frankfurt.de)
 
-\subsection*{Funding}
+\subsection*{Data and Code Availability}
+All figures and data points of this paper can be reproduced by using the \textit{python} workflow published in \cite{hofmann_pypsa-costallocation_2020}. \\
+The automated workflow allows for higher spatial resolution of the network (scalable up to the full ENTSO-E Transmission System Map) and optionally taking the total European power system into account.  
+
+\subsection*{Materials Availability}
+This study did not generate any new materials.
+
+
+\section*{Acknowledgement}
+
+In particular, I thank Tom Brown for very fruitful discussions. I am very grateful to Alexander Zerrahn for reviewing and helping out with important parts. Further, I want to thank Alexander Kies and Markus Schlott who steadily helped with creative thoughts.
 This research was funded by the by the German Federal Ministry for Economics Affairs and Energy (BMWi) in
 the frame of the NetAllok project (grant number 03ET4046A) \cite{bundesministerium_fur_wirtschaft_und_energie_verbundvorhaben_nodate}. 
 
-\subsubsection*{Acknowledgement}
+\section*{Author Contributions}
+This work was solely done by Fabian Hofmann.  
 
-In particular, I thank Tom Brown for very fruitful discussions. I am very grateful to Alexander Zerrahn for reviewing and helping out with important parts. Further, I want to thank Alexander Kies and Markus Schlott who steadily helped with creative thoughts.
+\section*{Declaration of Interests}
+The author declares no competing interests.
 
+
+\bibliographystyle{elsarticle-num} 
+\bibliography{main.bib}
 
 
 % ----------------------- APPENDIX -------------------------------------
@@ -970,7 +980,7 @@ where $\DirectedIncidence^-$ is the negative part of the directed Incidence matr
 \end{align}
 
 \section{Working Example}
-The following figures contain more detailed information about the peer-to-peer cost allocation discussed in \cref{sec:application_case}. The cost or prices payed by consumers are indicated by the region color. The dedicated revenue is displayed in proportion to the size of cycles (for assets attached to buses) or to the thickness of transmission branches.    
+The following figures contain more detailed information about the peer-to-peer cost allocation discussed in \ref{sec:application_case}. The cost or prices payed by consumers are indicated by the region color. The dedicated revenue is displayed in proportion to the size of cycles (for assets attached to buses) or to the thickness of transmission branches.    
 \begin{figure*}
     \centering
     \begin{subfigure}[c]{.49\linewidth}
@@ -999,7 +1009,7 @@ The following figures contain more detailed information about the peer-to-peer c
 
 \begin{table*}[h]
     \centering
-    \input{../tables/de50bf_ptpf_net/prices}    
+    \input{tables/de50bf_ptpf_net/prices}    
     \caption{Operational and capital price assumptions for all type of assets used in the working example. The capital price for transmission lines are given in [k\,\euro/MW/km]. The cost assumptions are retrieved from the PyPSA-EUR model \cite{horsch_jonas_pypsa-eur_2020}.}
     \label{tab:cost_assumptions}
 \end{table*} 
@@ -1033,7 +1043,7 @@ The following figures contain more detailed information about the peer-to-peer c
 
 
 \begin{figure*}
-    \includegraphics[width=\linewidth]{de50bf/capex_duration_curve}
+    \includegraphics[width=.9\linewidth]{de50bf/capex_duration_curve}
     \caption{Duration curve of the CAPEX allocation for production and storage technologies. Hours are sorted by the total amount of allocated expenditure. With 2.7 bn~\euro\, the first value pushes investments extraordinarily high. Due to low renewable potentials, it is dominated by CAPEX for OCGT which receives 92\% of the payments. This hour alone occasions about the half of all OCGT CAPEX. \Cref{fig:capex_duration_curve} gives a detailed picture of the operational state at this time-step. The following 7000 time-steps are dominated by revenues for onshore wind and reveal a rather even distribution. In hours of low CAPEX allocation (after the second drop) spending for OCGT start to increase again. These time-steps however play a minor role.}
     \label{fig:capex_duration_curve}
 \end{figure*}
@@ -1079,13 +1089,6 @@ The following figures contain more detailed information about the peer-to-peer c
     \caption{Average \textbf{allocated scarcity cost} per consumed MWh, $\sum_t \allocatescarcitycost / \sum_t \demand$. These cost result from land use restrictions for offshore wind, onshore wind,  solar, run-of-river. The cost per MWh are indicated by the color of a region. The revenue per production asset is given by the size of the circle at the corresponding bus.}
     \label{fig:scarcity_price}
 \end{figure*}
-
-
-
-
-
-\clearpage
-\printbibliography
 
 
 

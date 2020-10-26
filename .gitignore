@@ -10,6 +10,9 @@ code/__pycache__
 *.synctex.gz
 *.out
 *.nc
+*.fdb_latexmk
+*.spl
+*.fls
 pypsa-eur
 pypsa-de
 technology-data
@@ -18,3 +21,8 @@ resources/*
 figures/*
 figures/*test*
 review_az.pdf
+submission-arxiv
+submission-joule/paper/figures
+submission-joule/paper/tables
+submission-joule/paper/*.pdf
+submission-joule/paper/main.bib
