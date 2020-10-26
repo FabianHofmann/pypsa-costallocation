@@ -180,7 +180,8 @@
 
 
 \title{Tracing prices: A flow-based cost allocation for optimized power systems}
-\author{F. Hofmann}
+\author{Fabian Hofmann\\Frankfurt Institute for Advanced Studies (FIAS), 60438 Frankfurt, Germany\\
+Email: hofmann@fias.uni-frankfurt.de}
 
 
 \twocolumn[
@@ -192,7 +193,7 @@
         % Cost minimization of power systems leads to perfectly scheduled operations and investments while securing all power demands. 
         % System needs reports from regional, national and international agencies increasingly rely on cost minimization techniques. However, cost impact to single regions and thefore the question of who profits to what extent from an investment is often neglected. The literature provides multiple cost allocation methods dedicated to this problem, yet they hardly suit for large networks and an integration of all costs. 
         % This work introduces a peer-to-peer allocation of all system costs in optimized models. Combining basic relations from economic optimization with flow allocation, its cost assignments are locally constraint while still being aligned with the Locational Marginal Prices at the optimum. It is showcased by means of an optimized near-future scenario of the German power system. 
-        Power system models are a valuable and widely used tool to determine cost-minimal future operation and investment under political or ecological boundary conditions. Yet they are silent about the allocation of costs of single assets, \ie generators, transmission lines etc., to consumers in the network. Existing cost-allocation methods hardly suit large networks and do not take all relevant costs into account. This paper bridges this gap. Based on flow tracing, it introduces a peer-to-peer allocation of all costs in an optimized power system to consumers. The resulting cost allocation is both locally constrained and aligned with locational marginal prices in the optimum. The approach is applied and discussed using a future German scenario.
+        Power system models are a valuable and widely used tool to determine cost-minimal future operation and investment under political or ecological boundary conditions. Yet they are silent about the allocation of costs of single assets, as generators or transmission lines, to consumers in the network. Existing cost-allocation methods hardly suit large networks and do not take all relevant costs into account. This paper bridges this gap. Based on flow tracing, it introduces a peer-to-peer or more precisely an asset-to-consumer allocation of all costs in an optimized power system. The resulting cost allocation is both locally constrained and aligned with locational marginal prices in the optimum. The approach is applied and discussed using a future German scenario.
         \vtop{%
          \vskip0pt
           \hbox{%
@@ -276,7 +277,7 @@ In turn, each of the terms $\cost$ consists of the costs associated to an asset 
     \label{eq:asset_cost}
 \end{align} 
 where an ``asset'' describes any operating components of the network, such as a generator, line, energy storage etc. We refer to the set of all assets as $I$. 
-In a long-term equilibrium of a power system with perfect competition, the zero-profit condition states that each cost term $\cost_{i}$ can be considered as a cost-weighted sum of the operational state $s_{i,t}$ of asset $i$ and time $t$, \ie
+In a long-term equilibrium of a power system with perfect competition and no further constraints, the zero-profit condition states that each cost term $\cost_{i}$ is recovered by the revenue that asset $i$ receives from the market \cite{steiner_peak_1957}. As partly shown in \cite{brown_decreasing_2020}, it builds on the fact that $\cost_i$ can be expressed as a cost-weighted sum of the operational state $s_{i,t}$ of asset $i$ and time $t$, \ie
 \begin{align}
     \cost_{i} = \sum_t  \costfactor \, \state
     \label{eq:cost_decomposition}
