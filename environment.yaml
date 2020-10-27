@@ -57,5 +57,6 @@ dependencies:
     - vresutils==0.3.1
     - git+https://github.com/PyPSA/glaes.git#egg=glaes
     - git+https://github.com/PyPSA/geokit.git#egg=geokit
+    - git+https://github.com/PyPSA/pypsa.git@shadowprices
     - git+https://github.com/FRESNA/netallocation.git#egg=netallocation
     - cdsapi

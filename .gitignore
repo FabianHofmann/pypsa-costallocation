@@ -11,6 +11,8 @@ code/__pycache__
 *.out
 *.nc
 paper
+submission*
+review*
 pypsa-eur
 pypsa-de
 technology-data
