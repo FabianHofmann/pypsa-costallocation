@@ -16,5 +16,8 @@
         "stationarities",
         "stationarity"
     ],
-    "restructuredtext.confPath": "${workspaceFolder}/doc"
+    "restructuredtext.confPath": "${workspaceFolder}/doc",
+    "cSpell.enableFiletypes": [
+        "bibtex"
+    ]
 }
