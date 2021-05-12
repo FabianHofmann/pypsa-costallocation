@@ -29,7 +29,7 @@ n.madd('Generator', [1, 3], bus=[1, 3], p_nom=[50, 50],
 n.madd("Load", [1,2], bus=[1,2], p_set=[30,50])
 n.madd('Line', ['1-2', '3-1', '3-2',],
        bus0=[1, 3, 3,], bus1=[2, 1, 2,],
-       s_nom=[40, 15, 30], x=[0.01, 0.01, 0.01], )
+       s_nom=[60, 30, 30], x=[0.01, 0.01, 0.01], )
 
 n.lopf(pyomo=False, solver_name='gurobi', keep_shadowprices=True,
         keep_references=True)
@@ -113,7 +113,7 @@ fig.savefig(figures / 'network.png', bbox_inches='tight')
 
 C = ntl.allocate_revenue(n, with_cycle_prices=True)
 
-to_index = pd.Series(dict(payer='n', receiver_node='m', receiver_branch='$\ell$'))
+to_index = pd.Series(dict(payer='n', receiver_node='s', receiver_branch='$\ell$'))
 payoff = C.sum(['snapshot', 'receiver_carrier'])\
            .assign_coords(receiver_branch=['1-2', '1-3', '2-3'])\
            .rename(to_index).transpose(..., 'n') \
@@ -132,10 +132,37 @@ for i, v in enumerate(payoff):
                 annot_kws={'horizontalalignment': 'left'})
     if i:
         ax.set_ylabel('')
-    ax.set_title(v.replace("_", " ").title())
+    # ax.set_title(v.replace("_", " ").title())
+    ax.tick_params(left=False, bottom=False)
+fig.tight_layout(w_pad=.4)
+fig.savefig(figures / 'example_payoff-kvl.png', bbox_inches='tight')
+
+# %% revenue allocation wo KVL prices
+
+C = ntl.allocate_revenue(n, with_cycle_prices=False)
+
+to_index = pd.Series(dict(payer='n', receiver_node='s', receiver_branch='$\ell$'))
+payoff = C.sum(['snapshot', 'receiver_carrier'])\
+           .assign_coords(receiver_branch=['1-2', '1-3', '2-3'])\
+           .rename(to_index).transpose(..., 'n') \
+           .drop_sel(n='3')
+vmax = payoff.to_array().max()
+
+fig, axes = plt.subplots(1, 2, figsize=(4,3), sharey=True,
+                         gridspec_kw={'width_ratios':[0.5,.5,]})
+for i, v in enumerate(payoff):
+    ax = axes[i]
+    df = payoff[v].to_pandas().T
+    annot = df.round(0).astype(int).astype(str) + ' €'
+    annot = annot.where(annot != '0 €', "-")
+    sns.heatmap(df, cmap='PRGn', ax=ax, annot=annot, fmt='s',
+                cbar=False, vmin=-vmax, vmax=vmax, linewidths=1, square=True,
+                annot_kws={'horizontalalignment': 'left'})
+    if i:
+        ax.set_ylabel('')
+    # ax.set_title(v.replace("_", " ").title())
     ax.tick_params(left=False, bottom=False)
 fig.tight_layout(w_pad=.4)
 fig.savefig(figures / 'example_payoff.png', bbox_inches='tight')
-
 
 

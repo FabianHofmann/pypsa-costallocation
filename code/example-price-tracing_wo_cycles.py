@@ -30,7 +30,7 @@ n.madd('Generator', [1, 3], bus=[1, 3], p_nom=[50, 50],
 n.madd("Load", [1,2], bus=[1,2], p_set=[30,50])
 n.madd('Line', ['1-2', '3-1', ],
        bus0=[1, 3,], bus1=[2, 1,],
-       s_nom=[50, 30, ], x=[0.01, 0.01,], )
+       s_nom=[60, 30, ], x=[0.01, 0.01,], )
 n.lopf(pyomo=False, solver_name='gurobi', keep_shadowprices=True,
         keep_references=True)
 
@@ -105,7 +105,7 @@ fig.savefig(figures / 'network.png', bbox_inches='tight')
 
 C = ntl.allocate_revenue(n)
 
-to_index = pd.Series(dict(payer='n', receiver_node='m', receiver_branch='$\ell$'))
+to_index = pd.Series(dict(payer='n', receiver_node='s', receiver_branch='$\ell$'))
 payoff = C.sum(['snapshot', 'receiver_carrier'])\
            .assign_coords(receiver_branch=['1-2', '1-3'])\
            .rename(to_index).transpose(..., 'n') \
@@ -124,7 +124,7 @@ for i, v in enumerate(payoff):
                 annot_kws={'horizontalalignment': 'left'})
     if i:
         ax.set_ylabel('')
-    ax.set_title(v.replace("_", " ").title())
+    # ax.set_title(v.replace("_", " ").title())
     ax.tick_params(left=False, bottom=False)
 fig.tight_layout(w_pad=.4)
 fig.savefig(figures / 'example_payoff.png', bbox_inches='tight')
