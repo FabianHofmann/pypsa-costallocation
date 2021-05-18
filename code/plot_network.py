@@ -20,7 +20,7 @@ from pypsa.plot import projected_area_factor
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_network', nname='de10bf')
+        snakemake = mock_snakemake('plot_network', nname='de50bf')
 
 is_brownfield = 'bf' in snakemake.wildcards.nname
 
@@ -30,74 +30,46 @@ regions = gpd.read_file(snakemake.input.regions)
 bus_scale = 1.5e-5
 branch_scale = 5e-4
 
+# %%
+fig, axes = plt.subplots(1, 2, subplot_kw={"projection": ccrs.EqualEarth()},
+                         figsize=(8, 4))
+# existent
+bus_sizes = n.generators.groupby(["bus", "carrier"]).p_nom_min.sum()
+plot = n.plot(
+    bus_sizes=bus_sizes * bus_scale,
+    line_widths=n.lines.s_nom_min * branch_scale,
+    link_widths=n.links.p_nom_min * branch_scale,
+    ax=axes[0],
+    geomap='10m',
+    title='Lower Capacity Bounds',
+    boundaries=regions.total_bounds[[0,2,1,3]]
+)
+regions.plot(ax=axes[0], transform=ccrs.PlateCarree(), aspect='equal', facecolor='white',
+             edgecolor='blue', linewidth=0.1)
 
-if is_brownfield:
-    fig, axes = plt.subplots(1, 2, subplot_kw={"projection": ccrs.EqualEarth()},
-                             figsize=(10, 5))
-    # existent
-    bus_sizes = n.generators.groupby(["bus", "carrier"]).p_nom_min.sum()
-    plot = n.plot(
-        bus_sizes=bus_sizes * bus_scale,
-        line_widths=n.lines.s_nom_min * branch_scale,
-        link_widths=n.links.p_nom_min * branch_scale,
-        ax=axes[0],
-        geomap='10m',
-        title='Lower Capacity Bounds',
-        boundaries=regions.total_bounds[[0,2,1,3]]
-    )
-    regions.plot(ax=axes[0], transform=ccrs.PlateCarree(), aspect='equal')
-
-    # expanded
-    bus_sizes = n.generators.eval('p_nom_ext = p_nom_opt - p_nom_min')\
-                 .groupby(["bus", "carrier"]).p_nom_ext.sum()
-    plot = n.plot(
-        bus_sizes=bus_sizes * bus_scale,
-        line_widths=n.lines.eval('s_nom_opt - s_nom_min') * branch_scale,
-        link_widths=n.links.eval('p_nom_opt - p_nom_min') * branch_scale,
-        ax=axes[1],
-        geomap='10m',
-        title='Capacity Expansion',
-        boundaries=regions.total_bounds[[0,2,1,3]]
-    )
-    regions.plot(ax=axes[1], transform=ccrs.PlateCarree(), aspect='equal')
-else:
-    fig, axes = plt.subplots(subplot_kw={"projection": ccrs.EqualEarth()},
-                             figsize=(5, 5))
-    axes = [axes]
-    # optimal
-    bus_sizes = n.generators.groupby(["bus", "carrier"]).p_nom_opt.sum()
-    plot = n.plot(
-        bus_sizes=bus_sizes * bus_scale,
-        line_widths=n.lines.s_nom_opt * branch_scale,
-        link_widths=n.links.p_nom_opt * branch_scale,
-        ax=axes[0],
-        geomap='10m',
-        title='Optimal Capacities',
-        boundaries=regions.total_bounds[[0,2,1,3]]
-    )
-    regions.plot(ax=axes[0], transform=ccrs.PlateCarree(), aspect='equal')
-
-
+# expanded
+bus_sizes = n.generators.eval('p_nom_ext = p_nom_opt - p_nom_min')\
+             .groupby(["bus", "carrier"]).p_nom_ext.sum()
+plot = n.plot(
+    bus_sizes=bus_sizes * bus_scale,
+    line_widths=n.lines.eval('s_nom_opt - s_nom_min') * branch_scale,
+    link_widths=n.links.eval('p_nom_opt - p_nom_min') * branch_scale,
+    ax=axes[1],
+    geomap='10m',
+    title='Capacity Expansion',
+    boundaries=regions.total_bounds[[0,2,1,3]]
+)
+regions.plot(ax=axes[1], transform=ccrs.PlateCarree(), aspect='equal', facecolor='white',
+             edgecolor='blue', linewidth=0.1)
 
 fig.legend(
     *ntl.plot.handles_labels_for(n.carriers.set_index('nice_name').color),
     loc="upper left",
-    bbox_to_anchor=(1, 1),
-    title='Carrier',
+    bbox_to_anchor=(0,0),
+    ncol=2,
+    title='Generation Type',
     frameon=False,
 )
-
-# legend AC / DC
-handles = [Line2D([0], [0], color=c, linewidth=5) for c in
-           ['rosybrown', 'darkseagreen']]
-labels = ['AC', 'DC']
-
-legend = fig.legend(handles, labels,
-                    loc="upper left", bbox_to_anchor=(1, .5),
-                    frameon=False,
-                    title='Transmission Type')
-fig.artists.append(legend)
-
 
 # legend generator capacities
 reference_caps = [10e3, 5e3, 1e3]
@@ -108,11 +80,25 @@ handles = make_legend_circles_for(reference_caps, scale=scale,
 labels = ["%i GW"%(s / 1e3) for s in reference_caps]
 handler_map = make_handler_map_to_scale_circles_as_in(axes[0])
 legend = fig.legend(handles, labels,
-                loc="upper left", bbox_to_anchor=(1., 0.35),
+                loc="upper left", bbox_to_anchor=(.5, 0),
                 frameon=False,  # edgecolor='w',
                 title='Generation Capacity',
                 handler_map=handler_map)
 fig.add_artist(legend)
+
+
+
+# legend AC / DC
+handles = [Line2D([0], [0], color=c, linewidth=5) for c in
+           ['rosybrown', 'darkseagreen']]
+labels = ['AC', 'DC']
+
+legend = fig.legend(handles, labels,
+                    loc="upper left", bbox_to_anchor=(0.8, 0),
+                    frameon=False,
+                    title='Transmission Type')
+fig.artists.append(legend)
+
 
 # legend transmission capacitues
 handles, labels = [], []
@@ -122,7 +108,7 @@ handles = [Line2D([0], [0], color='grey', alpha=0.5, linewidth=s*1e3*branch_scal
 labels = ['%i GW'%s for s in reference_caps]
 
 legend = fig.legend(handles, labels,
-                    loc="lower left", bbox_to_anchor=(1, .0),
+                    loc="upper left", bbox_to_anchor=(.8, -.15),
                     frameon=False,
                     title='Transmission Capacity')
 fig.artists.append(legend)
