@@ -103,6 +103,15 @@ rule check_shadowprices:
     script: 'code/check_shadowprices.py'
 
 
+rule allocate_revenue:
+    input:
+        network = 'resources/{nname}.nc',
+    output:
+        revenues = 'resources/revenues_{nname}_{method}_{power}.nc',
+        payments = 'resources/demand_payments_{nname}_{method}_{power}.nc', 
+    script: 'code/allocate_revenue.py'
+
+
 rule allocate_network:
     input:
         network = 'resources/{nname}.nc',
@@ -113,6 +122,8 @@ rule allocate_network:
         scarcity = 'resources/scarcity_costs_{nname}_{method}_{power}.nc',
         power_mix = 'resources/power_mix_{nname}_{method}_{power}.nc'
     script: 'code/allocate_network.py'
+
+
 
 rule plot_graphical_abstract:
     input:
