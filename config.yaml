@@ -1,17 +1,10 @@
 
 analysis:
-    nname: ['de50bf']
-    method: ['ptpf']
-    power: ['net']
-    sink: ['highest-lmp', 'lowest-lmp']
-    expenditure: ['all', 'capex', 'opex']
+    nname: ['de50']
 test:
     nname: ['test-de10gf']
-    method: ['ptpf']
-    power: ['net']
-    sink: ['highest-lmp', 'lowest-lmp']
-    expenditure: ['all', 'capex', 'opex']
 
+aggregated_coupling: true
 alloc_to_load_only: true
 
 # =============================================================================

@@ -3,50 +3,25 @@ configfile: "config.yaml"
 
 wildcard_constraints:
     clusters="\d+",
-    field="(bf|gf)",
-    method="(ptpf|ebe)",
     expenditure="(all|capex|opex)",
 
 
+FIGURES = [
+    'network', 'total_costs', 'average_price', 'average_demand', 'subsidy', 'capex_duration_curve',
+    'operation_high_expenditure', 'power_mix', 'bars', 'maps_expenditure', 'maps_price', 'maps_scarcity_price', 
+    'maps_scarcity_expenditure', 'locality_all', 'allocation_to_highest-lmp' 
+]
+
 rule all:
     input:
-        expand('figures/{nname}/network.png', **config['analysis']),
-        expand('figures/{nname}/total_costs.png', **config['analysis']),
-        expand('figures/{nname}/average_price.png', **config['analysis']),
-        expand('figures/{nname}/average_demand.png', **config['analysis']),
-        expand('figures/{nname}/subsidy.png', **config['analysis']),
-        expand('figures/{nname}/capex_duration_curve.png', **config['analysis']),
-        expand('figures/{nname}/operation_high_expenditure.png', **config['analysis']),
-        expand('figures/{nname}/power_mix_{method}_{power}.png', **config['analysis']),
-        expand('figures/{nname}/bars_{method}_{power}.png', **config['analysis']),
-        expand('figures/{nname}/locality_{expenditure}_{method}_{power}.png', **config['analysis']),
-        expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['analysis']),
-        expand('figures/{nname}/maps_price_{method}_{power}', **config['analysis']),
-        expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['analysis']),
-        expand('figures/{nname}/maps_scarcity_price_{method}_{power}', **config['analysis']),
-        expand('figures/{nname}/{method}_{power}_to_{sink}.png', **config['analysis']),
-        expand('tables/{nname}_{method}_{power}', **config['analysis']),
-
+        expand('figures/{nname}/{figure}.png', figure=FIGURES, **config['analysis'])
+        expand('tables/{nname}', **config['analysis'])
 
 
 rule test:
     input:
-        expand('figures/{nname}/network.png', **config['test']),
-        expand('figures/{nname}/total_costs.png', **config['test']),
-        expand('figures/{nname}/average_price.png', **config['test']),
-        expand('figures/{nname}/average_demand.png', **config['test']),
-        expand('figures/{nname}/subsidy.png', **config['test']),
-        expand('figures/{nname}/capex_duration_curve.png', **config['test']),
-        expand('figures/{nname}/operation_high_expenditure.png', **config['test']),
-        expand('figures/{nname}/power_mix_{method}_{power}.png', **config['test']),
-        expand('figures/{nname}/bars_{method}_{power}.png', **config['test']),
-        expand('figures/{nname}/locality_{expenditure}_{method}_{power}.png', **config['test']),
-        expand('figures/{nname}/maps_expenditure_{method}_{power}', **config['test']),
-        expand('figures/{nname}/maps_price_{method}_{power}', **config['test']),
-        expand('figures/{nname}/maps_scarcity_expenditure_{method}_{power}', **config['test']),
-        expand('figures/{nname}/maps_scarcity_price_{method}_{power}', **config['test']),
-        expand('figures/{nname}/{method}_{power}_to_{sink}.png', **config['test']),
-        expand('tables/{nname}_{method}_{power}', **config['test']),
+        expand('figures/{nname}/{figure}.png', figure=FIGURES, **config['test'])
+        expand('tables/{nname}', **config['test'])
 
 
 subworkflow pypsade:
@@ -65,8 +40,8 @@ rule solve_and_sanitize_german_network:
         network = pypsade('networks/elec_s_{clusters}_ec_lv1.2_Ep.nc'),
         regions = pypsade('resources/regions_onshore_elec_s_{clusters}.geojson')
     output: 
-        network = 'resources/de{clusters}{field}.nc',
-        regions = 'resources/de{clusters}{field}_regions.geojson'
+        network = 'resources/de{clusters}.nc',
+        regions = 'resources/de{clusters}_regions.geojson'
     script: 'code/solve_and_sanitize_network.py'
 
 
@@ -75,8 +50,8 @@ rule solve_and_sanitize_european_network:
         network = pypsaeur('networks/elec_s_{clusters}_ec_lv1.2_Ep.nc'),
         regions = pypsaeur('resources/regions_onshore_elec_s_{clusters}.geojson')
     output: 
-        network = 'resources/eur{clusters}{field}.nc',
-        regions = 'resources/eur{clusters}{field}_regions.geojson'
+        network = 'resources/eur{clusters}.nc',
+        regions = 'resources/eur{clusters}_regions.geojson'
     script: 'code/solve_and_sanitize_network.py'
 
 
@@ -107,8 +82,8 @@ rule allocate_revenue:
     input:
         network = 'resources/{nname}.nc',
     output:
-        revenues = 'resources/revenues_{nname}_{method}_{power}.nc',
-        payments = 'resources/demand_payments_{nname}_{method}_{power}.nc', 
+        revenues = 'resources/revenues_{nname}.nc',
+        payments = 'resources/demand_payments_{nname}.nc', 
     script: 'code/allocate_revenue.py'
 
 
@@ -117,10 +92,10 @@ rule allocate_network:
         network = 'resources/{nname}.nc',
         check = 'resources/{nname}_shadowprices_checked'
     output:
-        costs = 'resources/costs_{nname}_{method}_{power}.nc',
-        payments = 'resources/payments_{nname}_{method}_{power}.nc', 
-        scarcity = 'resources/scarcity_costs_{nname}_{method}_{power}.nc',
-        power_mix = 'resources/power_mix_{nname}_{method}_{power}.nc'
+        costs = 'resources/costs_{nname}.nc',
+        payments = 'resources/payments_{nname}.nc', 
+        scarcity = 'resources/scarcity_costs_{nname}.nc',
+        power_mix = 'resources/power_mix_{nname}.nc'
     script: 'code/allocate_network.py'
 
 
@@ -153,18 +128,18 @@ rule plot_power_mix:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
-        power_mix = 'resources/power_mix_{nname}_{method}_{power}.nc'
-    output: 'figures/{nname}/power_mix_{method}_{power}.png'
+        power_mix = 'resources/power_mix_{nname}.nc'
+    output: 'figures/{nname}/power_mix.png'
     script: 'code/plot_power_mix.py'
 
 
 rule plot_total_cost_comparison:
     input:
-        costs_gf = 'resources/costs_{nname_wo_field}gf_ptpf_net.nc',
-        costs_bf = 'resources/costs_{nname_wo_field}bf_ptpf_net.nc',
-        network_gf = 'resources/{nname_wo_field}gf.nc',
-        network_bf = 'resources/{nname_wo_field}bf.nc'
-    output: 'figures/total_costs_{nname_wo_field}.png'
+        costs_gf = 'resources/costs_{nname}.nc',
+        costs_bf = 'resources/costs_{nname}.nc',
+        network_gf = 'resources/{nname}gf.nc',
+        network_bf = 'resources/{nname}bf.nc'
+    output: 'figures/total_costs_{nname}.png'
     script: 'code/plot_total_cost_comparison.py'
 
 
@@ -187,36 +162,36 @@ rule plot_expenditure_maps:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
-        costs = 'resources/costs_{nname}_{method}_{power}.nc'
+        costs = 'resources/costs_{nname}.nc'
     output:
-        folder = directory('figures/{nname}/maps_expenditure_{method}_{power}')
+        folder = directory('figures/{nname}/maps_expenditure')
     script: 'code/plot_maps_transfer.py'
 
 rule plot_price_maps:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
-        costs = 'resources/costs_{nname}_{method}_{power}.nc'
+        costs = 'resources/costs_{nname}.nc'
     output:
-        folder = directory('figures/{nname}/maps_price_{method}_{power}')
+        folder = directory('figures/{nname}/maps_price')
     script: 'code/plot_maps_transfer.py'
 
 rule plot_scarcity_maps:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
-        costs = 'resources/scarcity_costs_{nname}_{method}_{power}.nc'
+        costs = 'resources/scarcity_costs_{nname}.nc'
     output:
-        folder = directory('figures/{nname}/maps_scarcity_expenditure_{method}_{power}')
+        folder = directory('figures/{nname}/maps_scarcity_expenditure')
     script: 'code/plot_maps_transfer.py'
 
 rule plot_scarcity_price_maps:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
-        costs = 'resources/scarcity_costs_{nname}_{method}_{power}.nc'
+        costs = 'resources/scarcity_costs_{nname}.nc'
     output:
-        folder = directory('figures/{nname}/maps_scarcity_price_{method}_{power}')
+        folder = directory('figures/{nname}/maps_scarcity_price')
     script: 'code/plot_maps_transfer.py'
 
 rule plot_subsidy:
@@ -231,16 +206,16 @@ rule plot_subsidy:
 rule plot_locality:
     input:
         network = 'resources/{nname}.nc',
-        costs = 'resources/costs_{nname}_{method}_{power}.nc'
-    output: 'figures/{nname}/locality_{expenditure}_{method}_{power}.png'
+        costs = 'resources/costs_{nname}.nc'
+    output: 'figures/{nname}/locality_{expenditure}.png'
     script: 'code/plot_locality.py'
 
 
 rule plot_bars:
     input:
         network = 'resources/{nname}.nc',
-        payments = 'resources/payments_{nname}_{method}_{power}.nc'
-    output: 'figures/{nname}/bars_{method}_{power}.png'
+        payments = 'resources/payments_{nname}.nc'
+    output: 'figures/{nname}/bars.png'
     script: 'code/plot_bars.py'
 
 
@@ -248,9 +223,9 @@ rule plot_allocated_payment:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
-        costs = 'resources/costs_{nname}_{method}_{power}.nc'
+        costs = 'resources/costs_{nname}.nc'
     output:
-        'figures/{nname}/{method}_{power}_to_{sink}.png'
+        'figures/{nname}/allocation_to_{sink}.png'
     script: 
         'code/plot_allocated_payment.py'
 
@@ -276,10 +251,10 @@ rule plot_operation_high_expenditure:
 rule write_tables:
     input:
         network = 'resources/{nname}.nc',
-        costs = 'resources/costs_{nname}_{method}_{power}.nc',
-        scarcity = 'resources/scarcity_costs_{nname}_{method}_{power}.nc',
+        costs = 'resources/costs_{nname}.nc',
+        scarcity = 'resources/scarcity_costs_{nname}.nc',
     output:
-        folder = directory('tables/{nname}_{method}_{power}')
+        folder = directory('tables/{nname}')
     script: 'code/write_out_tables.py'
 
 
