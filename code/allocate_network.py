@@ -32,8 +32,9 @@ if __name__ == "__main__":
 
 n = pypsa.Network(snakemake.input.network)
 
-method = snakemake.wildcards.method.split('-')[0]
-aggregated = snakemake.wildcards.power == 'net'
+aggregated = snakemake.config['aggregated_coupling']
+method = snakemake.config['method']
+
 if 'co2_limit' in n.global_constraints.index:
     co2_price = 0
 else:

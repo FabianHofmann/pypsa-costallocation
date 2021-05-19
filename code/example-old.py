@@ -20,7 +20,7 @@ from config import to_static_symbol, color, to_total_symbol
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
-path = '../figures/example'
+path = '../figures/example-old'
 net = True
 power = 'net' if net else 'gross'
 method = 'ptpf'

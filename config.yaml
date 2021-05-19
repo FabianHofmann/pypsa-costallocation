@@ -6,6 +6,7 @@ test:
 
 aggregated_coupling: true
 alloc_to_load_only: true
+method: 'ptpf'
 
 # =============================================================================
 # copied from pypsa-eur config

@@ -17,7 +17,7 @@ import os
 
 if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_demand', nname='test-de10bf')
+        snakemake = mock_snakemake('plot_demand', nname='test-de10')
 
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions).set_index('name')

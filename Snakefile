@@ -7,7 +7,7 @@ wildcard_constraints:
 
 
 general_figures = [
-    'price_decomposition', 'cost_decomposition', #examples
+    'price_decomposition', 'cost_decomposition', 'example-with-cycles/network', 'example-without-cycles/network'
 ]
 
 network_figures = [
@@ -116,6 +116,23 @@ rule plot_graphical_abstract:
         regions = 'resources/de50_regions.geojson',
     output: 'figures/graphical_abstract.png'
     script: 'code/graphical_abstract.py'
+
+
+rule plot_example_without_cycles:
+    output: 
+        network = 'figures/example-without-cycles/network.png',
+        payoff = 'figures/example-without-cycles/payoff.png'
+    script: 'code/example_without_cycles.py'
+
+
+
+rule plot_example_with_cycles:
+    output: 
+        network = 'figures/example-with-cycles/network.png',
+        payoff = 'figures/example-with-cycles/payoff.png',
+        payoff_kvl = 'figures/example-with-cycles/payoff-kvl.png'
+    script: 'code/example_with_cycles.py'
+
 
 
 rule plot_price_decomposition:

@@ -11,15 +11,17 @@ import netallocation as ntl
 import pypsa
 import pandas as pd
 import matplotlib.pyplot as plt
-from pathlib import Path
 import seaborn as sns
 
-figures = Path('../figures/simple-example-wo-cycles')
-figures.mkdir(exist_ok=True)
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 plt.rc('text.latex', preamble=r'\usepackage{accents}')
+
+if 'snakemake' not in globals():
+    from _helpers import mock_snakemake
+    snakemake = mock_snakemake('plot_example_without_cycles')
+
 
 # %% create Network
 
@@ -99,7 +101,7 @@ ax.text(n.lines.xpos[1]+.1, n.lines.ypos[1]+-.1, boxes['3-1'], ha='center', va='
 
 ntl.plot.annotate_bus_names(n, ax, shift=0, color='w', size=18)
 fig.tight_layout()
-fig.savefig(figures / 'network.png', bbox_inches='tight')
+fig.savefig(snakemake.output.network, bbox_inches='tight')
 
 # %% revenue allocation
 
@@ -127,7 +129,7 @@ for i, v in enumerate(payoff):
     # ax.set_title(v.replace("_", " ").title())
     ax.tick_params(left=False, bottom=False)
 fig.tight_layout(w_pad=.4)
-fig.savefig(figures / 'example_payoff.png', bbox_inches='tight')
+fig.savefig(snakemake.output.payoff, bbox_inches='tight')
 
 
 
