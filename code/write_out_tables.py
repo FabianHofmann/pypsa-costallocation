@@ -13,8 +13,7 @@ from helpers import combine_oneports, load
 
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
-    snakemake = mock_snakemake('write_tables', nname='test-de10bf',
-                               method='ptpf', power='net', sink='DE0 1')
+    snakemake = mock_snakemake('write_tables', nname='test-de10', sink='DE0 1')
 
 
 n = pypsa.Network(snakemake.input.network)
@@ -40,8 +39,3 @@ prices = (prices.rename(columns=columns).rename(index, level=0)
 
 with open(snakemake.output[0] + '/prices.tex', 'w') as file:
     file.write(prices.replace(0., '').to_latex(escape=False))
-
-# %%
-
-# ds = costs.sum(['source', 'sink', 'snapshot', 'branch']) / load(n).sum(['snapshot', 'sink'])
-

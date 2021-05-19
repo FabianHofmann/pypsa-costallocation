@@ -7,13 +7,12 @@ Created on Wed Aug 12 11:06:12 2020
 """
 
 import pypsa
-from helpers import adjust_shadowprice
 import numpy as np
 
 if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('check_shadowprices', nname='de50bf')
+        snakemake = mock_snakemake('check_shadowprices', nname='de50')
 
 if not 'test' in snakemake.input[0]:
     n = pypsa.Network(snakemake.input[0])

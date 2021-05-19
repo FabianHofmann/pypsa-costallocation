@@ -17,8 +17,7 @@ import os
 
 if 'snakemake' not in globals():
         from _helpers import mock_snakemake
-        snakemake = mock_snakemake('plot_price_maps', nname='test-de10bf',
-                                   method='ptpf', power='net')
+        snakemake = mock_snakemake('plot_price_maps', nname='test-de10')
 
 if not os.path.isdir(snakemake.output.folder):
     os.mkdir(snakemake.output.folder)

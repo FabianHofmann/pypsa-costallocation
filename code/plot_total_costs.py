@@ -26,7 +26,6 @@ n = pypsa.Network(snakemake.input.network)
 ca = xr.open_dataset(snakemake.input.costs)
 
 
-
 stacked_cost = ca.sum().to_array().to_series()
 TC = n.objective_constant + n.objective
 
@@ -66,7 +65,7 @@ labels = [to_total_symbol.get(k, k) for k in labels]
 ax.legend(handles[::-1], labels[::-1], loc='lower center',
           bbox_to_anchor=(0.5, 1), ncol=3, frameon=False)
 ax.grid(axis='y', linestyle='dashed', color='gray', zorder=1, alpha=.5)
-ax.set_ylabel('Allocated Costs [Billion €]')
+ax.set_ylabel('Allocated Costs [bn €]')
 fig.tight_layout()
 
 fig.savefig(snakemake.output[0], bbox_inches='tight')

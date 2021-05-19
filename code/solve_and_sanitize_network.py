@@ -7,8 +7,6 @@ Created on Fri Jul 10 22:16:58 2020
 """
 
 import pypsa
-import pandas as pd
-import numpy as np
 import shutil
 
 
@@ -16,7 +14,7 @@ if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
         snakemake = mock_snakemake('solve_and_sanitize_german_network',
-                                   clusters=10, field='bf')
+                                   clusters=10)
 
 
 solver_opts = snakemake.config['solving']['solver']
@@ -32,15 +30,9 @@ for c in ['Generator', 'StorageUnit']:
 
 n.mremove('Line', n.lines.query('num_parallel == 0').index)
 
-if snakemake.wildcards.field == 'bf':
-    for c, attr in pypsa.descriptors.nominal_attrs.items():
-        n.df(c)[attr + '_min'] = n.df(c)[attr]
-        n.df(c)[attr] = 0
-else:
-    for c, attr in pypsa.descriptors.nominal_attrs.items():
-        n.df(c)[attr + '_min'] = 0
-        n.df(c)[attr] = 0
-
+for c, attr in pypsa.descriptors.nominal_attrs.items():
+    n.df(c)[attr + '_min'] = n.df(c)[attr]
+    n.df(c)[attr] = 0
 
 n.lopf(pyomo=False, solver_name=solver_name, solver_options=solver_opts,
         keep_shadowprices=True)

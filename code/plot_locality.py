@@ -15,8 +15,7 @@ from helpers import combine_oneports, scfmt
 
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
-    snakemake = mock_snakemake('plot_locality', nname='test-de10bf',
-                               method='ptpf', power='net', expenditure='capex')
+    snakemake = mock_snakemake('plot_locality', nname='test-de10', expenditure='capex')
 
 
 n = pypsa.Network(snakemake.input.network)

@@ -13,7 +13,7 @@ import config
 
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
-    snakemake = mock_snakemake('plot_capex_duration_curve', nname='de50bf')
+    snakemake = mock_snakemake('plot_capex_duration_curve', nname='de50')
 
 
 n = pypsa.Network(snakemake.input.network)

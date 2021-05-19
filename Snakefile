@@ -6,22 +6,32 @@ wildcard_constraints:
     expenditure="(all|capex|opex)",
 
 
-FIGURES = [
+general_figures = [
+    'price_decomposition', 'cost_decomposition', #examples
+]
+
+network_figures = [
     'network', 'total_costs', 'average_price', 'average_demand', 'subsidy', 'capex_duration_curve',
-    'operation_high_expenditure', 'power_mix', 'bars', 'maps_expenditure', 'maps_price', 'maps_scarcity_price', 
-    'maps_scarcity_expenditure', 'locality_all', 'allocation_to_highest-lmp' 
+    'operation_high_expenditure', 'power_mix', 'bars', 'locality_all', 'allocation_to_highest-lmp' ,
+]
+
+network_maps = [
+    'maps_expenditure', 'maps_price', 'maps_scarcity_price',  'maps_scarcity_expenditure',
 ]
 
 rule all:
     input:
-        expand('figures/{nname}/{figure}.png', figure=FIGURES, **config['analysis'])
-        expand('tables/{nname}', **config['analysis'])
+        expand('figures/{figure}.png', figure=general_figures),
+        expand('figures/{nname}/{figure}.png', figure=network_figures, **config['analysis']),
+        expand('figures/{nname}/{directory}', directory=network_maps, **config['analysis']),
+        expand('tables/{nname}', **config['analysis']),
 
 
 rule test:
     input:
-        expand('figures/{nname}/{figure}.png', figure=FIGURES, **config['test'])
-        expand('tables/{nname}', **config['test'])
+        expand('figures/{figure}.png', figure=general_figures),
+        expand('figures/{nname}/{figure}.png', figure=network_figures, **config['test']),
+        expand('tables/{nname}', **config['test']),
 
 
 subworkflow pypsade:
@@ -102,10 +112,18 @@ rule allocate_network:
 
 rule plot_graphical_abstract:
     input:
-        network = 'resources/de50bf.nc',
-        regions = 'resources/de50bf_regions.geojson',
+        network = 'resources/de50.nc',
+        regions = 'resources/de50_regions.geojson',
     output: 'figures/graphical_abstract.png'
     script: 'code/graphical_abstract.py'
+
+
+rule plot_price_decomposition:
+    output: 
+        price_decomposition ='figures/price_decomposition.png',
+        cost_decomposition = 'figures/cost_decomposition.png'
+    script: 'code/price_decomposition.py'
+
 
 
 rule plot_network:
@@ -118,7 +136,7 @@ rule plot_network:
 
 rule plot_total_costs:
     input:
-        costs = 'resources/costs_{nname}_ptpf_net.nc',
+        costs = 'resources/costs_{nname}.nc',
         network = 'resources/{nname}.nc',
     output: 'figures/{nname}/total_costs.png'
     script: 'code/plot_total_costs.py'
@@ -131,16 +149,6 @@ rule plot_power_mix:
         power_mix = 'resources/power_mix_{nname}.nc'
     output: 'figures/{nname}/power_mix.png'
     script: 'code/plot_power_mix.py'
-
-
-rule plot_total_cost_comparison:
-    input:
-        costs_gf = 'resources/costs_{nname}.nc',
-        costs_bf = 'resources/costs_{nname}.nc',
-        network_gf = 'resources/{nname}gf.nc',
-        network_bf = 'resources/{nname}bf.nc'
-    output: 'figures/total_costs_{nname}.png'
-    script: 'code/plot_total_cost_comparison.py'
 
 
 rule plot_average_price:

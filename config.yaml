@@ -2,7 +2,7 @@
 analysis:
     nname: ['de50']
 test:
-    nname: ['test-de10gf']
+    nname: ['test-de10']
 
 aggregated_coupling: true
 alloc_to_load_only: true
