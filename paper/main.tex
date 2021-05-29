@@ -350,7 +350,7 @@ In the following we illustrate the Price Tracing method in a numerical example a
 \subsubsection*{Network without Cycles}
 \Cref{fig:example-network} shows the optimized three-node network with corresponding numbers. Both, bus 1 and 3 have a fixed demand of 30~MW and 50~MW, respectively. Bus 1 has a generator with a marginal price at 6 \euro/MWh. Bus 3 has a cheaper generator with marginal price at 4 \euro/MWh. The maximal capacity of both generators is 50 MW. The transmission line from 1 to 3 has a capacity of 60 MW and line from 3 to 1 a capacity of 30 MW. Since the latter limits the use of the cheaper generator, there is a price difference between bus 1 and 3 of 2 \euro/MWh. Due to the absence of network cycles, this price difference defines the congestion revenue of line 3--1. Line 1--2 is not bound, hence there is no congestion revenue and bus 2 and 1 have the same price of 6 \euro/MWh.  
 \begin{figure}[h]
-    \includegraphics[width=\linewidth]{simple-example-wo-cycles/network.png}
+    \includegraphics[width=\linewidth]{example-without-cycles/network.png}
     \caption{Example network with nodal pricing scheme. Dispatch revenue as well as demand cost per MWh are given by the \ac{LMP} $\lambda$. Congestion revenue per MWh is given by the price difference $\lambda^\text{diff}$ of the connecting nodes.}
     \label{fig:example-network-wo}
 \end{figure}
@@ -358,12 +358,12 @@ In the following we illustrate the Price Tracing method in a numerical example a
 According to the \ac{AP} method, the demand at bus~1 is supplied by the local generator. In contrast, bus~2 imports power from bus~1 and bus~3. Using the Price Tracing method, we calculate the cost allocations $\mathcal{C}_{n\rightarrow s}$ and $\mathcal{C}_{n\rightarrow \ell}$, which we show in \cref{fig:example-network-payoff-wo}. Consumers at bus~1 only have to compensate the local generator with 180 \euro. Consumers at bus~2 pay for congestion revenues of line 1--3, all electricity generation at bus~3 and the remaining dispatch revenues of the generator at bus~1.    
 
 \begin{figure}[h]
-    \includegraphics[width=\linewidth]{simple-example-wo-cycles/example_payoff.png}
+    \includegraphics[width=\linewidth]{example-without-cycles/payoff.png}
     \caption{Allocation matrices $\mathcal{C}_{n\rightarrow s}$ (left) and $\mathcal{C}_{n\rightarrow \ell}$ (right) for the dispatch and congestion revenue for the network in \cref{fig:example-network-wo}.}
     \label{fig:example-network-payoff-wo}
 \end{figure}
 
-The consistency of the cost allocation can be easily double-checked. The sum of a column  yields the payment to a generator/line. This exactly matches the dispatch and congestion revenue defined in \cref{eq:dispatch_revenue,eq:congestion_revenue}. In turn the sum of a row gives the total amount that consumers at a bus have to pay. These exactly match the demand cost $\lambda_n \, d_n$. For example the sum of payments of consumers at bus~3 is 300~\euro\, which is the price of 6~\euro/MWh times the consumption of 50~MWh. \\
+The consistency of the cost allocation can be easily double-checked. The sum of a column  yields the payment to a generator/line. This exactly matches the dispatch and congestion revenue defined in \cref{eq:dispatch_revenue,eq:congestion_revenue}. In turn the sum of a row gives the total amount that consumers at a bus have to pay. These exactly match the demand cost $\lambda_n \, d_n$. For example the sum of payments of consumers at bus~2 is 300~\euro\, which is the price of 6~\euro/MWh times the consumption of 50~MWh. \\
 
 
 
@@ -373,7 +373,7 @@ Now, we add a line from bus~3 to bus~2 with a capacity of 30~MW. This introduces
 
 \begin{figure}[h!]
     % \begin{subfigure}[c]{0.5\linewidth}
-        \includegraphics[width=\linewidth]{simple-example/network.png}
+        \includegraphics[width=\linewidth]{example-with-cycles/network.png}
         \caption{Example network with nodal pricing scheme and a network cycle. Now, due to the \ac{KVL} a new constraint adds to the optimzation problem. Optionally, the congestion revenue per MWh may include shadow prices of the \ac{KVL} constraint $\lmpkvl$, thus $\lmp[\ell] = \lmpdiff + \lmpkvl$.}
         \label{fig:example-network}            
     % \end{subfigure}
@@ -381,12 +381,12 @@ Now, we add a line from bus~3 to bus~2 with a capacity of 30~MW. This introduces
 
 \begin{figure}[h!]
     \begin{subfigure}[c]{\linewidth}
-        \includegraphics[width=\linewidth]{simple-example/example_payoff.png}
+        \includegraphics[width=\linewidth]{example-with-cycles/payoff.png}
         \subcaption{Without \ac{KVL} shadow prices}
         \label{fig:example-network-payoff}
     \end{subfigure}
     \begin{subfigure}[c]{\linewidth}
-        \includegraphics[width=\linewidth]{simple-example/example_payoff-kvl.png}
+        \includegraphics[width=\linewidth]{example-with-cycles/payoff-kvl.png}
         \subcaption{With \ac{KVL} shadow prices}
         \label{fig:example-network-payoff-kvl}
     \end{subfigure}
@@ -402,16 +402,16 @@ The prices $\lambda_\ell^\text{KVL}$ of line $\ell$ are returned as the shadow p
 
 Again both cost allocation schemes are consistent with the total demand cost, dispatch and congestion revenues. In the following, we consider the \ac{KVL} shadow prices in the Price Tracing method since then, the total congestion revenue of a line equals the sum of all associated line costs in a short and long-term equilibrium.  
 
-
-
-\section{Application Cases}
-\label{sec:application_case}
 \begin{figure*}[h!]
     \centering
     \includegraphics[width=\linewidth]{de50bf/network}
     \caption{Brownfield optimization of the German power system. The left hand side shows minimum requirements for renewable and transmission capacities. The right hand side shows the capacity expansion of renewable resources as well as installation of backup gas power plants. The effective CO$_2$ price is set to 120 \euro\, per tonne CO$_2$ emission.}
     \label{fig:network}
 \end{figure*}
+ 
+
+\section{Application Cases}
+\label{sec:application_case}
 
 Using a cost-optimized model of the German power system with 50 representative nodes and a one year time span with hourly resolution, we demonstrate four use cases of the Price Tracing method. 
 
@@ -421,7 +421,7 @@ The investment model builds up on the PyPSA-EUR workflow \cite{horsch_jonas_pyps
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{de50bf/average_price}
-    \caption{Load-weighted average electricity price $\averagelmp$ per region in the optimized German power system. Regions in the middle and south of Germany have high prices whereas electricity in the North with a strong wind, transmission and OCGT infrastructure is cheaper.}
+    \caption{Load-weighted average electricity price $\averagelmp$ per region in the optimized German power system. Regions in the middle and south of Germany have high prices whereas electricity in the North with a strong wind, transmission and \ac{OCGT} infrastructure is cheaper.}
     \label{fig:average_price}
 \end{figure}
 We impose an carbon price of 120 \euro\, per tonne-CO$_{2}$ which, for OCGT, adds an effective price of 55 \euro/\megawatthour (assuming a gross emission of 180~kg/MWh and an efficiency of 39\%). All cost assumptions on operational costs $o_i$ and annualized capital cost $c_i$ are summarized in \cref{tab:cost_assumptions}. 
