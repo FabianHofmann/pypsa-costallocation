@@ -37,12 +37,12 @@ rule test:
 subworkflow pypsade:
     workdir: "pypsa-de"
     snakefile: "pypsa-de/Snakefile"
-    configfile: "config_germany.yaml"
+    configfile: "config.germany.yaml"
 
 subworkflow pypsaeur:
     workdir: "pypsa-eur"
     snakefile: "pypsa-eur/Snakefile"
-    configfile: "config_europe.yaml"
+    configfile: "config.europe.yaml"
 
 
 #-------------- Abstract --------------------------------

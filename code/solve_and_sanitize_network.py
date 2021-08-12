@@ -14,7 +14,7 @@ if __name__ == "__main__":
     if 'snakemake' not in globals():
         from _helpers import mock_snakemake
         snakemake = mock_snakemake('solve_and_sanitize_german_network',
-                                   clusters=10)
+                                   clusters=50)
 
 
 solver_opts = snakemake.config['solving']['solver']
@@ -28,11 +28,8 @@ for c in ['Generator', 'StorageUnit']:
     n.df(c).p_nom_max.update(n.df(c).query('not p_nom_extendable').p_nom)
     n.df(c)['p_nom_extendable'] = True
 
-n.mremove('Line', n.lines.query('num_parallel == 0').index)
+n.lines.num_parallel = n.lines.num_parallel.clip(lower=1)
 
-for c, attr in pypsa.descriptors.nominal_attrs.items():
-    n.df(c)[attr + '_min'] = n.df(c)[attr]
-    n.df(c)[attr] = 0
 
 n.lopf(pyomo=False, solver_name=solver_name, solver_options=solver_opts,
         keep_shadowprices=True)

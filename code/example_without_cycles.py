@@ -28,8 +28,8 @@ if 'snakemake' not in globals():
 n = pypsa.Network()
 n.madd("Bus", range(1,4), x=[0,0,0.5], y=[0,0.7, 0.35])
 n.madd('Generator', [1, 3], bus=[1, 3], p_nom=[50, 50],
-       marginal_cost=[6, 4])
-n.madd("Load", [1,2], bus=[1,2], p_set=[30,50])
+       marginal_cost=[6, 4], carrier='gen')
+n.madd("Load", [1,2], bus=[1,2], p_set=[30,50], carrier='load')
 n.madd('Line', ['1-2', '3-1', ],
        bus0=[1, 3,], bus1=[2, 1,],
        s_nom=[60, 30, ], x=[0.01, 0.01,], )
