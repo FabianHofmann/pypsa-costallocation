@@ -84,14 +84,14 @@ if not 'test' in snakemake.input[0]:
                  n.buses_t.marginal_price[bus])
 
 
-    gamma = (st.mu_lower_p_dispatch + st.mu_upper_p_dispatch +
-             st.mu_state_of_charge / s.efficiency_dispatch)
-    investment = s.eval('p_nom_opt * capital_cost')
-    # gamma + marginal_cost is the lmp
-    revenue = ((gamma) * st.p_dispatch - (gamma + s.marginal_cost) * st.p_store).sum()
-    subsidy = s.p_nom_opt * s.mu_lower_p_nom
-    scarcity = s.p_nom_opt * s.mu_upper_p_nom
-    assert close(investment, revenue + subsidy + scarcity)
+    # gamma = (st.mu_lower_p_dispatch + st.mu_upper_p_dispatch +
+    #          st.mu_state_of_charge / s.efficiency_dispatch)
+    # investment = s.eval('p_nom_opt * capital_cost')
+    # # gamma + marginal_cost is the lmp
+    # revenue = ((gamma) * st.p_dispatch - (gamma + s.marginal_cost) * st.p_store).sum()
+    # subsidy = s.p_nom_opt * s.mu_lower_p_nom
+    # scarcity = s.p_nom_opt * s.mu_upper_p_nom
+    # assert close(investment, revenue + subsidy + scarcity)
 
 
 

@@ -8,7 +8,7 @@ Created on Fri Jul 10 22:16:58 2020
 
 import pypsa
 import shutil
-
+import numpy as np
 
 if __name__ == "__main__":
     if 'snakemake' not in globals():
@@ -30,6 +30,7 @@ for c in ['Generator', 'StorageUnit']:
 
 n.lines.num_parallel = n.lines.num_parallel.clip(lower=1)
 
+n.generators.p_nom_max.fillna(np.inf, inplace=True)
 
 n.lopf(pyomo=False, solver_name=solver_name, solver_options=solver_opts,
         keep_shadowprices=True)

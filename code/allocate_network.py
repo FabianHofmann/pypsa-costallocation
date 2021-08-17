@@ -47,7 +47,7 @@ if 'lv_limit' in n.global_constraints.index:
         n.df(c)['mu_upper_'+nom] += mu_upper
 
 
-ds = ntl.allocate_flow(n, method=method, aggregated=aggregated)  # q=0
+ds = ntl.allocate_flow(n, method=method, aggregated=aggregated, dask=True)  # q=0
 
 if snakemake.config['alloc_to_load_only']:
     ds = expand_by_sink_type(ds.chunk(dict(snapshot=5)), n)

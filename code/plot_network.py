@@ -23,6 +23,8 @@ if __name__ == "__main__":
         snakemake = mock_snakemake('plot_network', nname='de50')
 
 
+plt.rc('axes', titlesize='medium')
+
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions)
 
