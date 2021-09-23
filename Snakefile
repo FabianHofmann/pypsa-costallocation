@@ -1,40 +1,45 @@
 configfile: "config.yaml"
 
+import matplotlib.pyplot as plt
+plt.rc('figure', dpi=300)
+
 
 wildcard_constraints:
     clusters="\d+",
     expenditure="(all|capex|opex)",
 
 
-general_figures = [
-    'price_decomposition', 'cost_decomposition', 'example-with-cycles/network', 'example-without-cycles/network'
+intro_and_theory_figures = [
+    # 'graphical_abstract', 
+    'example-without-cycles/network', 'example-without-cycles/payoff', 
+    'example-with-cycles/network', 'example-with-cycles/payoff', 'example-with-cycles/payoff-kvl'
 ]
 
-network_figures = [
-    'network', 'total_costs', 'average_price', 'average_demand', 'subsidy', 'capex_duration_curve',
-    'operation_high_expenditure', 'power_mix', 'bars', 'locality_all', 'allocation_to_highest-lmp' ,
+application_case_figures = [
+    'network', 'average_price', 'average_demand', 'maps_price/co2_cost', 'allocated_payment_comparison'
 ]
 
-network_maps = [
+
+application_case_maps = [
     'maps_expenditure', 'maps_price', 'maps_scarcity_price',  'maps_scarcity_expenditure',
 ]
 
 rule all:
     input:
-        expand('figures/{figure}.png', figure=general_figures),
-        expand('figures/{nname}/{figure}.png', figure=network_figures, **config['analysis']),
-        expand('figures/{nname}/{directory}', directory=network_maps, **config['analysis']),
+        expand('figures/{figure}.pdf', figure=intro_and_theory_figures),
+        expand('figures/{nname}/{figure}.png', figure=application_case_figures, **config['analysis']),
+        expand('figures/{nname}/{directory}', directory=application_case_maps, **config['analysis']),
         expand('tables/{nname}', **config['analysis']),
 
 
 rule test:
     input:
-        expand('figures/{figure}.png', figure=general_figures),
-        expand('figures/{nname}/{figure}.png', figure=network_figures, **config['test']),
-        expand('tables/{nname}', **config['test']),
+        expand('figures/{figure}.png', figure=intro_and_theory_figures),
+        expand('figures/{nname}/{figure}.png', figure=application_case_figures, **config['test']),
+        expand('tables/{nname}', **config['test'])
 
 
-subworkflow pypsade:
+subworkflow pypsade: 
     workdir: "pypsa-de"
     snakefile: "pypsa-de/Snakefile"
     configfile: "config.germany.yaml"
@@ -49,8 +54,8 @@ subworkflow pypsaeur:
 
 rule plot_graphical_abstract:
     input:
-        network = 'resources/de50.nc',
-        regions = 'resources/de50_regions.geojson',
+        network = 'resources/de9.nc',
+        regions = 'resources/de9_regions.geojson',
     output: 'figures/graphical_abstract.png'
     script: 'code/graphical_abstract.py'
 
@@ -60,17 +65,17 @@ rule plot_graphical_abstract:
 
 rule plot_example_without_cycles:
     output: 
-        network = 'figures/example-without-cycles/network.png',
-        payoff = 'figures/example-without-cycles/payoff.png'
+        network = 'figures/example-without-cycles/network.pdf',
+        payoff = 'figures/example-without-cycles/payoff.pdf'
     script: 'code/example_without_cycles.py'
 
 
 
 rule plot_example_with_cycles:
     output: 
-        network = 'figures/example-with-cycles/network.png',
-        payoff = 'figures/example-with-cycles/payoff.png',
-        payoff_kvl = 'figures/example-with-cycles/payoff-kvl.png'
+        network = 'figures/example-with-cycles/network.pdf',
+        payoff = 'figures/example-with-cycles/payoff.pdf',
+        payoff_kvl = 'figures/example-with-cycles/payoff-kvl.pdf'
     script: 'code/example_with_cycles.py'
 
 
@@ -156,18 +161,38 @@ rule plot_average_price:
     script: 'code/plot_map.py'
 
 
-rule plot_allocated_payment:
+rule plot_price_maps:
     input:
         network = 'resources/{nname}.nc',
         regions = 'resources/{nname}_regions.geojson',
         costs = 'resources/costs_{nname}.nc'
     output:
-        'figures/{nname}/allocation_to_{sink}.png'
+        folder = directory('figures/{nname}/maps_price')
+    script: 'code/plot_maps_transfer.py'
+
+
+
+rule plot_allocated_payment_comparison:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+        costs = 'resources/costs_{nname}.nc'
+    output:
+        'figures/{nname}/allocated_payment_comparison.png'
     script: 
-        'code/plot_allocated_payment.py'
+        'code/plot_allocated_payment_comparison.py'
+
 
 
 # --------------- Appendix ------------------
+
+rule plot_average_demand:
+    input:
+        network = 'resources/{nname}.nc',
+        regions = 'resources/{nname}_regions.geojson',
+    output: 'figures/{nname}/average_demand.png'
+    script: 'code/plot_map.py'
+
 
 rule plot_power_mix:
     input:
@@ -178,14 +203,6 @@ rule plot_power_mix:
     script: 'code/plot_power_mix.py'
 
 
-rule plot_average_demand:
-    input:
-        network = 'resources/{nname}.nc',
-        regions = 'resources/{nname}_regions.geojson',
-    output: 'figures/{nname}/average_demand.png'
-    script: 'code/plot_map.py'
-
-
 rule plot_expenditure_maps:
     input:
         network = 'resources/{nname}.nc',
@@ -193,16 +210,6 @@ rule plot_expenditure_maps:
         costs = 'resources/costs_{nname}.nc'
     output:
         folder = directory('figures/{nname}/maps_expenditure')
-    script: 'code/plot_maps_transfer.py'
-
-
-rule plot_price_maps:
-    input:
-        network = 'resources/{nname}.nc',
-        regions = 'resources/{nname}_regions.geojson',
-        costs = 'resources/costs_{nname}.nc'
-    output:
-        folder = directory('figures/{nname}/maps_price')
     script: 'code/plot_maps_transfer.py'
 
 rule plot_scarcity_maps:
@@ -245,58 +252,68 @@ rule write_tables:
 # ---------------- Old ---------------------
 
 
-rule plot_price_decomposition:
-    output: 
-        price_decomposition ='figures/price_decomposition.png',
-        cost_decomposition = 'figures/cost_decomposition.png'
-    script: 'code/price_decomposition.py'
+# rule plot_price_decomposition:
+#     output: 
+#         price_decomposition ='figures/price_decomposition.png',
+#         cost_decomposition = 'figures/cost_decomposition.png'
+#     script: 'code/price_decomposition.py'
 
 
 
-rule plot_total_costs:
-    input:
-        costs = 'resources/costs_{nname}.nc',
-        network = 'resources/{nname}.nc',
-    output: 'figures/{nname}/total_costs.png'
-    script: 'code/plot_total_costs.py'
+# rule plot_total_costs:
+#     input:
+#         costs = 'resources/costs_{nname}.nc',
+#         network = 'resources/{nname}.nc',
+#     output: 'figures/{nname}/total_costs.png'
+#     script: 'code/plot_total_costs.py'
 
 
 
-rule plot_locality:
-    input:
-        network = 'resources/{nname}.nc',
-        costs = 'resources/costs_{nname}.nc'
-    output: 'figures/{nname}/locality_{expenditure}.png'
-    script: 'code/plot_locality.py'
+# rule plot_locality:
+#     input:
+#         network = 'resources/{nname}.nc',
+#         costs = 'resources/costs_{nname}.nc'
+#     output: 'figures/{nname}/locality_{expenditure}.png'
+#     script: 'code/plot_locality.py'
 
 
-rule plot_bars:
-    input:
-        network = 'resources/{nname}.nc',
-        payments = 'resources/payments_{nname}.nc'
-    output: 'figures/{nname}/bars.png'
-    script: 'code/plot_bars.py'
+# rule plot_bars:
+#     input:
+#         network = 'resources/{nname}.nc',
+#         payments = 'resources/payments_{nname}.nc'
+#     output: 'figures/{nname}/bars.png'
+#     script: 'code/plot_bars.py'
 
 
 
-rule plot_capex_duration_curve:
-    input:
-        network = 'resources/{nname}.nc',
-    output:
-        'figures/{nname}/capex_duration_curve.png'
-    script: 
-        'code/plot_duration_curve.py'
+# rule plot_capex_duration_curve:
+#     input:
+#         network = 'resources/{nname}.nc',
+#     output:
+#         'figures/{nname}/capex_duration_curve.png'
+#     script: 
+#         'code/plot_duration_curve.py'
 
 
-rule plot_operation_high_expenditure:
-    input:
-        network = 'resources/{nname}.nc',
-        regions = 'resources/{nname}_regions.geojson',
-    output:
-        'figures/{nname}/operation_high_expenditure.png'
-    script: 
-        'code/plot_operation.py'
+# rule plot_operation_high_expenditure:
+#     input:
+#         network = 'resources/{nname}.nc',
+#         regions = 'resources/{nname}_regions.geojson',
+#     output:
+#         'figures/{nname}/operation_high_expenditure.png'
+#     script: 
+#         'code/plot_operation.py'
 
+
+# rule plot_allocated_payment:
+#     input:
+#         network = 'resources/{nname}.nc',
+#         regions = 'resources/{nname}_regions.geojson',
+#         costs = 'resources/costs_{nname}.nc'
+#     output:
+#         'figures/{nname}/allocated_payment_{sink}.png'
+#     script: 
+#         'code/plot_allocated_payment.py'
 
 
 # Local Variables:

@@ -51,10 +51,10 @@ for d in [to_symbol, to_static_symbol, to_total_symbol]:
 
 to_explanation = {'one_port_operational_cost': 'OPEX',
                   'one_port_investment_cost': 'Production & Storage CAPEX',
-                  'co2_cost': 'Emission Cost',
+                  'co2_cost': 'CO$_2$ Emissions',
                   'generator_investment_cost': 'Production CAPEX',
                   'storage_investment_cost': 'Storage CAPEX',
-                  'branch_investment_cost': 'Transmission CAPEX',
+                  'branch_investment_cost': 'Congestion Revenue',
                   'branch_scarcity_cost': 'Scarcity Cost',
                   'generator_scarcity_cost': 'Scarcity Cost',
                   'scarcity_cost': 'Scarcity Cost',

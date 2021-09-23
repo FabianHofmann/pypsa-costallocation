@@ -18,8 +18,9 @@ from helpers import combine_oneports, scfmt, load
 
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
-    snakemake = mock_snakemake('plot_scarcity_price_maps', nname='test-de10')
+    snakemake = mock_snakemake('plot_price_maps', nname='de50')
 
+plt.rc('figure', dpi=300)
 
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
@@ -29,7 +30,7 @@ cost = (combine_oneports(xr.open_dataset(snakemake.input.costs).sum('snapshot'))
 
 
 if 'price' in snakemake.output[0]:
-    if any(n.snapshot_weightings != 1):
+    if any(n.snapshot_weightings.objective != 1):
         w = ntl.cost.snapshot_weightings(n)
         cost['one_port_operational_cost'] /= w
         cost['co2_cost'] /= w
@@ -97,5 +98,5 @@ for var in cost:
                               'format': fmt})
 
     fig.canvas.draw(), fig.tight_layout()
-    fig.savefig(snakemake.output.folder + f'/{var}_total.png')
+    fig.savefig(snakemake.output.folder + f'/{var}.png')
 

@@ -17,7 +17,8 @@ scfmt.set_powerlimits((0, 0))
 
 
 def load(n):
-    return ntl.power_demand(n, per_carrier=True).sel(carrier='Load', drop=True)\
+    carrier = n.loads.carrier.unique().item()
+    return ntl.power_demand(n, per_carrier=True).sel(carrier=carrier, drop=True)\
               .rename(bus="sink")
 
 def combine_oneports(ds):

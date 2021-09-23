@@ -26,7 +26,7 @@ from netallocation.plot_helpers import (make_handler_map_to_scale_circles_as_in,
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
     snakemake = mock_snakemake('plot_allocated_payment', nname='de50',
-                               sink='DE0 1')
+                               sink='highest-lmp')
 
 
 n = pypsa.Network(snakemake.input.network)

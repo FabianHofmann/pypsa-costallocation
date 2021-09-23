@@ -24,6 +24,7 @@ if __name__ == "__main__":
 
 
 plt.rc('axes', titlesize='medium')
+plt.rc('figure', dpi=300)
 
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions)

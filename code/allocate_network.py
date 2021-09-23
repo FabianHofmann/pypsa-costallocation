@@ -51,14 +51,14 @@ ds = ntl.allocate_flow(n, method=method, aggregated=aggregated, dask=True)  # q=
 
 if snakemake.config['alloc_to_load_only']:
     ds = expand_by_sink_type(ds.chunk(dict(snapshot=5)), n)
-    ds = ds.sel(sink_carrier='Load', drop=True)
+    ds = ds.sel(sink_carrier='', drop=True)
 
 A = expand_by_source_type(peer_to_peer(ds, n).peer_to_peer, n, chunksize=5)
 A_f = virtual_patterns(ds, n, q=0).virtual_flow_pattern
 
 
 # emission
-ep = nodal_co2_price(n, price=co2_price) * snapshot_weightings(n)
+ep = nodal_co2_price(n, price=co2_price)
 ep = ep.rename(source_dims)
 C_emission = A * ep
 

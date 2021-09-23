@@ -15,8 +15,9 @@ import xarray as xr
 
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
-    snakemake = mock_snakemake('plot_power_mix', nname='test-de10')
+    snakemake = mock_snakemake('plot_power_mix', nname='de50')
 
+plt.rc('figure', dpi=300)
 
 n = pypsa.Network(snakemake.input.network)
 regions = gpd.read_file(snakemake.input.regions)

@@ -18,6 +18,7 @@ plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 plt.rc('text.latex', preamble=r'\usepackage{accents}')
 
+
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
     snakemake = mock_snakemake('plot_example_with_cycles')
@@ -167,5 +168,4 @@ for i, v in enumerate(payoff):
     ax.tick_params(left=False, bottom=False)
 fig.tight_layout(w_pad=.4)
 fig.savefig(snakemake.output.payoff, bbox_inches='tight')
-
 

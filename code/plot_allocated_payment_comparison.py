@@ -25,15 +25,13 @@ from netallocation.plot_helpers import (make_handler_map_to_scale_circles_as_in,
 
 if 'snakemake' not in globals():
     from _helpers import mock_snakemake
-    snakemake = mock_snakemake('plot_allocated_payment', nname='de50bf',
-                               method='ptpf', power='net', sink='DE0 1')
+    snakemake = mock_snakemake('plot_allocated_payment_comparison', nname='de50')
 
 
 n = pypsa.Network(snakemake.input.network)
 costs = xr.open_dataset(snakemake.input.costs)
-sink = snakemake.wildcards.sink
 regions = gpd.read_file(snakemake.input.regions).set_index('name')
-
+# %%
 fig, axes = plt.subplots(1, 2, figsize=(8,4.5),
                          subplot_kw={'projection': ccrs.EqualEarth()})
 
@@ -95,11 +93,10 @@ legend_colors = (n.carriers.set_index('nice_name').color
                  .append(emission_color.rename(to_explanation)))
 fig.legend(
     *ntl.plot.handles_labels_for(legend_colors),
-    loc="upper left",
-    bbox_to_anchor=(0.05, 0),
+    loc="lower left",
+    bbox_to_anchor=(0., 0.1),
     title='Carrier',
-    frameon=False,
-    ncol=4
+    ncol=2
 )
 
 
@@ -111,27 +108,22 @@ handles = make_legend_circles_for(reference_caps, scale=scale,
                                   facecolor="w", edgecolor='grey',
                                   alpha=.5)
 labels = ["%iM €"%(s / 1e6) for s in reference_caps]
+
+# append legend transmission capacities
+reference_caps = [20,10]
+handles += [Line2D([0], [0], color='cadetblue', linewidth=abs(s)*1e6*branch_scale)
+            for s in reference_caps]
+labels += ['%iM €'%s for s in reference_caps]
+
+
 handler_map = make_handler_map_to_scale_circles_as_in(ax)
 legend = fig.legend(handles, labels,
-                loc="upper left", bbox_to_anchor=(0., 0.6),
-                frameon=False,
+                loc="lower left",
+                bbox_to_anchor=(0., 0.42),
+                title='Revenue',
                 ncol=2,
                 handler_map=handler_map)
 fig.add_artist(legend)
-
-# legend transmission capacitues
-handles, labels = [], []
-reference_caps = [20,-10]
-handles = [Line2D([0], [0], color=c, linewidth=abs(s)*1e6*branch_scale)
-           for s, c in zip(reference_caps, ['cadetblue', 'indianred'])]
-labels = ['%iM €'%s for s in reference_caps]
-
-legend = fig.legend(handles, labels,
-                    loc="upper right", bbox_to_anchor=(0, .95),
-                    frameon=False,
-                    ncol=2
-                    )
-fig.artists.append(legend)
 
 
 
