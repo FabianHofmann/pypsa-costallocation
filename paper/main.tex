@@ -212,7 +212,7 @@
     \maketitle
     
     \begin{abstract}
-        Power system models are a valuable, widely used tool for determining cost-minimal future operation and investment  under policy or environmental constraints. However, they neglect to allocate the costs of individual assets, such as generators or transmission lines, to individual consumers on the grid. Existing cost allocation methods are hardly suitable for large grids and do not consider all relevant costs. This paper addresses this gap. Based on flow tracing, the \textit{price tracing} method is introduced, which derives a node-to-node and from there an asset-to-consumer allocation of all costs in an optimized power system. The resulting cost allocations are transparent, plausible, and consistent with locational marginal prices at the optimum. The method can also allocate costs in a sub-optmimal system state. The approach is applied and discussed using a model of the future German power system.
+        Power system models are a valuable, widely used tool for determining cost-minimal future operation and investment  under policy or environmental constraints. However, they neglect to allocate the costs of individual assets, such as generators or transmission lines, to individual consumers on the grid. Existing cost allocation methods are hardly suitable for large grids and do not consider all relevant costs. This paper addresses this gap. Based on flow tracing, the \textit{Price Tracing} method is introduced, which derives a node-to-node and from there an asset-to-consumer allocation of all costs in an optimized power system. The resulting cost allocations are transparent, plausible, and consistent with locational marginal prices at the optimum. The method can also allocate costs in a sub-optmimal system state. The approach is applied and discussed using a model of the future German power system.
 
         % \vtop{%
         %  \vskip0pt
@@ -258,7 +258,7 @@ This paper addresses this gap. We introduce a new method called Price Tracing th
 
 In the literature, the concept of flow-based cost allocation has been discussed and applied in a number of works \cite{galiana_transmission_2003,shahidehpour_market_2002,meng_investigation_2007,schafer_allocation_2017,nikoukar_transmission_2012,arabali_pricing_2012,wu_locational_2005}. Shahidehpour et al. provide deep insights into the allocation of congestion costs and transmission investments to market participants using different allocation techniques \cite{shahidehpour_market_2002}. In particular, they suggest that generation shift factors, i.e., the marginal contribution of generators to a flow on a line, allow the \ac{LMP} to be represented as a superposition of (a) the \ac{LMP} on the reference bus, (b) the congestion price, and (c) a price for losses. The approach in \cite{meng_investigation_2007} extends this relationship for contributions based on the \ac{AP} scheme, which provides an accurate, albeit imprecise, estimate of the optimal \ac{LMP}. A similar approach based on \ac{AP} is used in \cite{schafer_allocation_2017}, which allocates electricity prices from a non-optimal electricity dispatch.
 
-In this paper, we combine the advantages of the above studies. Our approach ensures that cost allocations are plausible and spatially constrained, while payments are fully aligned with the \ac{LMP}-based nodal pricing system. It also facilitates transparency and cost-benefit analysis in network planning, such as the ten-year network development plan \cite{entso-e_completing_2020} or the German network development plan \cite{bundesnetzagentur_netzentwicklungsplan_2020}. In addition, it provides a starting point for a usage-based allocation of transmission costs. While the presented method uses the \ac{LOPF} to analyze large network models, we discuss how it can be extended to nonlinear power flows. 
+The presented approach combines the advantages of the above studies. It ensures that cost allocations are plausible and spatially constrained, while payments are fully aligned with the \ac{LMP}-based nodal pricing system. It also facilitates transparency and cost-benefit analysis in network planning, such as the ten-year network development plan \cite{entso-e_completing_2020} or the German network development plan \cite{bundesnetzagentur_netzentwicklungsplan_2020}. In addition, it provides a starting point for a usage-based allocation of transmission costs. While the presented method uses the \ac{LOPF} to analyze large network models, it is discussed how it can be extended to nonlinear power flows. 
 
 First, we formulate the price-tracing method (\cref{sec:price_tracing}) with the underlying assumptions and a numerical example (\cref{sec:numerical_example}). In \cref{sec:application_case}, possible use cases are presented using an optimized German power system with a high share of renewable resources. \Cref{sec:limitations} shows methodological limitations and \cref{sec:conclusions} draws final conclusions. 
 
@@ -267,7 +267,7 @@ First, we formulate the price-tracing method (\cref{sec:price_tracing}) with the
 \section{Price Tracing}
 \label{sec:price_tracing}
 
-Assume an electricity network model with N nodes, L lines and T time steps. Using the linearized power flow approximation, the power flow $\flow$ on a passive line $\ell$ at time $t$ relates to the generation $\nodalgeneration$ and demand $\demand$ at node $n$ and time $t$ according to 
+Consider an electricity network model with N nodes, L lines and T time steps. Using the linearized power flow approximation, the power flow $\flow$ on a passive line $\ell$ at time $t$ relates to the generation $\nodalgeneration$ and demand $\demand$ at node $n$ and time $t$ according to 
 \begin{align}
     \flow = \sum_n \ptdf \left(\nodalgeneration - \demand \right) \Forall{t}
 \end{align}
@@ -280,7 +280,7 @@ In a nodal pricing scheme, the system cost occasioned by the electrical demand $
     \text{Demand Cost}: \lmp\, \demand .
     \label{eq:demand_cost}
 \end{align}
-On the other hand, system assets gain a revenue from their operation. Therefore, the revenue of the dispatch $\nodalgeneration[m]$ at bus $m$ is given by 
+On the other hand, system assets generate revenue from their operation. Therefore, the revenue of the dispatch $\nodalgeneration[m]$ at bus $m$ is given by 
 \begin{align}
     \text{Dispatch Revenue}: \lmp[m] \, \nodalgeneration[m] 
     \label{eq:dispatch_revenue}
@@ -290,9 +290,9 @@ and the congestion revenue of line $\ell$ at time $t$ by
     \text{Congestion Revenue}: \lmp[\ell]\, \flow .
     \label{eq:congestion_revenue}
 \end{align}
-where in the absence of network cycles the revenue per transported MWh $\lmp[\ell]$ is the price difference $\lmpdiff$ between the ending and starting node of line $\ell$. In the case of network cycles, the price of the \ac{KVL} $\lmpkvl$ may be added to $\lmp[\ell]$ to adjust congestion revenues to expenditures in a long-term equilibrium, see \cref{sec:problem_formulation,sec:zero_profit_flow} for details. The \ac{LMP} as well as the prices for the \ac{KVL} are given by the dual values, often termed shadow prices, of the corresponding constraints in the underlying cost-optimization (see \cref{sec:optimality_conditions} for details).   
+where, in the absence of network cycles, the revenue per transported MWh $\lmp[\ell]$ is the price difference $\lmpdiff$ between the end node and beginning node of line $\ell$. In the case of network cycles, the price of the \ac{KVL} $\lmpkvl$ may be added to $\lmp[\ell]$ to match congestion revenues to expenditures in a long-term equilibrium, see \cref{sec:problem_formulation,sec:zero_profit_flow} for details. The \ac{LMP} as well as the prices for the \ac{KVL} are given by the dual values, often called shadow prices, of the corresponding constraints in the underlying cost optimization (see \cref{sec:optimality_conditions} for details).   
 % Using the Incidence Matrix $\incidence$, which is 1 if $n$ is a starting node of line $\ell$, -1 if $n$ is a ending node of line $\ell$ and zero otherwise, the price differences are given by $\lmpdiff = - \sum_n \incidence \lmp$.
-In economic equilibrium, prices occur naturally, which in turn lead to the following equivalency
+In economic equilibrium, prices naturally arise, which in turn lead to the following equivalency
 \begin{align}
     \underbrace{\sum_{n} \lmp\, \demand}_{\text{Total electricity cost at $t$}}  = \underbrace{\sum_{m} \lmp[m]\, \nodalgeneration[m] + \sum_{\ell} \lmp[\ell] \flow}_{\text{Total revenue at $t$}}\, \Forall{t} .
     \label{eq:total-demand-cost}
@@ -322,36 +322,36 @@ Dispatch and flow can be considered as a superposition of individual contributio
     \caption{Schematic illustration of the \ac{AP} method. Figuratively, each power source is given one color. As soon as different power flows mix at a node, the mix of ``colors'' in the outgoing flows is in proportion to the ingoing colors. Therefore, all consumed power can be related to a distinct origin.}
     \label{fig:ap-scheme}
 \end{figure}
-It states that when flows from different sources meet at the same bus, their proportion determines the mix of all outgoing flows from this bus, including nodal withdrawal. The advantage of the \ac{AP} method is the spatial confinement of \ac{P2P} allocations $A_{m \rightarrow n}$ \cite{hofmann_techno-economic_2020}. By definition, the sum of all recipients yields the nodal generation at $m$, thus
+It states that when flows from different sources meet at the same bus, their share determines the mixture of all flows originating from that bus, including nodal withdrawal. The advantage of the \ac{AP} method is the spatial containment of \ac{P2P} allocations $A_{m \rightarrow n}$ \cite{hofmann_techno-economic_2020}. By definition, the sum of all receivers gives the nodal generation at $m$, thus
 \begin{align}
     \nodalgeneration[m] = \sum_n \allocatepeer \Forall{m.t} 
     \label{eq:nodalgeneration-breakdown}
 \end{align}   
-As explained later in the paper, we only use the \ac{P2P} mappings of the \ac{AP} method. Thus, regardless of the \ac{AP} allocation, let $\allocateflow$ denote the contribution of demand $\demand$ to the flow on line $\ell$ such that the sum of all flow contributions equals flow on line $\ell$,  
+As explained later in the paper, only the \ac{P2P} mappings of the \ac{AP} method are used. Thus, regardless of the \ac{AP} allocation, $\allocateflow$ denotes the contribution of demand $\demand$ to the flow on line $\ell$ such that the sum of all flow contributions equals flow on line $\ell$,  
 \begin{align}
     \flow = \sum_n \allocateflow \Forall{\ell,t}.
     \label{eq:flow-breakdown}
 \end{align}
-We insert \cref{eq:nodalgeneration-breakdown,eq:flow-breakdown} into \cref{eq:total-demand-cost} and impose that the equality holds for all summands referring to $n$ separately, which leads us to 
+Inserting \cref{eq:nodalgeneration-breakdown,eq:flow-breakdown} into \cref{eq:total-demand-cost} and imposing that the equality holds for all summands referring to $n$ separately, leads to 
 \begin{align}
     \lmp\, \demand &= \sum_m \lmp[m] \allocatepeer + \sum_\ell \lmp[\ell] \allocateflow \Forall{n,t}.
     \label{eq:demand-cost-allocation}
 \end{align}
-This equation maps the cost of nodal demand on the left-hand side to the contributions of dispatch and congestion revenues on the right-hand side. It thus indicates what consumers at $n$ have to pay to generators at $m$ and the transmission line $\ell$. The equation introduces N new equalities for each time step for which the necessary degree of freedom comes from the yet undefined flow contribution $\allocateflow$. In \cref{sec:proof_equivalence} we prove that 
+This equation maps the cost of nodal demand on the left-hand side to the contributions of dispatch and congestion revenues on the right-hand side. It thus indicates what consumers at $n$ have to pay to generators at $m$ and the transmission line $\ell$. The equation introduces N new equalities for each time step for which the necessary degree of freedom comes from the yet undefined flow contribution $\allocateflow$. \Cref{sec:proof_equivalence} proves that 
 \begin{align}
     \allocateflow = \sum_m \ptdf[m] (\allocatepeer - \delta_{nm} \demand) 
     \label{eq:allocateflow}
 \end{align}
 solves \cref{eq:demand-cost-allocation} where $\delta_{mn}$ is 1 for $m=n$ and zero otherwise. Since \cref{eq:allocateflow} is a function of the \ac{P2P}-assignment $\allocatepeer$ only, the cost of electricity in \cref{eq:demand-cost-allocation} is also only a function of the \ac{P2P} allocation $\allocatepeer$ and the \ac{LMP} $\lmp$. 
 % This holds true because the flow allocations $\allocateflow$ obey the (linearized) \ac{KVL}\footnote{for transport models or networks with \acl{HVDC} lines, the PTDF can be artificially derived from the network flow using the formulation in \cite{hofmann_flow_2020}}. 
-Note that it is not possible to take the non-modified flow allocations given by the \ac{AP} as these are not a solution to \cref{eq:demand-cost-allocation}. Instead it is necessary to reassign them through \cref{eq:allocateflow}\footnote{This can be explained by considering that the \ac{AP} flow allocations do not respect the \ac{KVL}, which however have a direct effect on the \ac{LMP}. For the same reason the cost estimation in \cite{meng_investigation_2007} are inexact.}. 
+Note that it is not possible to take the non-modified flow allocations given by the \ac{AP} as these are not a solution to \cref{eq:demand-cost-allocation}. Instead it is necessary to reassign them through \cref{eq:allocateflow}\footnote{This can be explained by considering that the \ac{AP} flow allocations do not respect the \ac{KVL}, which however have a direct effect on the \ac{LMP}. For the same reason, the cost estimation in \cite{meng_investigation_2007} are also inaccurate.}. 
 
-Since generators are often grouped together at network nodes, the \ac{P2P}-assignments $\allocatepeer$ break down into the contributions of generators located at $m$. Following the formulation in \cite{schafer_tracing_2020}, let $\allocategeneration = \allocatepeer \, r_{s,m,t}$ be the power allocation from generator $s$ to demand at $n$ where $r_{s,m,t}$ is the share that generation $\generation$ of generator $s$ at time $t$ contributes to the generation $\nodalgeneration[m]$ at node $m$ and $t$. Naturally, it fulfills
+Since generators are often grouped together at network nodes, the \ac{P2P}-assignments $\allocatepeer$ partition into the contributions of generators located at $m$. Following the formulation in \cite{schafer_tracing_2020}, let $\allocategeneration = \allocatepeer \, r_{s,m,t}$ be the power allocation from generator $s$ to demand at $n$ where $r_{s,m,t}$ is the share that generation $\generation$ of generator $s$ at time $t$ contributes to the generation $\nodalgeneration[m]$ at node $m$ and $t$. It fulfills
 \begin{align}
     \generation = \sum_n \allocategeneration .
     \label{eq:generation-breakdown}
 \end{align}  
-Further, we set the selling price $\lmp[s]$ of generator $s$ to the \ac{LMP} $\lmp$ with $s$ being located at bus $n$. For consistency with \cref{eq:dispatch_revenue}, the dispatch revenue of generator $s$ is given by $\lmp[s] \, \generation$.\\
+Further, let $\lmp[s]$ of generator $s$ be set to the \ac{LMP} $\lmp$, where $s$ is located at bus $n$. For consistency with \cref{eq:dispatch_revenue}, the dispatch revenue of generator $s$ is given by $\lmp[s] \, \generation$.\
 
 
 The \textit{Price Tracing} method for a network with a linearized power flow and a nodal pricing scheme builds on the above equations and defines  
@@ -366,7 +366,7 @@ as the payment from consumers at $n$ to generator $s$ as well as
 \end{subequations}
 as the payment to transmission line $\ell$. For consistency, let $\payment = \lmp \demand$ denote the nodal payment of all consumers at node $n$ which according to \cref{eq:demand-cost-allocation} is $\payment = \sum_s \allocategeneratorcost + \sum_\ell \allocatelinecost$. 
 
-Note that storage units such as batteries may be easily introduced into the Price Tracing method: when they discharge power, they are treated like generators and when they charge power, they are treated as consumers. For the latter, the allocations $\allocategeneration$ and $\allocateflow$ must be divided into allocations to consumers and charging storage units at $n$.    
+It should be noted that storage units such as batteries can easily be included in the Price Tracing method: When they discharge electricity, they are treated as generators, and when they charge electricity, they are treated as consumers. For the latter, the $\allocategeneration$ and $\allocateflow$ allocations must be split into allocations to consumers and charging storage units at $n$.   
 
 % Price Tracing enables to track the flow of money in a network with optimal or sub-optimal prices. Note that as long as the allocation $\allocatepeer$ fulfills \cref{eq:flow-breakdown,eq:generation-breakdown}, it may be modified. So, there is a degree of freedom to pre-allocate direct \ac{P2P} tradings $\allocatepeer^\text{Trade}$ and to allocate the remaining generation and demand with the \ac{AP} method, thus 
 % \begin{align}
@@ -378,8 +378,7 @@ Note that storage units such as batteries may be easily introduced into the Pric
 \subsection{Numerical Example}
 \label{sec:numerical_example}
 
-In the following we illustrate the Price Tracing method using a numerical example and start with a three-node network with two lines. We optimize the dispatch for one time step and perform the cost allocation. We then add a third line to the system and repeat the cost allocation to show the effect of the network cycle.      
-
+In the following, the Price Tracing method is illustrated by a numerical example, assuming a three-node network with two lines. Considering one time step, the dispatch of the generators is optimized and the costs are allocated. Finally, a third line is added to the system and the cost allocation is repeated in order to show the effects of the network cycle. 
 
 \subsubsection*{Network without Cycles}
 \Cref{fig:example-network} shows the optimized three-node network with corresponding numerical values.
@@ -388,9 +387,9 @@ In the following we illustrate the Price Tracing method using a numerical exampl
     \caption{Example network with nodal pricing scheme. Dispatch revenue as well as demand cost per MWh are given by the \ac{LMP} $\lambda$. Congestion revenue per MWh is given by the price difference $\lambda^\text{diff}$ of the connecting nodes.}
     \label{fig:example-network-wo}
 \end{figure}
-Both, bus 1 and 2 have a fixed demand of 30~MW and 50~MW, respectively. Bus~1 has a generator with a marginal price of 6~\euro/MWh. Bus~3 has a cheaper generator with a marginal price of 4~\euro/MWh. The maximal capacity of both generators is 50~MW. The transmission line from 1 to 2 has a capacity of 60~MW and line from 3 to 1 a capacity of 30 MW. Since the latter limits the use of the cheaper generator, there is a price difference of 2 \euro/MWh between bus 1 and 3. Due to the absence of network cycles, this price difference defines the congestion revenue of line 1--3. The flow on line 1--2 is not bound, hence there is no congestion revenue and bus 2 and 1 have the same electricity price of 6~\euro/MWh.  
+Both, bus 1 and 2 have a fixed demand of 30~MW and 50~MW, respectively. Bus~1 has a generator with an operational price of 6~\euro/MWh. Bus~3 has a cheaper generator with an operational price of 4~\euro/MWh. The maximum capacity of both generators is 50~MW. The transmission line from 1 to 2 has a capacity of 60~MW and line from 3 to 1 a capacity of 30 MW. Since the latter limits the use of the cheaper generator, there is a price difference of 2 \euro/MWh between bus 1 and 3. Due to the absence of network cycles, this price difference defines the congestion revenue of line 1--3. The flow on line 1--2 is not bound, hence there is no congestion revenue and bus 2 and 1 have the same electricity price of 6~\euro/MWh.  
 
-Since only net injections are allocated to different buses, the total demand at bus~1 is supplied by the local generator. In contrast, bus~2 imports power from bus~1 and bus~3. Using the Price Tracing method, we calculate the cost allocations $\mathcal{C}_{n\rightarrow s}$ and $\mathcal{C}_{n\rightarrow \ell}$, which we show in \cref{fig:example-network-payoff-wo}. Consumers at bus~1 only have to compensate the local generator with 180 \euro. Consumers at bus~2 pay for congestion revenues of line 1--3, all electricity generation at bus~3 and the remaining dispatch revenues of the generator at bus~1.    
+Since only net injections are allocated to the different buses, all demand at bus~1 is met by the local generator. Bus~2, on the other hand, imports electricity from bus~1 and bus~3. Using the Price Tracing method, the cost allocations $\mathcal{C}_{n\rightarrow s}$ and $\mathcal{C}_{n\rightarrow \ell}$ are calculated and shown in \cref{fig:example-network-payoff-wo}. Consumers at bus~1 only have to compensate the local generator with 180 \euro. Consumers at bus~2 pay for congestion revenues from line 1--3, all electricity generation at bus~3, and the remaining dispatch revenues from the generator at bus~1. 
 
 \begin{figure}[h]
     \includegraphics[width=\linewidth]{example-without-cycles/payoff}
@@ -398,13 +397,12 @@ Since only net injections are allocated to different buses, the total demand at 
     \label{fig:example-network-payoff-wo}
 \end{figure}
  
-The consistency of the cost allocation can be easily double-checked. The sum of a column  yields the payment to a generator or a line. This exactly matches the dispatch and congestion revenue defined in \cref{eq:dispatch_revenue,eq:congestion_revenue}. In turn, the sum of a row gives the total amount that consumers at a bus have to pay. This equals the demand cost $\lambda_n \, d_n$. For example, the sum of payments of consumers at bus~2 is 300~\euro\, which is the price of 6~\euro/MWh times the consumption of 50~MWh. \\
-
+The consistency of the cost allocation can be easily checked. The sum of a column gives the payment to a generator or a line. This corresponds exactly to the dispatch and congestion revenue defined in \cref{eq:dispatch_revenue,eq:congestion_revenue}. In turn, the sum of a row gives the total amount consumers have to pay at a bus. This corresponds to the demand cost $\lambda_n \, d_n$. For example, the sum of payments by consumers to bus~2 is 300~\euro, which is equal to the price of 6~\euro/MWh times the consumption of 50~MWh. \\
 
 
 \subsubsection*{Network with Cycle}
 
-Now, we add a line from bus~3 to bus~2 with a capacity of 30~MW. This introduces \ac{KVL} constraints for the three lines, requiring that the sum of flows following the cycle is zero\footnote{For simplicity, we assume a uniform impedance in the example.}. As shown in \cref{fig:example-network} the new line's capacity is bound at 30~MW. The new cost optimum results in a higher price at bus~2 of 8~\euro/MWh despite the cheaper generator~2 producing 10~MW more than before. This result may be counterintuitive, but it becomes clear when considering that the low capacity of the new line, combined with the \ac{KVL}, restricts flows on line 1--3 and 1--2.   
+Now, we add a line from bus~3 to bus~2 with a capacity of 30~MW. This introduces \ac{KVL} constraints for the three lines that the sum of flows following the cycle is zero\footnote{For simplicity, we assume a uniform impedance in the example.}. As shown in \cref{fig:example-network} the new line's capacity is bound at 30~MW. The new cost optimum results in a higher price at bus~2 of 8~\euro/MWh despite the cheaper generator~2 producing 10~MW more than before. This result may be counterintuitive, but it becomes clear when considering that the low capacity of the new line, combined with the \ac{KVL}, restricts flows on line 1--3 and 1--2.   
 
 \begin{figure}[h!]
     % \begin{subfigure}[c]{0.5\linewidth}
@@ -429,13 +427,13 @@ Now, we add a line from bus~3 to bus~2 with a capacity of 30~MW. This introduces
     \label{fig:example-network-payoff-all}
 \end{figure}
 
-The prices $\lambda_\ell^\text{KVL}$ of line $\ell$ are returned as the shadow price of the \ac{KVL} constraints in the cost-optimization, see \cref{sec:problem_formulation} for details. The Price Tracing method optionally allows considering these in the congestion revenue without losing its consistency with the demand costs. 
+The prices $\lambda_\ell^\text{KVL}$ of line $\ell$ are returned as the shadow price of the \ac{KVL} constraints in the cost-optimization, see \cref{sec:problem_formulation} for details. The Price Tracing method optionally allows these to be included in the congestion revenue without losing consistency with the demand cost. 
 
 
 
 \Cref{fig:example-network-payoff} shows the cost allocation without considering the \ac{KVL} shadow prices. Here, the congestion revenue is proportional to the price difference of the connected buses only. The new line 2--3 has the highest revenue at 120~\euro/MWh. However, \cref{fig:example-network-payoff-kvl} shows the cost allocation taking into account the \ac{KVL} shadow prices. Here, the congestion revenues are shifted towards 1--2 and 1--3. Note that this shift accounts for the fact that it is the new line 2--3 that limits the flow on line 1--2 and 1--3.    
 
-Again, both cost allocation schemes are consistent with the total demand cost, dispatch and congestion revenues. In the following, we consider the \ac{KVL} shadow prices in the Price Tracing method since then, the total congestion revenue of a line equals the sum of all associated line costs in a short and long-term equilibrium, see \cref{sec:zero_profit_flow}.  
+Again, both cost allocation schemes are consistent with the total demand cost, dispatch and congestion revenues. In the following, the \ac{KVL} shadow prices in the Price Tracing method are considered since then, the total congestion revenue of a line equals the sum of all associated line costs in a short and long-term equilibrium, see \cref{sec:zero_profit_flow}.  
 
 \begin{figure*}[h!]
     \centering
@@ -448,9 +446,9 @@ Again, both cost allocation schemes are consistent with the total demand cost, d
 \section{Application Cases}
 \label{sec:application_case}
 
-Using a cost-optimized model of the German power system with 50 representative nodes and a one-year time span with hourly resolution, we demonstrate four use cases of the Price Tracing method. 
+Using a cost-optimized model of the German power grid with 50 representative nodes and a time span of one year with hourly resolution, four use cases of the Price Tracing method are demonstrated. 
 
-The investment model builds on the PyPSA-EUR workflow \cite{horsch_jonas_pypsa-eur_2020} whose technical details and assumptions are presented in \cite{horsch_pypsa-eur_2018}. Transmission line capacities can be expanded but require a minimum of today's capacities, originally retrieved from the ENTSO-E Transmission System Map \cite{entso-e_entso-e_nodate}. Further, we require a minimum deployment of renewable capacity derived from matching all entries of the OPSD renewable power plant list \cite{schlechtRenewablePowerPlants2020} to its closest bus. Wind and solar capacity expansion are limited by land-use restrictions considering agriculture, urban, forested and protected areas based on the CORINE and NATURA2000 database \cite{eea_corine_2012,eea_natura_2016}. \ac{PHS} and \ac{ROR} power plants are fixed to today's capacities and may not be expanded. Additionally, unlimited expansion of batteries and H$_{2}$-storages and \ac{OCGT} are allowed at each node. 
+The investment model builds on the PyPSA-EUR workflow \cite{horsch_jonas_pypsa-eur_2020} whose technical details and assumptions are presented in \cite{horsch_pypsa-eur_2018}. Transmission line capacities can be expanded but require a minimum of today's capacities, originally retrieved from the ENTSO-E Transmission System Map \cite{entso-e_entso-e_nodate}. Further, a minimum deployment of renewable capacity is required, derived from matching all entries of the OPSD renewable power plant list \cite{schlechtRenewablePowerPlants2020} to its closest bus. Wind and solar capacity expansion are limited by land-use restrictions considering agriculture, urban, forested and protected areas based on the CORINE and NATURA2000 database \cite{eea_corine_2012,eea_natura_2016}. \ac{PHS} and \ac{ROR} power plants are fixed to today's capacities and may not be expanded. In addition, unlimited expansion of batteries and H$_{2}$-storages and \ac{OCGT} are allowed at each node. 
 % 
 % 
 \begin{figure}
@@ -459,7 +457,7 @@ The investment model builds on the PyPSA-EUR workflow \cite{horsch_jonas_pypsa-e
     \caption{Load-weighted average electricity price $\averagelmp$ per region in the optimized German power system. Regions in the middle and south of Germany have high prices whereas electricity in the North with a strong wind, transmission and \ac{OCGT} infrastructure is cheaper.}
     \label{fig:average_price}
 \end{figure}
-We impose a carbon price of 120 \euro\, per ton of CO$_{2}$ which, for OCGT, adds an effective price of 55 \euro/\megawatthour (assuming a gross emission of 180~kg/MWh and an efficiency of 39\%). All cost assumptions on operational costs and annualized capital cost are summarized in \cref{tab:cost_assumptions}. 
+We assume a carbon price of 120 \euro\, per ton of CO$_{2}$, which adds an effective price of 55 \euro/\megawatthour\, to the operational price of \acp{OCGT} (assuming a gross emission of 180~kg/MWh and an efficiency of 39\%). All cost assumptions on operational costs and annualized capital costs are summarized in \cref{tab:cost_assumptions}. 
 
 The network is shown in  \cref{fig:network}. The left-hand side shows all the minimum capacity requirements, the right-hand side the cost-optimal generation capacities as well as net transmission expansions. Solar capacities are expanded in the south, onshore and offshore wind in the upper north and far west. \ac{OCGT} are built in the middle and north of the country. Transmission lines are amplified along the north-south axis, including a major \ac{DC} link, associated with the German S\"ud-Link, running from the coastal region to the southwest. 
 The total annualized cost of the power system is roughly 46 billion \euro.
@@ -475,7 +473,7 @@ It reveals a relatively strong gradient from the south (at roughly 98 \euro/MWh)
  
 \subsection{Usage-based Network Tariff}
 
-The first possible use-case of the Price Tracing method we discuss here, is a usage-based network tariff. Like in other countries, electricity consumers in Germany pay a uniform network tariff, the ``Netzentgelte''. These are based on a relatively opaque calculation and valuation of all network costs for each Transmission System Operator, in addition to an individually derived profit margin. 
+The first possible use case of the Price Tracing method discussed here is a usage-based network tariff. As in other countries, electricity consumers in Germany pay a uniform network tariff, the ``Netzentgelte''. These are based on a relatively opaque calculation and valuation of all network costs for each Transmission System Operator, in addition to an individually derived profit margin. 
 
 The Price Tracing method allocates all congestion revenues to consumers in the network, given by $\allocatelinecost$. This cost allocation can be used to define a usage-based network tariffs $\averagelmp^\text{grid}$ for each bus-region $n$ in the network:     
 \begin{align}
@@ -529,10 +527,9 @@ Note, since the CO$_2$ price is given exogenously, this tracing method may also 
     \label{fig:direct-allocation}
 \end{figure*}
 
-A further application of the Price Tracing method is making the nodal demand cost in a network more transparent. This enables us to discover which parts of the system the spent costs of consumers in a region are going to. To demonstrate this, \cref{fig:direct-allocation} shows the total \ac{P2P} cost assignments $\sum_t \allocategeneratorcost$ and $\sum_t  \allocatelinecost$ for the region with the lowest average \ac{LMP} (left side) and for the region with the highest \ac{LMP} (right side). The dedicated region is indicated in blue. The circles and their segments indicate the allocated dispatch revenues which are subdivided by carrier type. The lines indicate the allocated congestion revenue. 
+Another application of the Price Tracing method is to make the nodal demand cost in a network more transparent. This enables to discover, which parts of the system the spent costs of consumers in a region go to. To demonstrate this, \cref{fig:direct-allocation} shows the total \ac{P2P} cost assignments $\sum_t \allocategeneratorcost$ and $\sum_t  \allocatelinecost$ for the region with the lowest average \ac{LMP} (left side) and for the region with the highest \ac{LMP} (right side). The dedicated region is indicated in blue. The circles and their segments indicate the allocated dispatch revenues which are subdivided by carrier type. The lines indicate the allocated congestion revenue. 
 
-Due to its small net imports, the low-price region in the north-west has few congestion costs. It profits from local offshore wind farms and only a small share of the payments is allocated to remote \acp{OCGT}. In contrast, the high-priced region is highly dependent on local \ac{OCGT} and the transmission system, which causes high amounts of allocated dispatch and congestion costs. Interestingly, its payments to  onshore and offshore wind infrastructure are low despite a third of its supply coming from wind power, compare \cref{fig:power_mix}. This leads to the conclusion that the wind power supply in this region is not restricted by exhausted wind power resources but by bottlenecks in the transmission system.  
-
+The low-cost region in the Northwest has few congestion costs due to its low net imports. It profits from local offshore wind farms and only a small share of the payments is allocated to remote \acp{OCGT}. In contrast, the high-price region is highly dependent on local \ac{OCGT} and the transmission system, which causes high amounts of allocated dispatch and congestion costs. Interestingly, its payments to  onshore and offshore wind infrastructure are low despite a third of its supply coming from wind power, compare \cref{fig:power_mix}. This suggests that wind power supply in this region is constrained not by depleted wind power resources, but by bottlenecks in the transmission grid.  
 
 
 
@@ -550,7 +547,7 @@ Due to its small net imports, the low-price region in the north-west has few con
 
 \subsection{Revenue Decomposition}
 
-Finally, we demonstrate a more abstract application case of the Price Tracing method which focuses on decomposing the congestion and dispatch revenue for each asset. In a long-term equilibrium without any exogenous constraints, a network asset recovers all its \ac{OPEX} and \ac{CAPEX} from the revenue. This relation is known as the zero-profit rule and is an outcome of the \ac{KKT} conditions of the underlying cost-minimization problem, derived in detail in \cref{sec:zero_profit_generation,sec:zero_profit_flow,sec:zero_profit_storage_units}. However, if the cost-optimum is constrained by external factors, for example by a minimum share of renewable capacity, the zero-profit relation is altered and more cost contributions have to be considered \cite{brown_decreasing_2020} as soon as the new constraint becomes binding. 
+Finally, a more abstract use case of Price Tracing is demonstrated that focuses on the decomposition of congestion and dispatch revenues for each asset. In a long-term equilibrium without any exogenous constraints, a network asset recovers all its \ac{OPEX} and \ac{CAPEX} from the revenue. This relation is known as the zero-profit rule and is an outcome of the \ac{KKT} conditions of the underlying cost-minimization problem, derived in detail in \cref{sec:zero_profit_generation,sec:zero_profit_flow,sec:zero_profit_storage_units}. However, if the cost-optimum is constrained by external factors, for example by a minimum share of renewable capacity, the zero-profit relation is altered and more cost contributions have to be considered \cite{brown_decreasing_2020} as soon as the new constraint becomes binding. 
 
 \begin{table}[h!]
     \caption{Exemplary contributions to the revenue of network assets highlighted in this work. Depending on the formulation of the optimization problem, the list changes and may possibly include other terms.}
@@ -575,9 +572,9 @@ Finally, we demonstrate a more abstract application case of the Price Tracing me
 \end{table}
 
 \noindent
-\Cref{tab:contributions} shows a possible set of contributions to the asset revenue. On top of \ac{OPEX} and \ac{CAPEX}, there are possible emission costs which we previously discussed in \cref{sec:co2-cost-allocation}. In the presence of capacity expansion limits, additional Scarcity Rent $\scarcitycost$ has to be considered in the revenue, in case the corresponding constraints are binding, for mathematical details see \cref{sec:upper_capacity_limits}. This rent translates to a compensation for more investment, but can also be ignored in case an asset is fixed to its existent, amortized capacity. Likewise, assets may be constrained to lower capacity requirements which reflect \ie  existing infrastructure known as Brownfield constraints, see \cref{sec:lower_capacity_limits}. If binding, the lower limit reduces the revenue of the corresponding asset and leaves a Subsidy Cost $\subsidycost$ which have to be compensated by external institutions (government, community) or are simply ignored when the asset is already amortized. 
+\Cref{tab:contributions} shows a possible set of contributions to the asset revenue. On top of \ac{OPEX} and \ac{CAPEX}, there are possible emission costs which were previously discussed in \cref{sec:co2-cost-allocation}. In presence of capacity expansion limits, additional Scarcity Rent $\scarcitycost$ must be included in the revenues, in case the corresponding constraints are binding, for mathematical details see \cref{sec:upper_capacity_limits}. This rent translates to a compensation for higher investments in a highly competitive market, but can also be ignored in case an asset is fixed to its existent, amortized capacity. Likewise, assets may be constrained to lower capacity requirements which reflect \ie  existing infrastructure, called Brownfield constraints, see \cref{sec:lower_capacity_limits}. If binding, the lower limit reduces the revenue of the corresponding asset and leaves a Subsidy Cost $\subsidycost$ which have to be compensated by external institutions (government, community) or are simply ignored when the asset is already amortized. 
 
-Except for the subsidies, all contributions can be expressed in terms of the operation of an asset, that is the generation $\generation$ and the flow $\flow$. Thus, given the set of discussed revenue contributions, we can decompose the dispatch revenue allocation into 
+Except for the subsidies, all contributions can be expressed in terms of the operation of an asset, that is the generation $\generation$ and the flow $\flow$. Thus, given the set of discussed revenue contributions, the dispatch revenue allocation decomposes into 
 \begin{align}
     \allocategeneratorcost = \allocateopex + \allocatecapex + \allocateemissioncost + \allocatescarcitycost - \subsidycost_s .
 \end{align} 
@@ -602,9 +599,9 @@ The method can be equally applied to short and long-term planning network models
 \section{Conclusion}
 \label{sec:conclusions}
 
-A new method, called Price Tracing, was presented. It builds upon the nodal pricing scheme and decomposes the dispatch and congestion revenues of generators and transmission lines into individual payments of consumers. It is based on the Average Participation method which calculates assignments between generators and consumers using the principle of proportional sharing. These assignments are weighted with the market price to determine the allocation of the revenues to consumers. By means of a numerical example, we showed that there exist two options of how to treat network cycles regarding cost allocation and laid out why it is more sensible to consider shadow prices of the Kirchhoff Voltage constraint.     
+A new method, called Price Tracing, was presented. It builds upon the nodal pricing scheme and decomposes the dispatch and congestion revenues of generators and transmission lines into individual payments of consumers. It is based on the Average Participation method which calculates assignments between generators and consumers using the principle of proportional sharing. These assignments are weighted by the market price to determine the allocation of the revenues to consumers. By means of a numerical example, it is shown that there exist two options of how to treat network cycles regarding cost allocation and laid out why it is more sensible to consider shadow prices of the Kirchhoff Voltage constraint.     
 
-Four application cases of the Price Tracing method were presented, using an optimized model of the German power system with a price of 120~\euro\, per ton of CO$_2$. Firstly, it is shown how network tariffs can be adjusted to a transparent, usage-based tariff that gives incentives to invest in the local infrastructure. Secondly, Price Tracing enables tracking of cost associated with CO$_2$ emissions through the network. These results may be used to reduce CO$_2$-intensive demands in a network. The third presented application case uses Price Tracing to derive cost contributions for individual consumers in order to make nodal payments transparent and explain price differences. This relates to the fourth case where individual dispatch and congestion revenues are decomposed into contributions of operational expenditure, capital expenditure, scarcity rents, and subsidies. We show that the allocation can be performed for an individual cost contribution in order to give insights into power system models or to derive political advice.    
+Using an optimized model of the German power system with a price of 120~\euro\, per ton of CO$_2$, four use cases of the Price Tracing method were presented. First, it is shown how grid tariffs can be adjusted to a transparent, consumption-based tariff that incentivizes investment in local infrastructure. Second, Price Tracing allows the grid to track the costs associated with CO$_2$ emissions. These results can be used to reduce CO$_2$-intensive demand on a grid. The third use case presented uses Price Tracing to derive cost contributions for individual consumers to make nodal payments transparent and explain price differences. This relates to the fourth case where individual dispatch and congestion revenues are decomposed into contributions from operational expenditures, capital expenditures, scarcity rents, and subsidies. It is shown that the allocation can be performed for a single cost contribution to provide insights into electricity system models or to derive policy advice.       
 
 \subsubsection*{Reproducibility and Expansion}
 
