@@ -212,7 +212,7 @@
     \maketitle
     
     \begin{abstract}
-        Power system models are a valuable, widely used tool for determining cost-minimal future operation and investment  under policy or environmental constraints. However, they neglect to allocate the costs of individual assets, such as generators or transmission lines, to individual consumers on the grid. Existing cost allocation methods are hardly suitable for large grids and do not consider all relevant costs. This paper addresses this gap. Based on flow tracing, the \textit{Price Tracing} method is introduced, which derives a node-to-node and from there an asset-to-consumer allocation of all costs in an optimized power system. The resulting cost allocations are transparent, plausible, and consistent with locational marginal prices at the optimum. The method can also allocate costs in a sub-optmimal system state. The approach is applied and discussed using a model of the future German power system.
+        Power system models are a valuable, widely used tool for determining cost-minimal future operation and investment  under policy or environmental constraints. However, they neglect to allocate the costs of individual assets, such as generators or transmission lines, to individual consumers on the grid. Existing cost allocation methods are hardly suitable for large grids and do not consider all relevant costs. This paper addresses this gap. Based on flow tracing, the \textit{Price Tracing} method is introduced, which derives a node-to-node and from there an asset-to-consumer allocation of all costs in an optimized power system. The resulting cost allocations are transparent, plausible, and consistent with locational marginal prices at the optimum. The approach is applied and discussed using a model of the future German power system. Although the method is strongly tied to a power system model, the underlying considerations should help in finding a more efficient market design.
 
         % \vtop{%
         %  \vskip0pt
@@ -266,6 +266,8 @@ First, we formulate the price-tracing method (\cref{sec:price_tracing}) with the
 
 \section{Price Tracing}
 \label{sec:price_tracing}
+
+\subsection{Mathematical Model}
 
 Consider an electricity network model with N nodes, L lines and T time steps. Using the linearized power flow approximation, the power flow $\flow$ on a passive line $\ell$ at time $t$ relates to the generation $\nodalgeneration$ and demand $\demand$ at node $n$ and time $t$ according to 
 \begin{align}
@@ -381,7 +383,7 @@ It should be noted that storage units such as batteries can easily be included i
 In the following, the Price Tracing method is illustrated by a numerical example, assuming a three-node network with two lines. Considering one time step, the dispatch of the generators is optimized and the costs are allocated. Finally, a third line is added to the system and the cost allocation is repeated in order to show the effects of the network cycle. 
 
 \subsubsection*{Network without Cycles}
-\Cref{fig:example-network} shows the optimized three-node network with corresponding numerical values.
+\Cref{fig:example-network-wo} shows the optimized three-node network with corresponding numerical values.
 \begin{figure}[h!]
     \includegraphics[width=\linewidth]{example-without-cycles/network}
     \caption{Example network with nodal pricing scheme. Dispatch revenue as well as demand cost per MWh are given by the \ac{LMP} $\lambda$. Congestion revenue per MWh is given by the price difference $\lambda^\text{diff}$ of the connecting nodes.}
@@ -588,6 +590,9 @@ This approach allows modelers and system operators to disentangle the combined e
 
 \section{Limitations}
 \label{sec:limitations}
+
+The method presented is closely linked to the underlying power system model and its optimization. In the usual electricity market mechanism, electricity producers bid on the market and Transmission System Operators make profits by charging grid fees. On the other hand, electricity consumers always pay indirectly for electricity generation costs, grid usage fees, and carbon emission costs. 
+While this study is less concerned with today's market structures, it is more concerned with showing what other market structures are theoretically possible and what flexibilities result from them. Nodal price structures with optimized prices hold many possibilities to create incentives. The preceding explanation is intended to help illuminate this space of possibilities.
 
 The presented cost allocation is based on the linear power flow approximation. Yet, the method is equally applicable to a system with an optimal power flow, \ie an \ac{AC} power flow. However, in this case, the allocations $\allocategeneration$ and $\allocateflow$ should be computed with the Z-Bus flow allocation presented in \cite{conejo_z-bus_2007} which, by design, respects both Kirchhoff Circuit Laws. Here, an additional cost term accounting for the transmission loss has to be considered in the decomposition of the congestion revenue. 
 
