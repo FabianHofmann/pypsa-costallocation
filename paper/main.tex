@@ -36,7 +36,7 @@
 \setlength\parindent{8pt}
 
 % style operators
-\newcommand{\ie}{\textit{i.e.} }
+\newcommand{\ie}{i.e.}
 \newcommand{\eg}{\textit{e.g.} }
 \newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
 \newcommand{\note}[1]{\textcolor{Orange}{#1}}
@@ -200,7 +200,7 @@
 
 
 \title{Tracing prices: A flow-based cost allocation for optimized power systems}
-\author{Fabian Hofmann and Alexander Kies \\Frankfurt Institute for Advanced Studies (FIAS), 60438 Frankfurt, Germany\\
+\author{Fabian Hofmann and Markus Schlott \\Frankfurt Institute for Advanced Studies (FIAS), 60438 Frankfurt, Germany\\
 % Email: hofmann@fias.uni-frankfurt.de
 }
 
@@ -212,7 +212,7 @@
     \maketitle
     
     \begin{abstract}
-        Power system models are a valuable, widely used tool for determining cost-minimal future operation and investment  under policy or environmental constraints. However, they neglect to allocate the costs of individual assets, such as generators or transmission lines, to individual consumers on the grid. Existing cost allocation methods are hardly suitable for large grids and do not consider all relevant costs. This paper addresses this gap. Based on flow tracing, the \textit{Price Tracing} method is introduced, which derives a node-to-node and from there an asset-to-consumer allocation of all costs in an optimized power system. The resulting cost allocations are transparent, plausible, and consistent with locational marginal prices at the optimum. The approach is applied and discussed using a model of the future German power system. Although the method is strongly tied to a power system model, the underlying considerations should help in finding a more efficient market design.
+        Power system models are a valuable, widely used tool for determining cost-minimal future operation and investment  under policy or environmental constraints. However, they neglect to allocate the costs of individual assets, such as generators or transmission lines, to individual consumers on the grid. Existing cost allocation methods are hardly suitable for large grids and do not consider all relevant costs. This paper addresses this gap. Based on flow tracing, the \textit{Price Tracing} method is introduced, which derives a node-to-node and from there an asset-to-consumer allocation of all costs in an optimized power system. The resulting cost allocations are transparent, plausible, and consistent with locational marginal prices at the optimum. The approach is applied and discussed using a model of the future German power system. Although the method is strongly tied to a power system model, the underlying considerations can help in finding a more efficient market design.
 
         % \vtop{%
         %  \vskip0pt
@@ -254,9 +254,9 @@
 Today's energy systems are undergoing profound and enduring change. The transition from controllable to variable, weather-dependent power generation and the constant improvement and innovation of technology require rigorous system planning and international cooperation. The core of the challenge manifests itself in the total cost of the system. First, these should be as low as possible, while meeting environmental and techno-economic standards. Second, they must be distributed fairly and transparently among all actors in the power system. It is essential to identify the cost drivers and account for them appropriately.  
 In this regard, power system models are a valuable and widely used tool \cite{pfenninger_energy_2014,bazmi_sustainable_2011,pereira_generation_2017,brown_sectoral_2019}. Many studies looking at different countries and regions around the world show how to expand renewable energy penetration at minimal cost. However, they are largely silent on how and for what reasons these costs are passed on to consumers. 
 
-This paper addresses this gap. We introduce a new method called Price Tracing that links electricity prices from different nodes. The method builds on Bialek's \ac{AP} \cite{bialek_tracing_1996}, also known as flow tracing, and weights the resulting power flow allocations with the \ac{LMP}. This provides the basis for a transparent allocation of cost contributions to consumer electricity prices, i.e., it answers not only the question of who supplies electricity to whom, but also how much consumers must pay to particular generators or transmission lines. 
+This paper addresses this gap. We introduce a new method called Price Tracing that links electricity prices from different nodes. The method builds on Bialek's \ac{AP} \cite{bialek_tracing_1996}, also known as flow tracing, and weights the resulting power flow allocations with the \ac{LMP}. This provides the basis for a transparent allocation of cost contributions to consumer electricity prices, i.e. it answers not only the question of who supplies electricity to whom, but also how much consumers must pay to particular generators or transmission lines. 
 
-In the literature, the concept of flow-based cost allocation has been discussed and applied in a number of works \cite{galiana_transmission_2003,shahidehpour_market_2002,meng_investigation_2007,schafer_allocation_2017,nikoukar_transmission_2012,arabali_pricing_2012,wu_locational_2005}. Shahidehpour et al. provide deep insights into the allocation of congestion costs and transmission investments to market participants using different allocation techniques \cite{shahidehpour_market_2002}. In particular, they suggest that generation shift factors, i.e., the marginal contribution of generators to a flow on a line, allow the \ac{LMP} to be represented as a superposition of (a) the \ac{LMP} on the reference bus, (b) the congestion price, and (c) a price for losses. The approach in \cite{meng_investigation_2007} extends this relationship for contributions based on the \ac{AP} scheme, which provides an accurate, albeit imprecise, estimate of the optimal \ac{LMP}. A similar approach based on \ac{AP} is used in \cite{schafer_allocation_2017}, which allocates electricity prices from a non-optimal electricity dispatch.
+In the literature, the concept of flow-based cost allocation has been discussed and applied in a number of works \cite{galiana_transmission_2003,shahidehpour_market_2002,meng_investigation_2007,schafer_allocation_2017,nikoukar_transmission_2012,arabali_pricing_2012,wu_locational_2005}. Shahidehpour et al. provide deep insights into the allocation of congestion costs and transmission investments to market participants using different allocation techniques \cite{shahidehpour_market_2002}. In particular, they suggest that generation shift factors, i.e. the marginal contribution of generators to a flow on a line, allow the \ac{LMP} to be represented as a superposition of (a) the \ac{LMP} on the reference bus, (b) the congestion price, and (c) a price for losses. The approach in \cite{meng_investigation_2007} extends this relationship for contributions based on the \ac{AP} scheme, which provides an accurate, albeit imprecise, estimate of the optimal \ac{LMP}. A similar approach based on \ac{AP} is used in \cite{schafer_allocation_2017}, which allocates electricity prices from a non-optimal electricity dispatch.
 
 The presented approach combines the advantages of the above studies. It ensures that cost allocations are plausible and spatially constrained, while payments are fully aligned with the \ac{LMP}-based nodal pricing system. It also facilitates transparency and cost-benefit analysis in network planning, such as the ten-year network development plan \cite{entso-e_completing_2020} or the German network development plan \cite{bundesnetzagentur_netzentwicklungsplan_2020}. In addition, it provides a starting point for a usage-based allocation of transmission costs. While the presented method uses the \ac{LOPF} to analyze large network models, it is discussed how it can be extended to nonlinear power flows. 
 
@@ -294,7 +294,7 @@ and the congestion revenue of line $\ell$ at time $t$ by
 \end{align}
 where, in the absence of network cycles, the revenue per transported MWh $\lmp[\ell]$ is the price difference $\lmpdiff$ between the end node and beginning node of line $\ell$. In the case of network cycles, the price of the \ac{KVL} $\lmpkvl$ may be added to $\lmp[\ell]$ to match congestion revenues to expenditures in a long-term equilibrium, see \cref{sec:problem_formulation,sec:zero_profit_flow} for details. The \ac{LMP} as well as the prices for the \ac{KVL} are given by the dual values, often called shadow prices, of the corresponding constraints in the underlying cost optimization (see \cref{sec:optimality_conditions} for details).   
 % Using the Incidence Matrix $\incidence$, which is 1 if $n$ is a starting node of line $\ell$, -1 if $n$ is a ending node of line $\ell$ and zero otherwise, the price differences are given by $\lmpdiff = - \sum_n \incidence \lmp$.
-In economic equilibrium, prices naturally arise, which in turn lead to the following equivalency
+In economic equilibrium, prices naturally arise, which in turn leads to the following equivalency
 \begin{align}
     \underbrace{\sum_{n} \lmp\, \demand}_{\text{Total electricity cost at $t$}}  = \underbrace{\sum_{m} \lmp[m]\, \nodalgeneration[m] + \sum_{\ell} \lmp[\ell] \flow}_{\text{Total revenue at $t$}}\, \Forall{t} .
     \label{eq:total-demand-cost}
@@ -469,7 +469,7 @@ The total annualized cost of the power system is roughly 46 billion \euro.
 \begin{align}
     \averagelmp = \dfrac{\sum_{t} \lmp \demand}{\sum_t \demand} = \dfrac{\sum_{t} \payment }{\sum_t \demand}    
 \end{align}
-It reveals a relatively strong gradient from the south (at roughly 98 \euro/MWh) to the north (84 \euro/MWh). Regions with few minimum capacity requirements and little capacity expansion, especially with respect to renewable generation, tend to have higher prices. 
+It reveals a relatively strong gradient from the south (at roughly 98 \euro/MWh) to the north (84 \euro/MWh). Regions with relatively poor renewable resources and therefore little capacity expansion tend to have higher prices. 
 % The node with the lowest \ac{LMP} in the upper northwest, stands out through high offshore capacity requirements.
  \\
  
@@ -481,7 +481,7 @@ The Price Tracing method allocates all congestion revenues to consumers in the n
 \begin{align}
     \averagelmp^\text{grid} = \dfrac{\sum_{t,\ell} \allocatelinecost}{\sum_t \demand}.
 \end{align}
-This is the average price that consumers at $n$ pay for the transmission of electricity. These include compensation for all capital investments taken by the network operators. Consumers with a high degree of nodal autarky, \ie with a little net electricity import, pay a lower network tariff and vice versa. This gives an incentive to regions with a sub-optimal deployment of renewable technologies to invest in local infrastructure. Note since the cost-optimum represents a long-term equilibrium, the total revenue per network asset equals the total \ac{OPEX} and \ac{CAPEX}. Therefore, the network tariffs $\averagelmp^\text{grid}$ do not result in any profits. 
+This is the average price that consumers at $n$ pay for the transmission of electricity. These include compensation for all capital investments taken by the network operators. Consumers with a high degree of nodal autarky, i.e. with a little net electricity import, pay a lower network tariff and vice versa. This gives an incentive to regions with a sub-optimal deployment of renewable technologies to invest in local infrastructure. Note since the cost-optimum represents a long-term equilibrium, the total revenue per network asset equals the total \ac{OPEX} and \ac{CAPEX}. The network tariffs $\averagelmp^\text{grid}$ reflect this equilibrium and therefore do not result in any profits for the grid operator.
 
 A further advantage of this network tariff allocation lies in the possibility of differentiating between network operators. The quantity 
 \begin{align}
@@ -529,7 +529,7 @@ Note, since the CO$_2$ price is given exogenously, this tracing method may also 
     \label{fig:direct-allocation}
 \end{figure*}
 
-Another application of the Price Tracing method is to make the nodal demand cost in a network more transparent. This enables to discover, which parts of the system the spent costs of consumers in a region go to. To demonstrate this, \cref{fig:direct-allocation} shows the total \ac{P2P} cost assignments $\sum_t \allocategeneratorcost$ and $\sum_t  \allocatelinecost$ for the region with the lowest average \ac{LMP} (left side) and for the region with the highest \ac{LMP} (right side). The dedicated region is indicated in blue. The circles and their segments indicate the allocated dispatch revenues which are subdivided by carrier type. The lines indicate the allocated congestion revenue. 
+Another application of the Price Tracing method is to make the nodal demand cost in a network more transparent. This answers the question of which parts of the system consumers' electricity payments go to. To demonstrate this, \cref{fig:direct-allocation} shows the total \ac{P2P} cost assignments $\sum_t \allocategeneratorcost$ and $\sum_t  \allocatelinecost$ for the region with the lowest average \ac{LMP} (left side) and for the region with the highest \ac{LMP} (right side). The dedicated region is indicated in blue. The circles and their segments indicate the allocated dispatch revenues which are subdivided by carrier type. The lines indicate the allocated congestion revenue. 
 
 The low-cost region in the Northwest has few congestion costs due to its low net imports. It profits from local offshore wind farms and only a small share of the payments is allocated to remote \acp{OCGT}. In contrast, the high-price region is highly dependent on local \ac{OCGT} and the transmission system, which causes high amounts of allocated dispatch and congestion costs. Interestingly, its payments to  onshore and offshore wind infrastructure are low despite a third of its supply coming from wind power, compare \cref{fig:power_mix}. This suggests that wind power supply in this region is constrained not by depleted wind power resources, but by bottlenecks in the transmission grid.  
 
@@ -549,7 +549,7 @@ The low-cost region in the Northwest has few congestion costs due to its low net
 
 \subsection{Revenue Decomposition}
 
-Finally, a more abstract use case of Price Tracing is demonstrated that focuses on the decomposition of congestion and dispatch revenues for each asset. In a long-term equilibrium without any exogenous constraints, a network asset recovers all its \ac{OPEX} and \ac{CAPEX} from the revenue. This relation is known as the zero-profit rule and is an outcome of the \ac{KKT} conditions of the underlying cost-minimization problem, derived in detail in \cref{sec:zero_profit_generation,sec:zero_profit_flow,sec:zero_profit_storage_units}. However, if the cost-optimum is constrained by external factors, for example by a minimum share of renewable capacity, the zero-profit relation is altered and more cost contributions have to be considered \cite{brown_decreasing_2020} as soon as the new constraint becomes binding. 
+Finally, a more abstract use case of Price Tracing is demonstrated that focuses on the decomposition of congestion and dispatch revenues for each asset. In a long-term equilibrium without any exogenous constraints, a network asset recovers all its \ac{OPEX} and \ac{CAPEX} from the revenue. This relation is known as the zero-profit rule and is an outcome of the \ac{KKT} conditions of the underlying cost-minimization problem, derived in detail in \cref{sec:zero_profit_generation,sec:zero_profit_flow,sec:zero_profit_storage_units}. However, if the cost-optimum is subject to additional constraints, for example by a minimum share of renewable capacity, the zero-profit relation is altered and more cost contributions have to be considered \cite{brown_decreasing_2020} as soon as the new constraint becomes binding. With the price-tracing method it is possible to decompose the effect of the additional boundary conditions to the cost of individual consumers.
 
 \begin{table}[h!]
     \caption{Exemplary contributions to the revenue of network assets highlighted in this work. Depending on the formulation of the optimization problem, the list changes and may possibly include other terms.}
@@ -604,9 +604,9 @@ The method can be equally applied to short and long-term planning network models
 \section{Conclusion}
 \label{sec:conclusions}
 
-A new method, called Price Tracing, was presented. It builds upon the nodal pricing scheme and decomposes the dispatch and congestion revenues of generators and transmission lines into individual payments of consumers. It is based on the Average Participation method which calculates assignments between generators and consumers using the principle of proportional sharing. These assignments are weighted by the market price to determine the allocation of the revenues to consumers. By means of a numerical example, it is shown that there exist two options of how to treat network cycles regarding cost allocation and laid out why it is more sensible to consider shadow prices of the Kirchhoff Voltage constraint.     
+A new method, called Price Tracing, was presented. It builds upon the nodal pricing scheme and decomposes the dispatch and congestion revenues of generators and transmission lines into individual payments of consumers. It is based on the Average Participation method which calculates assignments between generators and consumers using the principle of proportional sharing. These assignments are weighted by the market price to determine the allocation of the revenues to consumers. By means of a numerical example, it was shown that there exist two options of how to treat network cycles regarding cost allocation and laid out why it is more sensible to consider shadow prices of the Kirchhoff Voltage constraint.     
 
-Using an optimized model of the German power system with a price of 120~\euro\, per ton of CO$_2$, four use cases of the Price Tracing method were presented. First, it is shown how grid tariffs can be adjusted to a transparent, consumption-based tariff that incentivizes investment in local infrastructure. Second, Price Tracing allows the grid to track the costs associated with CO$_2$ emissions. These results can be used to reduce CO$_2$-intensive demand on a grid. The third use case presented uses Price Tracing to derive cost contributions for individual consumers to make nodal payments transparent and explain price differences. This relates to the fourth case where individual dispatch and congestion revenues are decomposed into contributions from operational expenditures, capital expenditures, scarcity rents, and subsidies. It is shown that the allocation can be performed for a single cost contribution to provide insights into electricity system models or to derive policy advice.       
+Using an optimized model of the German power system with a price of 120~\euro\, per ton of CO$_2$, four use cases of the Price Tracing method were presented. First, it was demonstrated how grid tariffs can be adjusted to a transparent, consumption-based tariff that incentivizes investment in local infrastructure. Second, Price Tracing allows the grid to track the costs associated with CO$_2$ emissions. These results can be used to reduce CO$_2$-intensive demand on a grid. The third use case presented uses Price Tracing to derive cost contributions for individual consumers to make nodal payments transparent and explain price differences. This relates to the fourth case where individual dispatch and congestion revenues are decomposed into contributions from operational expenditures, capital expenditures, scarcity rents, and subsidies. It was shown that the allocation can be performed for a single cost contribution to provide insights into electricity system models or to derive policy advice.       
 
 \subsubsection*{Reproducibility and Expansion}
 
@@ -618,7 +618,7 @@ the frame of the NetAllok project (grant number 03ET4046A) \cite{bundesministeri
 
 \subsubsection*{Acknowledgement}
 
-In particular, we thank Tom Brown for very fruitful discussions. We are very grateful to Alexander Zerrahn for reviewing. Further, we thank Markus Schlott and Horst Stöcker for their creative and fruitful inputs.
+In particular, we thank Tom Brown for very fruitful discussions. We are very grateful to Alexander Zerrahn for reviewing. Further, we thank Alexander Kies and Horst Stöcker for their creative and fruitful inputs.
 
 
 
@@ -730,7 +730,7 @@ Of particular importance is the nodal balance constraint which ensures that the 
      \resultsin{\lmp} \Forall{n,t}
     \label[constraint]{eq:nodal_balance_lin}
 \end{align}
-where $\incidence$ is +1 if line $\ell$ starts at bus $n$, -1 if it ends at $n$, 0 otherwise. The nodal generation $\nodalgeneration$ collects the production of all nodal assets. The corresponding dual variable (or shadow price) $\lmp$ is the \ac{LMP} per bus and time step. In an economic equilibrium for a nodal pricing scheme this is the \euro/\megawatthour price which a consumer has to pay.\\
+where $\incidence$ is +1 if line $\ell$ starts at bus $n$, -1 if it ends at $n$, 0 otherwise. The nodal generation $\nodalgeneration$ collects the production of all nodal assets. The corresponding dual variable (or shadow price) $\lmp$ is the \ac{LMP} per bus and time step. In an economic equilibrium for a nodal pricing scheme this is the \euro/\megawatthour\, price which a consumer has to pay.\\
 
 In order to impose the \ac{KVL} for the linearized \ac{AC} flow, the constraint 
 \begin{align}
@@ -930,7 +930,7 @@ The stationarity of the dispatched power leads us to
 \begin{align}
     \notag
     \pdv{\lagrangian}{\storagedispatch} &= 0 \\
-    \operationalpricestorage - \sum_n \lmp \, \incidencestorage - \mulowerstoragedispatch + \muupperstoragedispatch + (\efficiencydispatch )^{-1} \mustateofcharge &= 0 \;  \forall r,t
+    \operationalpricestorage - \sum_n \lmp \, \incidencestorage - \mulowerstoragedispatch + \muupperstoragedispatch + (\efficiencydispatch )^{-1} \mustateofcharge &= 0 \;  \forall\; r,t
     \label{eq:stationarity_storagedispatch}
 \end{align}
 which we  can use to define the revenue which recovers the \ac{CAPEX} at $r$, 
@@ -1007,7 +1007,7 @@ In that case, asset $i$ does not collect enough revenue from $\allocatecost$ in 
     \subsidycost_i = \mulowernom \capacity
     \Forall{i}
 \end{align}
-has to be subsidized by governments or communities or is simply ignored when investments are amortized. Allocating these cost contribution is ambiguous these as assets may not gain any revenue for their operational state. 
+has to be subsidized by governments or communities or is simply ignored when investments are amortized. Allocating the subsidies to consumers is ambiguous as revenue of the assets are not in equilibrium with their \ac{CAPEX} and \ac{OPEX} anymore. 
 \end{subequations}
 
 
@@ -1046,7 +1046,7 @@ the second expression on the right-hand side of \cref{eq:demand-cost-allocation2
     =& - \sum_{m} \allocatepeer \lmp[m] + \demand \lmp 
 \end{align}
 where in the third step we used the relation $\sum_\ell \ptdf \incidence[m] = \delta_{n m}$.
-The second term in the first line vanishes as the basis cycles $\cycle$ are the kernel of the PTDF, $\sum_{\ell} \cycle \ptdf  = 0 \; \forall c,n$. 
+The second term in the first line vanishes as the basis cycles $\cycle$ are the kernel of the PTDF, $\sum_{\ell} \cycle \ptdf  = 0 \; \forall\, c, n$. 
 
 
 
@@ -1107,7 +1107,7 @@ where $\DirectedIncidence^-$ is the negative part of the directed Incidence matr
 \end{table*} 
 
 
-The following figures contain more detailed information about the peer-to-peer cost allocation discussed in \cref{sec:application_case}. The cost or prices payed by consumers are indicated by the region color. The dedicated revenue is displayed in proportion to the size of cycles (for assets attached to buses) or to the thickness of transmission branches.    
+The following figures contain more detailed information about the peer-to-peer cost allocation discussed in \cref{sec:application_case}. The cost or prices payed by consumers are indicated by the region color. The dedicated revenue is displayed in proportion to the size of circles (for assets attached to buses) or to the thickness of transmission branches.    
 
 \begin{figure}[h]
     \includegraphics[width=\linewidth]{de50/average_demand}
