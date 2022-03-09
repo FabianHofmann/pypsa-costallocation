@@ -139,6 +139,8 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/enumitem/enumitem.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/enumitem/enumitem.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/accents/accents.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/accents/accents.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/preprint/authblk.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/preprint/authblk.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
