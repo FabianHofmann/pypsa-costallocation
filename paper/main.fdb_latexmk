@@ -1,11 +1,11 @@
 # Fdb version 3
-["biber main"] 1646766178 "main.bcf" "main.bbl" "main" 1646766216
-  "main.bcf" 1646766216 103151 b049a0a1caa52f683122a27f7e2194d5 "pdflatex"
+["biber main"] 1646766178 "main.bcf" "main.bbl" "main" 1647008681
+  "main.bcf" 1647008681 103151 b049a0a1caa52f683122a27f7e2194d5 "pdflatex"
   "main.bib" 1632402916 46048 a04aeebaac3c518bd5dfbf90b3516962 ""
   (generated)
-  "main.blg"
   "main.bbl"
-["pdflatex"] 1646766213 "/home/fabian/papers/price-tracing/paper/main.tex" "/home/fabian/papers/price-tracing/paper/main.pdf" "main" 1646766216
+  "main.blg"
+["pdflatex"] 1647008678 "/home/fabian/papers/price-tracing/paper/main.tex" "/home/fabian/papers/price-tracing/paper/main.pdf" "main" 1647008681
   "../figures/de50/allocated_payment_comparison.png" 1629721604 230946 31667ae99fda468037afaaac16967a75 ""
   "../figures/de50/average_demand.png" 1629138218 112720 d602ec3797befe1696f0bdd5c7fd05bb ""
   "../figures/de50/average_price.png" 1629138248 105278 c455eb0594883c26a3cf280080c8229f ""
@@ -26,8 +26,8 @@
   "../figures/example-without-cycles/payoff.pdf" 1644832844 212444 ffd8d5fbbf8061d2bb2d8989cb51d3be ""
   "../tables/de50/prices.tex" 1629293646 865 af050c8dbef191d3ca6966d5ef3012df ""
   "/etc/texmf/web2c/texmf.cnf" 1617707163 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/fabian/papers/price-tracing/paper/main.aux" 1646766216 41904 a0449417c24b530ce637657e33a1266d ""
-  "/home/fabian/papers/price-tracing/paper/main.tex" 1646766213 86230 57e75cfdf501468006a5dcbaaff7f16e ""
+  "/home/fabian/papers/price-tracing/paper/main.aux" 1647008681 41904 a0449417c24b530ce637657e33a1266d ""
+  "/home/fabian/papers/price-tracing/paper/main.tex" 1647008678 86230 16899b8ec466184e21322aca42cb7a20 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1095.tfm" 1136768653 1536 02c06700a42be0f5a28664c7273f82e7 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1246382020 1120 1e8878807317373affa7f7bba4cf2f6a ""
@@ -244,17 +244,17 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1581979058 38841 ce3692aa899bb693b90b87eaa5d4d84e ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1618148498 4770781 1ed1abab22da9c3e2cc82e4db562318b ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1618148515 8271655 f01cdd5845c98554698280b6b03b8f25 ""
-  "main.aux" 1646766216 41904 a0449417c24b530ce637657e33a1266d "pdflatex"
+  "main.aux" 1647008681 41904 a0449417c24b530ce637657e33a1266d "pdflatex"
   "main.bbl" 1646766179 58036 b7027193f80a4967eda87cff9bb2c424 "biber main"
-  "main.out" 1646766216 1472 9a5fda1b5dcbdb16ba352038b2a30ff5 "pdflatex"
-  "main.run.xml" 1646766216 2430 e13b986f64046a694c0386b97fbc3fb8 "pdflatex"
-  "main.tex" 1646766213 86230 57e75cfdf501468006a5dcbaaff7f16e ""
+  "main.out" 1647008681 1472 9a5fda1b5dcbdb16ba352038b2a30ff5 "pdflatex"
+  "main.run.xml" 1647008681 2430 e13b986f64046a694c0386b97fbc3fb8 "pdflatex"
+  "main.tex" 1647008678 86230 16899b8ec466184e21322aca42cb7a20 ""
   (generated)
-  "/home/fabian/papers/price-tracing/paper/main.pdf"
-  "main.bcf"
-  "main.run.xml"
-  "main.log"
   "main.pdf"
+  "/home/fabian/papers/price-tracing/paper/main.pdf"
+  "main.run.xml"
   "main.aux"
-  "main.out"
+  "main.log"
   "/home/fabian/papers/price-tracing/paper/main.log"
+  "main.bcf"
+  "main.out"
