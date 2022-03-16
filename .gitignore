@@ -26,5 +26,9 @@ submission-joule/paper/figures
 submission-joule/paper/tables
 submission-joule/paper/*.pdf
 submission-joule/paper/main.bib
+submission-energy/paper/figures
+submission-energy/paper/tables
+submission-energy/paper/*.pdf
+submission-energy/paper/main.bib
 price_tracing_comments2_ak.pdf
 

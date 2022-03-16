@@ -1,33 +1,30 @@
-\documentclass[11pt,twocolumn]{article}
+\documentclass[preprint,12pt]{elsarticle}
 \usepackage{graphicx}
 \usepackage[left=1.80cm, right=1.80cm, top=2.00cm, bottom=2.00cm]{geometry}
 \usepackage{amsmath,bm}
 \usepackage[colorlinks]{hyperref}
-\usepackage[natbib=true, sorting=none, backend=biber, bibencoding=utf8, style=ieee]{biblatex}
+% \usepackage[natbib=true, sorting=none, backend=biber, bibencoding=utf8, style=ieee]{biblatex}
 \usepackage{eurosym}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{subcaption}
 \usepackage{booktabs} % for table (toprule, bottomrule)
 \usepackage{enumitem} % for alphabetical enumeration 
 \usepackage{accents}
-\usepackage{authblk}
 \usepackage{tikz}
 \usepackage{dblfloatfix}
 \usepackage[printonlyused]{acronym}
 \usepackage{cleveref}
  
 
-
-\addbibresource{main.bib}
-\graphicspath{{../figures/}}
+\graphicspath{{figures/}}
 
 \usetikzlibrary{arrows}
 \tikzset{
     vertex/.style={circle,draw,minimum size=1.5em},
     edge/.style={->,> = latex',very thick}
-}
+    }
 
-\crefname{relation}{Rel.}{Rels.}
+    \crefname{relation}{Rel.}{Rels.}
 \creflabelformat{relation}{(#2#1#3)}
 \crefname{constraint}{Constr.}{Constrs.}
 \creflabelformat{constraint}{(#2#1#3)}
@@ -196,52 +193,57 @@
 \newcommand{\allocatesubsidycost}[1][n \rightarrow s]{\subsidycost_{#1,t}}
 
 
+\journal{Energy}
 
 \begin{document}
 
 
-\title{Price Tracing: Linking Nodal Prices in Optimized Power Systems}
-\author[1,2]{Fabian Hofmann}
-\author[1]{Markus Schlott}
+\begin{frontmatter}
 
-\affil[1]{Frankfurt Institute for Advanced Studies (FIAS), 60438 Frankfurt, Germany}
-\affil[2]{Technical University Berlin, Department of Energy Systems, 10623 Berlin, Germany}
+    
+    \title{Price Tracing: Linking Nodal Prices in Optimized Power Systems}
+    
+    \author[tub,fias]{Fabian Hofmann}
+    \ead{hofmann@fias.uni-frankfurt.de}
 
-\date{}
+    \author{Markus Schlott}
+    \ead{schlott@fias.uni-frankfurt.de}
 
-\twocolumn[
-    \begin{@twocolumnfalse}
+    \affiliation[tub]{organization={Technical University Berlin, Department of Energy Systems},
+        city={Berlin},
+        postcode={10623},
+        country={Germany}}
 
-        \maketitle
-
-        \begin{abstract}
-            Optimizing the total cost of power systems is a common tool for network operation and planning. Besides valuable information about how to run and possibly expand a power system, the optimization provides an optimal Locational Marginal Price per node and time step. This price can be seen as the price of electricity paid by consumers and purchased by suppliers, while maximizing social welfare. Naturally, it is a direct result of the optimization problem, and therefore does not give any information about its internal composition. This paper shows that by applying Flow Tracing, an algorithm for tracking flows in complex networks, it is possible to interlink Locational Marginal Prices in a coherent mathematical way. This does not only lead to important insights into the price structure, but also provides an intuitive decomposition and allocation of all system costs. Then individual consumers ``see'' how much they have to pay to individual generators and transmission lines in the power system. This method, introduced as Price Tracing, outperforms similar approaches provided by the literature, since the resulting cost allocations are transparent, plausible, and consistent with the Locational Marginal Prices from the optimization. The Price Tracing method is applied and discussed on behalf of a power system model of Germany with a high share of renewable power. The presented analysis and its implications can help in finding a more efficient market design to promote renewable power supply.
-        \end{abstract}
-
-    \end{@twocolumnfalse}
-]
-
-
-\subsection*{Highlights}
-\begin{itemize}
-    \item Flow Tracing is used to interlink optimal Locational Marginal Prices.
-    \item This quantifies the payment of individual consumers to individual generators and transmission lines.
-    \item Four use-cases are proposed and demonstrated on behalf of a future model of the German power system.
-\end{itemize}
+    \affiliation[tub]{organization={Frankfurt Institute for Advanced Studies (FIAS)},
+        city={Frankfurt},
+        postcode={60438},
+        country={Germany}}
 
 
-% \subsubsection*{Nomenclature}
+    \begin{abstract}
+        Optimizing the total cost of power systems is a common tool for network operation and planning. Besides valuable information about how to run and possibly expand a power system, the optimization provides an optimal Locational Marginal Price per node and time step. This price can be seen as the price of electricity paid by consumers and purchased by suppliers, while maximizing social welfare. Naturally, it is a direct result of the optimization problem, and therefore does not give any information about its internal composition. This paper shows that by applying Flow Tracing, an algorithm for tracking flows in complex networks, it is possible to interlink Locational Marginal Prices in a coherent mathematical way. This does not only lead to important insights into the price structure, but also provides an intuitive decomposition and allocation of all system costs. Then individual consumers ``see'' how much they have to pay to individual generators and transmission lines in the power system. This method, introduced as Price Tracing, outperforms similar approaches provided by the literature, since the resulting cost allocations are transparent, plausible, and consistent with the Locational Marginal Prices from the optimization. The Price Tracing method is applied and discussed on behalf of a power system model of Germany with a high share of renewable power. The presented analysis and its implications can help in finding a more efficient market design to promote renewable power supply.
+    \end{abstract}
 
-% \begin{table}[h!]
-%     \centering
-%     \begin{tabular}{ll}
-%         $\lmp$ & Locational Market Price at bus $n$ and  \\ & time step $t$ in \euro/MW \vpad \\
-%         $\demand$ & Electric demand at bus $n$ \\ & time step $t$ in MW  \vpad \\
-%         $\nodalgeneration$ & Electric generation of all generators at bus $n$, \\ & time step $t$  in MW \vpad \\
-%         $\generation$ & Electric generation of generator $s$, \\ & time step $t$  in MW \vpad \\
-%         $\flow$ & Active power flow on line $\ell$,\\ &time step $t$ in MW   \vpad \\
-%     \end{tabular}
-% \end{table}
+
+
+    \begin{highlights}
+        \item Flow Tracing is used to interlink optimal Locational Marginal Prices.
+        \item This quantifies the payment of individual consumers to individual generators and transmission lines.
+        \item Four use-cases are proposed and demonstrated on behalf of a future model of the German power system.
+    \end{highlights}
+
+    \begin{keyword}
+        keywords here, in the form: keyword \sep keyword
+
+        %% PACS codes here, in the form: \PACS code \sep code
+
+        %% MSC codes here, in the form: \MSC code \sep code
+        %% or \MSC[2008] code \sep code (2000 is the default)
+
+    \end{keyword}
+
+
+\end{frontmatter}
 
 \section{Introduction}
 
@@ -379,7 +381,8 @@ In the following, the Price Tracing method is illustrated by a numerical example
 \subsubsection*{Network without Cycles}
 \Cref{fig:example-network-wo} shows the optimized three-node network with corresponding numerical values.
 \begin{figure}[h!]
-    \includegraphics[width=\linewidth]{example-without-cycles/network}
+    \centering
+    \includegraphics[width=.5\linewidth]{example-without-cycles/network}
     \caption{Example network with nodal pricing scheme. Dispatch revenue as well as demand cost per MWh are given by the \ac{LMP} $\lambda$. Congestion revenue per MWh is given by the price difference $\lambda^\text{diff}$ of the connecting nodes.}
     \label{fig:example-network-wo}
 \end{figure}
@@ -388,7 +391,8 @@ Both, bus 1 and 2 have a fixed demand of 30~MW and 50~MW, respectively. Bus~1 ha
 Since only net injections are allocated to the different buses, all demand at bus~1 is met by the local generator. Bus~2, on the other hand, imports electricity from bus~1 and bus~3. Using the Price Tracing method, the cost allocations $\mathcal{C}_{n\rightarrow s}$ and $\mathcal{C}_{n\rightarrow \ell}$ are calculated and shown in \cref{fig:example-network-payoff-wo}. Consumers at bus~1 only have to compensate the local generator with 180 \euro. Consumers at bus~2 pay for congestion revenues from line 1--3, all electricity generation at bus~3, and the remaining dispatch revenues from the generator at bus~1.
 
 \begin{figure}[h]
-    \includegraphics[width=\linewidth]{example-without-cycles/payoff}
+    \centering
+    \includegraphics[width=.5\linewidth]{example-without-cycles/payoff}
     \caption{Allocation matrices $\mathcal{C}_{n\rightarrow s}$ (left) and $\mathcal{C}_{n\rightarrow \ell}$ (right) for the dispatch and congestion revenue for the network in \cref{fig:example-network-wo}.}
     \label{fig:example-network-payoff-wo}
 \end{figure}
@@ -401,20 +405,19 @@ The consistency of the cost allocation can be easily checked. The sum of a colum
 Now, we add a line from bus~3 to bus~2 with a capacity of 30~MW. This introduces \ac{KVL} constraints for the three lines that the sum of flows following the cycle is zero\footnote{For simplicity, we assume a uniform impedance in the example.}. As shown in \cref{fig:example-network} the new line's capacity is bound at 30~MW. The new cost optimum results in a higher price at bus~2 of 8~\euro/MWh despite the cheaper generator~2 producing 10~MW more than before. This result may be counterintuitive, but it becomes clear when considering that the low capacity of the new line, combined with the \ac{KVL}, restricts flows on line 1--3 and 1--2.
 
 \begin{figure}[h!]
-    % \begin{subfigure}[c]{0.5\linewidth}
-    \includegraphics[width=\linewidth]{example-with-cycles/network}
+    \centering
+    \includegraphics[width=.5\linewidth]{example-with-cycles/network}
     \caption{Example network with nodal pricing scheme and a network cycle. Now, due to the \ac{KVL} a new constraint adds to the optimization problem. Optionally, the congestion revenue per MWh may include shadow prices of the \ac{KVL} constraint $\lmpkvl$, thus $\lmp[\ell] = \lmpdiff + \lmpkvl$.}
     \label{fig:example-network}
-    % \end{subfigure}
 \end{figure}
 
 \begin{figure}[h!]
-    \begin{subfigure}[c]{\linewidth}
+    \begin{subfigure}[c]{.5\linewidth}
         \includegraphics[width=\linewidth]{example-with-cycles/payoff}
         \subcaption{Without \ac{KVL} shadow prices}
         \label{fig:example-network-payoff}
     \end{subfigure}
-    \begin{subfigure}[c]{\linewidth}
+    \begin{subfigure}[c]{.5\linewidth}
         \includegraphics[width=\linewidth]{example-with-cycles/payoff-kvl}
         \subcaption{With \ac{KVL} shadow prices}
         \label{fig:example-network-payoff-kvl}
@@ -449,7 +452,7 @@ The investment model builds on the PyPSA-EUR workflow \cite{horsch_jonas_pypsa-e
 % 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{de50/average_price}
+    \includegraphics[width=.5\linewidth]{de50/average_price}
     \caption{Load-weighted average electricity price $\averagelmp$ per region in the optimized German power system. Regions in the middle and south of Germany have high prices whereas electricity in the North with a strong wind, transmission and \ac{OCGT} infrastructure is cheaper.}
     \label{fig:average_price}
 \end{figure}
@@ -484,7 +487,8 @@ A further advantage of this network tariff allocation lies in the possibility of
 decomposes the network tariff into single lines, naturally fulfilling  $\averagelmp^\text{grid} = \sum_\ell \averagelmp[n\rightarrow \ell]^\text{grid}$. On the one hand this enables operator or country specific network tariffs to be quantified so they are consistent with cross-border flows. On the other hand this facilitates tracing back which congested lines are the strongest drivers to the local network tariff.
 
 \begin{figure}
-    \includegraphics[width=\linewidth]{de50/maps_price/branch_investment_cost.png}
+    \centering
+    \includegraphics[width=.5\linewidth]{de50/maps_price/branch_investment_cost.png}
     \caption{Usage-based network tariff per region. The resulting prices are indicated by the color of the region, the transmission lines are drawn in proportion to their congestion revenues.}
     \label{fig:congestion_revenue}
 \end{figure}
@@ -497,7 +501,8 @@ decomposes the network tariff into single lines, naturally fulfilling  $\average
 \label{sec:co2-cost-allocation}
 
 \begin{figure}[h!]
-    \includegraphics[width=\linewidth]{de50/maps_price/co2_cost.png}
+    \centering
+    \includegraphics[width=.5\linewidth]{de50/maps_price/co2_cost.png}
     \caption{Average CO$_2$ cost per consumed MWh. The effective prices are indicated by the color of the region, the circles are drawn in proportion to the revenue per regional generators.}
     \label{fig:opex_price}
 \end{figure}
@@ -1096,7 +1101,7 @@ where $\DirectedIncidence^-$ is the negative part of the directed Incidence matr
 
 \begin{table*}[h]
     \centering
-    \input{../tables/de50/prices}
+    \input{tables/de50/prices}
     \caption{Operational and capital price assumptions for all type of assets used in the working example. The capital price for transmission lines are given in [k\,\euro/MW/km]. The cost assumptions are retrieved from the PyPSA-EUR model \cite{horsch_jonas_pypsa-eur_2020}.}
     \label{tab:cost_assumptions}
 \end{table*}
@@ -1105,14 +1110,16 @@ where $\DirectedIncidence^-$ is the negative part of the directed Incidence matr
 The following figures contain more detailed information about the peer-to-peer cost allocation discussed in \cref{sec:application_case}. The cost or prices payed by consumers are indicated by the region color. The dedicated revenue is displayed in proportion to the size of circles (for assets attached to buses) or to the thickness of transmission branches.
 
 \begin{figure}[h]
-    \includegraphics[width=\linewidth]{de50/average_demand}
+    \centering
+    \includegraphics[width=.5\linewidth]{de50/average_demand}
     \caption{Average demand, $\sum_t \demand/T$ per regions. The regions with high population densities and larger areas reveal a higher demand.}
     \label{fig:average_demand}
 \end{figure}
 
 
 \begin{figure}
-    \includegraphics[width=\linewidth]{de50/power_mix}
+    \centering
+    \includegraphics[width=.5\linewidth]{de50/power_mix}
     \caption{Average power mix per region calculated by Average Participation. Coastal regions are mainly supplied by local offshore and onshore wind farms. Their strong power injections additionally penetrate the network up to the southern border. In the middle and South, the supply is dominated by a combination of OCGT and solar power.}
     \label{fig:power_mix}
 \end{figure}
@@ -1147,15 +1154,17 @@ The following figures contain more detailed information about the peer-to-peer c
 
 
 \begin{figure}
-    \includegraphics[width=\linewidth]{de50/maps_scarcity_price/branch_scarcity_cost_total}
+    \centering
+    \includegraphics[width=.5\linewidth]{de50/maps_scarcity_price/branch_scarcity_cost_total}
     \caption{Average allocated transmission scarcity cost per consumed MWh, $\sum_t \scarcitycost_{n \rightarrow \ell, t} / \sum_t \demand $. This scarcity cost results from the upper transmission expansion limit of 25\%. The costs are indicated by the regional color.  The lines are drawn in proportion to revenue dedicated to scarcity cost. }
     \label{fig:branch_scarcity_price}
 \end{figure}
 
 
 \begin{figure}
+    \centering
     \vspace{2cm}
-    \includegraphics[width=\linewidth]{de50/subsidy}
+    \includegraphics[width=.5\linewidth]{de50/subsidy}
     \caption{Total costs for subsidy $\subsidycost$ resulting from lower capacity expansion bounds (brownfield constraints). The figure shows the built infrastructure that does not gain back its CAPEX from its market revenue, but is only built due to lower capacity limits.}
     \label{fig:subsidy}
 \end{figure}
@@ -1209,7 +1218,8 @@ The following figures contain more detailed information about the peer-to-peer c
 
 
 \clearpage
-\printbibliography
+\bibliographystyle{elsarticle-harv}
+\bibliography{main.bib}
 
 
 
