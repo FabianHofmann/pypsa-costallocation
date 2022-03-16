@@ -200,14 +200,12 @@
 \begin{document}
 
 
-\title{Tracing prices: A flow-based cost allocation for optimized power systems}
+\title{Price Tracing: Linking Nodal Prices in Optimized Power Systems}
 \author[1,2]{Fabian Hofmann}
 \author[1]{Markus Schlott}
-\author[1,3]{Alexander Kies}
 
 \affil[1]{Frankfurt Institute for Advanced Studies (FIAS), 60438 Frankfurt, Germany}
 \affil[2]{Technical Univerisity Berlin, Department of Energy Systems, 10623 Berlin}
-\affil[3]{Aarhus ...}
 
 \date{}
 
@@ -217,8 +215,8 @@
     \maketitle
     
     \begin{abstract}
-        Power system models are a valuable, widely used tool for determining cost-minimal future operation and investment  under policy or environmental constraints. However, they neglect to allocate the costs of individual assets, such as generators or transmission lines, to individual consumers on the grid. Existing cost allocation methods are hardly suitable for large grids and do not consider all relevant costs. This paper addresses this gap. Based on flow tracing, the \textit{Price Tracing} method is introduced, which derives a node-to-node and from there an asset-to-consumer allocation of all costs in an optimized power system. The resulting cost allocations are transparent, plausible, and consistent with locational marginal prices at the optimum. The approach is applied and discussed using a model of the future German power system. Although the method is strongly tied to a power system model, the underlying considerations can help in finding a more efficient market design.
-
+        Optimizing the total cost of power systems is a common tool for network operation and planning. Besides valuable information about how to run and possibly expand the power system, the optimization yields an optimal Locational Marginal Price per node and time step. That is, the price of electricity paid by consumers and purchased by suppliers while maximizing the social welfare. Naturally, these prices are a direct result of the optimization problem, so do not give any information about their composition.
+        This paper shows that by applying Flow Tracing, an algorithm developed for transmission systems, it is possible to interlink the Locational Marginal Prices in a coherent mathematical manner. This not only leads to important insights into the price structure but enables to an make an intuitive decomposition and allocation of all costs. Therefore, individual consumers "see" how much they pay to individual generators and transmission lines. This method, which we introduce as Price Tracing, outperforms similar approaches provided by the literature as resulting cost allocations are transparent, plausible, and consistent with Locational Marginal Prices. The Price Tracing method is applied and discussed on behalf of a power system model of Germany with a high share of renewables. The presented analysis can help in finding a more efficient market design to drive renewable power supply.
         % \vtop{%
         %  \vskip0pt
         %   \hbox{%
@@ -234,10 +232,9 @@
 
 \subsection*{Highlights}
 \begin{itemize}
-    \item Cost-optimal Locational Marginal Prices are used to determine the revenues of all network assets in the system. 
-    \item Flow tracing is used to relate the revenue of each asset separately to consumers. 
-    \item This decomposes the electricity price at each node in a fair and transparent manner.
-    \item Four use-cases are proposed and demonstrated on behalf of a future model of the German power system. 
+    \item Flow Tracing is used to interlink optimal Locational Marginal Prices.
+    \item This quantifies the payment of individual consumers to individual generators and transmission lines.
+    \item Four use-cases are proposed and demonstrated on behalf of a future model of the German power system.
 \end{itemize}
 
 
@@ -261,7 +258,7 @@ In this regard, power system models are a valuable and widely used tool \cite{pf
 
 This paper addresses this gap. We introduce a new method called Price Tracing that links electricity prices from different nodes. The method builds on Bialek's \ac{AP} \cite{bialek_tracing_1996}, also known as flow tracing, and weights the resulting power flow allocations with the \ac{LMP}. This provides the basis for a transparent allocation of cost contributions to consumer electricity prices, i.e. it answers not only the question of who supplies electricity to whom, but also how much consumers must pay to particular generators or transmission lines. 
 
-In the literature, the concept of flow-based cost allocation has been discussed and applied in a number of works \cite{galiana_transmission_2003,shahidehpour_market_2002,meng_investigation_2007,schafer_allocation_2017,nikoukar_transmission_2012,arabali_pricing_2012,wu_locational_2005}. Shahidehpour et al. provide deep insights into the allocation of congestion costs and transmission investments to market participants using different allocation techniques \cite{shahidehpour_market_2002}. In particular, they suggest that generation shift factors, i.e. the marginal contribution of generators to a flow on a line, allow the \ac{LMP} to be represented as a superposition of (a) the \ac{LMP} on the reference bus, (b) the congestion price, and (c) a price for losses. The approach in \cite{meng_investigation_2007} extends this relationship for contributions based on the \ac{AP} scheme, which provides an accurate, albeit imprecise, estimate of the optimal \ac{LMP}. A similar approach based on \ac{AP} is used in \cite{schafer_allocation_2017}, which allocates electricity prices from a non-optimal electricity dispatch.
+In the literature, the concept of flow-based cost allocation has been discussed and applied in a number of works \cite{galiana_transmission_2003,shahidehpour_market_2002,meng_investigation_2007,schafer_allocation_2017,nikoukar_transmission_2012,arabali_pricing_2012,wu_locational_2005}. Shahidehpour et al. provide deep insights into the allocation of congestion costs and transmission investments to market participants using different allocation techniques \cite{shahidehpour_market_2002}. In particular, they suggest that generation shift factors, i.e. the marginal contribution of generators to a flow on a line, allow the \ac{LMP} to be represented as a superposition of (a) the \ac{LMP} on the reference bus, (b) the congestion price, and (c) a price for losses. The approach in \cite{meng_investigation_2007} extends this relationship for contributions based on the \ac{AP} scheme, which provides an accurate, albeit imprecise, estimate of the optimal \ac{LMP}. A similar approach based on \ac{AP} is used in \cite{tranbergFlowbasedNodalCost2018}, which allocates electricity prices from a non-optimal electricity dispatch.
 
 The presented approach combines the advantages of the above studies. It ensures that cost allocations are plausible and spatially constrained, while payments are fully aligned with the \ac{LMP}-based nodal pricing system. It also facilitates transparency and cost-benefit analysis in network planning, such as the ten-year network development plan \cite{entso-e_completing_2020} or the German network development plan \cite{bundesnetzagentur_netzentwicklungsplan_2020}. In addition, it provides a starting point for a usage-based allocation of transmission costs. While the presented method uses the \ac{LOPF} to analyze large network models, it is discussed how it can be extended to nonlinear power flows. 
 
